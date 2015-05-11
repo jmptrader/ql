@@ -679,7 +679,7 @@ func (s *selectStmt) do(ctx *execCtx, onlyNames bool, f func(id interface{}, dat
 }
 
 func (s *selectStmt) exec0() (r rset) { //LATER overlapping goroutines/pipelines
-	s.mu.Lock()
+	s.mu.Lock() //TODO- when new planner is ready
 	defer s.mu.Unlock()
 	r = rset(s.from)
 	if o := s.outer; o != nil {

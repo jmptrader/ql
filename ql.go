@@ -90,6 +90,7 @@ type recordset struct {
 	tx *TCtx
 }
 
+// Do implements Recordset.
 func (r recordset) Do(names bool, f func(data []interface{}) (more bool, err error)) (err error) {
 	nm := noNames
 	if names {
@@ -98,6 +99,7 @@ func (r recordset) Do(names bool, f func(data []interface{}) (more bool, err err
 	return r.ctx.db.do(r, nm, f)
 }
 
+// Fields implements Recordset.
 func (r recordset) Fields() (names []string, err error) {
 	err = r.ctx.db.do(
 		r,
@@ -116,6 +118,7 @@ func (r recordset) Fields() (names []string, err error) {
 	return
 }
 
+// FirstRow implements Recordset.
 func (r recordset) FirstRow() (row []interface{}, err error) {
 	rows, err := r.Rows(1, 0)
 	if err != nil {
@@ -129,6 +132,7 @@ func (r recordset) FirstRow() (row []interface{}, err error) {
 	return nil, nil
 }
 
+// Rows implements Recordset.
 func (r recordset) Rows(limit, offset int) (rows [][]interface{}, err error) {
 	if err := r.Do(false, func(row []interface{}) (bool, error) {
 		if offset > 0 {
