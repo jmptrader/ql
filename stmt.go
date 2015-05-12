@@ -775,7 +775,6 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 		//r = o
 	}
 	if w := s.where; w != nil {
-		panic("TODO")
 		//switch ok, list := isPossiblyRewriteableCrossJoinWhereExpression(w.expr); ok && len(s.from.sources) > 1 {
 		//case true:
 		//	//dbg("====(in, %d)\n%s\n----", len(list), s)
@@ -827,6 +826,9 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 		//default:
 		//	r = &whereRset{expr: w.expr, src: r}
 		//}
+		if r, err = (&whereRset{expr: w.expr, src: r}).plan(ctx); err != nil {
+			return nil, err
+		}
 	}
 	switch {
 	case !s.hasAggregates && s.group == nil: // nop

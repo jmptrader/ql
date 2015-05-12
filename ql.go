@@ -538,11 +538,11 @@ func (r *orderByRset) String() string {
 
 func (r *orderByRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
-var nowhere = &whereRset{}
+//TODO- var nowhere = &whereRset{}
 
 type whereRset struct {
 	expr expression
-	src  rset
+	src  rset2
 }
 
 //TODO- func (r *whereRset) doIndexedBool(t *table, en indexIterator, v bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
@@ -984,7 +984,50 @@ type whereRset struct {
 //TODO- 	})
 //TODO- }
 
-func (r *whereRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+func (r *whereRset) plan(ctx *execCtx) (rset2, error) {
+	r2 := &whereRset2{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
+	//TODO optimize here
+	return r2, nil
+}
+
+type whereRset2 struct {
+	expr   expression
+	src    rset2
+	fields []string
+}
+
+func (r *whereRset2) fieldNames() []string { return r.fields }
+
+func (r *whereRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+	m := map[interface{}]interface{}{}
+	return r.src.do(ctx, func(rid interface{}, in []interface{}) (more bool, err error) {
+		for i, fld := range r.fields {
+			if fld != "" {
+				m[fld] = in[i]
+			}
+		}
+		m["$id"] = rid
+		val, err := r.expr.eval(ctx, m, ctx.arg)
+		if err != nil {
+			return false, err
+		}
+
+		if val == nil {
+			return true, nil
+		}
+
+		x, ok := val.(bool)
+		if !ok {
+			return false, fmt.Errorf("invalid WHERE expression %s (value of type %T)", val, val)
+		}
+
+		if !x {
+			return true, nil
+		}
+
+		return f(rid, in)
+	})
+}
 
 type offsetRset struct {
 	expr expression
