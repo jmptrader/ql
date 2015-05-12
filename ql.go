@@ -47,10 +47,22 @@ var (
 	_ rset = (*offsetRset)(nil)
 	_ rset = (*orderByRset)(nil)
 	_ rset = (*outerJoinRset)(nil)
-	_ rset = (*selectRset)(nil)
+	//TODO- _ rset = (*selectRset)(nil)
 	_ rset = (*selectStmt)(nil)
 	_ rset = (*tableRset)(nil)
 	_ rset = (*whereRset)(nil)
+
+	_ rset2 = (*crossJoinRset2)(nil)
+	//_ rset2 = (*distinctRset2)(nil)
+	//_ rset2 = (*groupByRset2)(nil)
+	//_ rset2 = (*limitRset2)(nil)
+	//_ rset2 = (*offsetRset2)(nil)
+	//_ rset2 = (*orderByRset2)(nil)
+	//_ rset2 = (*outerJoinRset2)(nil)
+	_ rset2 = (*selectRset2)(nil)
+	//_ rset2 = (*selectStmt2)(nil) // There's no selectStmt2.
+	_ rset2 = (*tableRset2)(nil)
+	//_ rset2 = (*whereRset2)(nil)
 
 	isTesting bool // enables test hook: select from an index
 )
@@ -62,6 +74,7 @@ type rset interface {
 
 type rset2 interface {
 	do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error
+	fieldNames() []string
 }
 
 type recordset struct {
@@ -256,6 +269,16 @@ type groupByRset struct {
 //TODO- }
 
 func (r *groupByRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+
+type groupByRset2 struct { //TODO
+	fields []string
+}
+
+func (r *groupByRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+	panic("TODO")
+}
+
+func (r *groupByRset2) fieldNames() []string { return r.fields }
 
 // TCtx represents transaction context. It enables to execute multiple
 // statement lists in the same context. The same context guarantees the state
@@ -1066,10 +1089,10 @@ type limitRset struct {
 
 func (r *limitRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
-type selectRset struct {
-	flds []*fld
-	src  rset
-}
+//TODO- type selectRset struct {
+//TODO- 	flds []*fld
+//TODO- 	src  rset2
+//TODO- }
 
 //TODO- func (r *selectRset) doGroup(grp *groupByRset, ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
 //TODO- 	if onlyNames {
@@ -1201,7 +1224,49 @@ type selectRset struct {
 //TODO- 	})
 //TODO- }
 
-func (r *selectRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+type selectRset2 struct {
+	flds   []*fld
+	src    rset2
+	fields []string
+}
+
+func (r *selectRset2) plan(ctx *execCtx) (rset2, error) {
+	if len(r.flds) == 0 {
+		return r.src, nil
+	}
+
+	r.fields = make([]string, len(r.flds))
+	for i, v := range r.flds {
+		r.fields[i] = v.name
+	}
+	return r, nil
+}
+
+func (r *selectRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+	if _, ok := r.src.(*groupByRset2); ok {
+		panic("TODO")
+	}
+
+	fields := r.src.fieldNames()
+	m := map[interface{}]interface{}{}
+	return r.src.do(ctx, func(rid interface{}, in []interface{}) (more bool, err error) {
+		for i, nm := range fields {
+			if nm != "" {
+				m[nm] = in[i]
+			}
+		}
+		m["$id"] = rid
+		out := make([]interface{}, len(r.flds))
+		for i, fld := range r.flds {
+			if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+				return false, err
+			}
+		}
+		return f(rid, out)
+	})
+}
+
+func (r *selectRset2) fieldNames() []string { return r.fields }
 
 type tableRset string
 
@@ -1419,7 +1484,70 @@ type tableRset string
 //TODO- 	return
 //TODO- }
 
-func (r *tableRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+func (r tableRset) plan(ctx *execCtx) (rset2, error) {
+	switch r {
+	case "__Table":
+		panic("TODO")
+	case "__Column":
+		panic("TODO")
+	case "__Index":
+		panic("TODO")
+	}
+
+	t, ok := ctx.db.root.tables[string(r)]
+	if !ok && isTesting {
+		if _, x0 := ctx.db.root.findIndexByName(string(r)); x0 != nil {
+			panic("TODO")
+		}
+	}
+
+	if !ok {
+		return nil, fmt.Errorf("table %s does not exist", r)
+	}
+
+	rs := &tableRset2{t: t}
+	for _, col := range t.cols {
+		rs.fields = append(rs.fields, col.name)
+	}
+	return rs, nil
+}
+
+type tableRset2 struct {
+	t      *table
+	fields []string
+}
+
+func (r *tableRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+	t := r.t
+	h := t.head
+	cols := t.cols
+	for h > 0 {
+		rec, err := t.store.Read(nil, h, cols...) // 0:next, 1:id, 2...: data
+		if err != nil {
+			return err
+		}
+
+		if n := len(cols) + 2 - len(rec); n > 0 {
+			rec = append(rec, make([]interface{}, n)...)
+		}
+		for i, c := range cols {
+			if x := c.index; 2+x < len(rec) {
+				rec[2+i] = rec[2+x]
+				continue
+			}
+
+			rec[2+i] = nil
+		}
+		if m, err := f(rec[1], rec[2:2+len(cols)]); !m || err != nil {
+			return err
+		}
+
+		h = rec[0].(int64) // next
+	}
+	return nil
+}
+
+func (r *tableRset2) fieldNames() []string { return r.fields }
 
 type crossJoinRset struct {
 	sources []interface{}
@@ -1578,7 +1706,84 @@ func (r *crossJoinRset) String() string {
 //TODO- 	return g(nil, rsets, 0)
 //TODO- }
 
-func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) {
+	r2 := crossJoinRset2{}
+	r2.rsets = make([]rset2, len(r.sources))
+	r2.names = make([]string, len(r.sources))
+	var err error
+	m := map[string]bool{}
+	for i, v := range r.sources {
+		pair := v.([]interface{})
+		src := pair[0]
+		nm := pair[1].(string)
+		if s, ok := src.(string); ok {
+			src = tableRset(s)
+			if nm == "" {
+				nm = s
+			}
+		}
+		if m[nm] {
+			return nil, fmt.Errorf("%s: duplicate name %s", r.String(), nm)
+		}
+
+		m[nm] = true
+		r2.names[i] = nm
+		var rs2 rset2
+		if rs2, err = src.(rset).plan(ctx); err != nil {
+			return nil, err
+		}
+
+		switch {
+		case len(r.sources) == 1:
+			r2.fields = rs2.fieldNames()
+		default:
+			for _, f := range rs2.fieldNames() {
+				if strings.Contains(f, ".") {
+					return nil, fmt.Errorf("cannot join on recordset with already qualified field names (use the AS clause): %s", f)
+				}
+
+				if f != "" && nm != "" {
+					f = fmt.Sprintf("%s.%s", nm, f)
+				}
+				r2.fields = append(r2.fields, f)
+			}
+		}
+		r2.rsets[i] = rs2
+	}
+	if len(r2.rsets) == 1 {
+		return r2.rsets[0], nil
+	}
+
+	return &r2, nil
+}
+
+type crossJoinRset2 struct {
+	rsets  []rset2
+	names  []string
+	fields []string
+}
+
+func (r *crossJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
+	ids := map[string]interface{}{}
+	var g func([]interface{}, []rset2, int) error
+	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+		rset := rsets[0]
+		rsets = rsets[1:]
+		return rset.do(ctx, func(id interface{}, in []interface{}) (more bool, err error) {
+			dbg("", id, in)
+			ids[r.names[x]] = id
+			if len(rsets) != 0 {
+				dbg("")
+				return true, g(append(prefix, in...), rsets, x+1)
+			}
+
+			return f(ids, append(prefix, in...))
+		})
+	}
+	return g(nil, r.rsets, 0)
+}
+
+func (r *crossJoinRset2) fieldNames() []string { return r.fields }
 
 type fld struct {
 	expr expression
@@ -2420,73 +2625,66 @@ type DbInfo struct {
 }
 
 func (db *DB) info() (r *DbInfo, err error) {
-	panic("TODO")
-	//_, hasColumn2 := db.root.tables["__Column2"]
-	//r = &DbInfo{Name: db.Name()}
-	//for nm, t := range db.root.tables {
-	//	ti := TableInfo{Name: nm}
-	//	m := map[string]*ColumnInfo{}
-	//	if hasColumn2 {
-	//		rs, err := selectColumn2.l[0].exec(&execCtx{db: db})
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		ok := false
-	//		if err := rs.(recordset).do(
-	//			&execCtx{db: db, arg: []interface{}{nm}},
-	//			false,
-	//			func(id interface{}, data []interface{}) (more bool, err error) {
-	//				if ok {
-	//					ci := &ColumnInfo{NotNull: data[1].(bool), Constraint: data[2].(string), Default: data[3].(string)}
-	//					m[data[0].(string)] = ci
-	//					return true, nil
-	//				}
+	_, hasColumn2 := db.root.tables["__Column2"]
+	r = &DbInfo{Name: db.Name()}
+	for nm, t := range db.root.tables {
+		ti := TableInfo{Name: nm}
+		m := map[string]*ColumnInfo{}
+		if hasColumn2 {
+			rs, err := selectColumn2.l[0].exec(&execCtx{db: db})
+			if err != nil {
+				return nil, err
+			}
 
-	//				ok = true
-	//				return true, nil
-	//			},
-	//		); err != nil {
-	//			return nil, err
-	//		}
-	//	}
-	//	for _, c := range t.cols {
-	//		ci := ColumnInfo{Name: c.name, Type: Type(c.typ)}
-	//		if c2 := m[c.name]; c2 != nil {
-	//			ci.NotNull = c2.NotNull
-	//			ci.Constraint = c2.Constraint
-	//			ci.Default = c2.Default
-	//		}
-	//		ti.Columns = append(ti.Columns, ci)
-	//	}
-	//	r.Tables = append(r.Tables, ti)
-	//	for i, x := range t.indices {
-	//		if x == nil {
-	//			continue
-	//		}
+			if err := rs.(recordset).do(
+				&execCtx{db: db, arg: []interface{}{nm}},
+				func(id interface{}, data []interface{}) (more bool, err error) {
+					ci := &ColumnInfo{NotNull: data[1].(bool), Constraint: data[2].(string), Default: data[3].(string)}
+					m[data[0].(string)] = ci
+					return true, nil
+				},
+			); err != nil {
+				return nil, err
+			}
+		}
+		for _, c := range t.cols {
+			ci := ColumnInfo{Name: c.name, Type: Type(c.typ)}
+			if c2 := m[c.name]; c2 != nil {
+				ci.NotNull = c2.NotNull
+				ci.Constraint = c2.Constraint
+				ci.Default = c2.Default
+			}
+			ti.Columns = append(ti.Columns, ci)
+		}
+		r.Tables = append(r.Tables, ti)
+		for i, x := range t.indices {
+			if x == nil {
+				continue
+			}
 
-	//		var cn string
-	//		switch {
-	//		case i == 0:
-	//			cn = "id()"
-	//		default:
-	//			cn = t.cols0[i-1].name
-	//		}
-	//		r.Indices = append(r.Indices, IndexInfo{x.name, nm, cn, x.unique, []string{cn}})
-	//	}
-	//	var a []string
-	//	for k := range t.indices2 {
-	//		a = append(a, k)
-	//	}
-	//	for _, k := range a {
-	//		x := t.indices2[k]
-	//		a = a[:0]
-	//		for _, e := range x.exprList {
-	//			a = append(a, e.String())
-	//		}
-	//		r.Indices = append(r.Indices, IndexInfo{k, nm, "", x.unique, a})
-	//	}
-	//}
-	//return
+			var cn string
+			switch {
+			case i == 0:
+				cn = "id()"
+			default:
+				cn = t.cols0[i-1].name
+			}
+			r.Indices = append(r.Indices, IndexInfo{x.name, nm, cn, x.unique, []string{cn}})
+		}
+		var a []string
+		for k := range t.indices2 {
+			a = append(a, k)
+		}
+		for _, k := range a {
+			x := t.indices2[k]
+			a = a[:0]
+			for _, e := range x.exprList {
+				a = append(a, e.String())
+			}
+			r.Indices = append(r.Indices, IndexInfo{k, nm, "", x.unique, a})
+		}
+	}
+	return
 }
 
 // Info provides meta data describing a DB or an error if any. It locks the DB

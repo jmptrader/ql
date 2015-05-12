@@ -10,7 +10,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(11, 22, 33);
 COMMIT;
 SELECT * FROM t;
-|lc1, lc2, lc3
+|c1, c2, c3
 [11 22 33]
 
 -- 1
@@ -33,7 +33,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2, 3, "foo");
 COMMIT;
 SELECT * FROM t;
-|lc1, lc2, lc3, sc4
+|c1, c2, c3, c4
 [1 2 3 foo]
 
 -- 4
@@ -69,7 +69,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2);
 COMMIT;
 SELECT * FROM t;
-|lc1, lc3
+|c1, c3
 [1 2]
 
 -- 9
@@ -119,7 +119,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2+3*4, 2*3+4);
 COMMIT;
 SELECT * FROM t;
-|lc1, lc2
+|c1, c2
 [14 10]
 
 -- 16
@@ -150,7 +150,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2, 3, 4, );
 COMMIT;
 SELECT * FROM t;
-|lc1, lc2, lc3, lc4
+|c1, c2, c3, c4
 [1 2 3 4]
 [<nil> 14 10 <nil>]
 
@@ -163,7 +163,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2, 3);
 COMMIT;
 SELECT * FROM t;
-|lc1, lc2, lc4
+|c1, c2, c4
 [1 2 3]
 [14 10 <nil>]
 [42 <nil> 314]
@@ -182,7 +182,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(314);
 COMMIT;
 SELECT * FROM t;
-|lc1
+|c1
 [314]
 
 -- 23
@@ -196,7 +196,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT * FROM t;
-|lc1, sc2
+|c1, c2
 [1 a]
 [2 b]
 
@@ -229,7 +229,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT 3*c1 AS v FROM t;
-|kv
+|v
 [3]
 [6]
 
@@ -240,7 +240,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT c2 FROM t;
-|sc2
+|c2
 [a]
 [b]
 
@@ -251,7 +251,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT c1 AS X, c2 FROM t;
-|lX, sc2
+|X, c2
 [1 a]
 [2 b]
 
@@ -262,7 +262,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT c2, c1 AS Y FROM t;
-|sc2, lY
+|c2, Y
 [a 1]
 [b 2]
 
