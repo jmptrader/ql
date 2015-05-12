@@ -118,41 +118,42 @@ func dumpFlds(flds []*fld) string {
 }
 
 func recSetDump(rs Recordset) (s string, err error) {
-	var state int
-	var a []string
-	var flds []*fld
-	rs2 := rs.(recordset)
-	if err = rs2.do(rs2.ctx, false, func(_ interface{}, rec []interface{}) (bool, error) {
-		switch state {
-		case 0:
-			flds = rec[0].([]*fld)
-			state++
-		case 1:
-			for i, v := range flds {
-				a = append(a, stypeof(v.name, rec[i]))
-			}
-			a = []string{strings.Join(a, ", ")}
-			state++
-			fallthrough
-		default:
-			if err = expand(rec); err != nil {
-				return false, err
-			}
+	panic("TODO")
+	//var state int
+	//var a []string
+	//var flds []*fld
+	//rs2 := rs.(recordset)
+	//if err = rs2.do(rs2.ctx, false, func(_ interface{}, rec []interface{}) (bool, error) {
+	//	switch state {
+	//	case 0:
+	//		flds = rec[0].([]*fld)
+	//		state++
+	//	case 1:
+	//		for i, v := range flds {
+	//			a = append(a, stypeof(v.name, rec[i]))
+	//		}
+	//		a = []string{strings.Join(a, ", ")}
+	//		state++
+	//		fallthrough
+	//	default:
+	//		if err = expand(rec); err != nil {
+	//			return false, err
+	//		}
 
-			a = append(a, fmt.Sprintf("%v", rec))
-		}
-		return true, nil
-	}); err != nil {
-		return
-	}
+	//		a = append(a, fmt.Sprintf("%v", rec))
+	//	}
+	//	return true, nil
+	//}); err != nil {
+	//	return
+	//}
 
-	if state == 1 {
-		for _, v := range flds {
-			a = append(a, stypeof(v.name, nil))
-		}
-		a = []string{strings.Join(a, ", ")}
-	}
-	return strings.Join(a, "\n"), nil
+	//if state == 1 {
+	//	for _, v := range flds {
+	//		a = append(a, stypeof(v.name, nil))
+	//	}
+	//	a = []string{strings.Join(a, ", ")}
+	//}
+	//return strings.Join(a, "\n"), nil
 }
 
 // http://en.wikipedia.org/wiki/Join_(SQL)#Sample_tables

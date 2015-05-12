@@ -14,7 +14,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"math/big"
 	"strconv"
@@ -22,7 +21,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cznic/b"
 	"github.com/cznic/strutil"
 )
 
@@ -57,36 +55,18 @@ var (
 	isTesting bool // enables test hook: select from an index
 )
 
-// List represents a group of compiled statements.
-type List struct {
-	l      []stmt
-	params int
-}
-
-// String implements fmt.Stringer
-func (l List) String() string {
-	var b bytes.Buffer
-	f := strutil.IndentFormatter(&b, "\t")
-	for _, s := range l.l {
-		switch s.(type) {
-		case beginTransactionStmt:
-			f.Format("%s\n%i", s)
-		case commitStmt, rollbackStmt:
-			f.Format("%u%s\n", s)
-		default:
-			f.Format("%s\n", s)
-		}
-	}
-	return b.String()
-}
-
 type rset interface {
-	do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error
+	//do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error
+	plan(ctx *execCtx) (rset2, error)
+}
+
+type rset2 interface {
+	do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error
 }
 
 type recordset struct {
 	ctx *execCtx
-	rset
+	rset2
 	tx *TCtx
 }
 
@@ -158,99 +138,124 @@ func (r recordset) Rows(limit, offset int) (rows [][]interface{}, err error) {
 	return rows, nil
 }
 
+// List represents a group of compiled statements.
+type List struct {
+	l      []stmt
+	params int
+}
+
+// String implements fmt.Stringer
+func (l List) String() string {
+	var b bytes.Buffer
+	f := strutil.IndentFormatter(&b, "\t")
+	for _, s := range l.l {
+		switch s.(type) {
+		case beginTransactionStmt:
+			f.Format("%s\n%i", s)
+		case commitStmt, rollbackStmt:
+			f.Format("%u%s\n", s)
+		default:
+			f.Format("%s\n", s)
+		}
+	}
+	return b.String()
+}
+
 type groupByRset struct {
 	colNames []string
 	src      rset
 }
 
-func (r *groupByRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	t, err := ctx.db.store.CreateTemp(true)
-	if err != nil {
-		return
-	}
+//TODO- func (r *groupByRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	t, err := ctx.db.store.CreateTemp(true)
+//TODO- 	if err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	defer func() {
+//TODO- 		if derr := t.Drop(); derr != nil && err == nil {
+//TODO- 			err = derr
+//TODO- 		}
+//TODO- 	}()
+//TODO-
+//TODO- 	var flds []*fld
+//TODO- 	var gcols []*col
+//TODO- 	var cols []*col
+//TODO- 	ok := false
+//TODO- 	k := make([]interface{}, len(r.colNames)) //LATER optimize when len(r.cols) == 0
+//TODO- 	if err = r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		if ok {
+//TODO- 			infer(in, &cols)
+//TODO- 			for i, c := range gcols {
+//TODO- 				k[i] = in[c.index]
+//TODO- 			}
+//TODO- 			h0, err := t.Get(k)
+//TODO- 			if err != nil {
+//TODO- 				return false, err
+//TODO- 			}
+//TODO-
+//TODO- 			var h int64
+//TODO- 			if len(h0) != 0 {
+//TODO- 				h, _ = h0[0].(int64)
+//TODO- 			}
+//TODO- 			nh, err := t.Create(append([]interface{}{h, nil}, in...)...)
+//TODO- 			if err != nil {
+//TODO- 				return false, err
+//TODO- 			}
+//TODO-
+//TODO- 			for i, c := range gcols {
+//TODO- 				k[i] = in[c.index]
+//TODO- 			}
+//TODO- 			err = t.Set(k, []interface{}{nh})
+//TODO- 			if err != nil {
+//TODO- 				return false, err
+//TODO- 			}
+//TODO-
+//TODO- 			return true, nil
+//TODO- 		}
+//TODO-
+//TODO- 		ok = true
+//TODO- 		flds = in[0].([]*fld)
+//TODO- 		for _, c := range r.colNames {
+//TODO- 			i := findFldIndex(flds, c)
+//TODO- 			if i < 0 {
+//TODO- 				return false, fmt.Errorf("unknown column %s", c)
+//TODO- 			}
+//TODO-
+//TODO- 			gcols = append(gcols, &col{name: c, index: i})
+//TODO- 		}
+//TODO- 		return !onlyNames, nil
+//TODO- 	}); err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	if onlyNames {
+//TODO- 		_, err := f(nil, []interface{}{flds})
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	it, err := t.SeekFirst()
+//TODO- 	if err != nil {
+//TODO- 		return noEOF(err)
+//TODO- 	}
+//TODO-
+//TODO- 	for i, v := range flds {
+//TODO- 		cols[i].name = v.name
+//TODO- 		cols[i].index = i
+//TODO- 	}
+//TODO-
+//TODO- 	var data []interface{}
+//TODO- 	var more bool
+//TODO- 	for more, err = f(nil, []interface{}{t, cols}); more && err == nil; more, err = f(nil, data) {
+//TODO- 		_, data, err = it.Next()
+//TODO- 		if err != nil {
+//TODO- 			return noEOF(err)
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return err
+//TODO- }
 
-	defer func() {
-		if derr := t.Drop(); derr != nil && err == nil {
-			err = derr
-		}
-	}()
-
-	var flds []*fld
-	var gcols []*col
-	var cols []*col
-	ok := false
-	k := make([]interface{}, len(r.colNames)) //LATER optimize when len(r.cols) == 0
-	if err = r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
-		if ok {
-			infer(in, &cols)
-			for i, c := range gcols {
-				k[i] = in[c.index]
-			}
-			h0, err := t.Get(k)
-			if err != nil {
-				return false, err
-			}
-
-			var h int64
-			if len(h0) != 0 {
-				h, _ = h0[0].(int64)
-			}
-			nh, err := t.Create(append([]interface{}{h, nil}, in...)...)
-			if err != nil {
-				return false, err
-			}
-
-			for i, c := range gcols {
-				k[i] = in[c.index]
-			}
-			err = t.Set(k, []interface{}{nh})
-			if err != nil {
-				return false, err
-			}
-
-			return true, nil
-		}
-
-		ok = true
-		flds = in[0].([]*fld)
-		for _, c := range r.colNames {
-			i := findFldIndex(flds, c)
-			if i < 0 {
-				return false, fmt.Errorf("unknown column %s", c)
-			}
-
-			gcols = append(gcols, &col{name: c, index: i})
-		}
-		return !onlyNames, nil
-	}); err != nil {
-		return
-	}
-
-	if onlyNames {
-		_, err := f(nil, []interface{}{flds})
-		return err
-	}
-
-	it, err := t.SeekFirst()
-	if err != nil {
-		return noEOF(err)
-	}
-
-	for i, v := range flds {
-		cols[i].name = v.name
-		cols[i].index = i
-	}
-
-	var data []interface{}
-	var more bool
-	for more, err = f(nil, []interface{}{t, cols}); more && err == nil; more, err = f(nil, data) {
-		_, data, err = it.Next()
-		if err != nil {
-			return noEOF(err)
-		}
-	}
-	return err
-}
+func (r *groupByRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 // TCtx represents transaction context. It enables to execute multiple
 // statement lists in the same context. The same context guarantees the state
@@ -350,56 +355,58 @@ type distinctRset struct {
 	src rset
 }
 
-func (r *distinctRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	t, err := ctx.db.store.CreateTemp(true)
-	if err != nil {
-		return
-	}
+//TODO- func (r *distinctRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	t, err := ctx.db.store.CreateTemp(true)
+//TODO- 	if err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	defer func() {
+//TODO- 		if derr := t.Drop(); derr != nil && err == nil {
+//TODO- 			err = derr
+//TODO- 		}
+//TODO- 	}()
+//TODO-
+//TODO- 	var flds []*fld
+//TODO- 	ok := false
+//TODO- 	if err = r.src.do(ctx, onlyNames, func(id interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		if ok {
+//TODO- 			if err = t.Set(in, nil); err != nil {
+//TODO- 				return false, err
+//TODO- 			}
+//TODO-
+//TODO- 			return true, nil
+//TODO- 		}
+//TODO-
+//TODO- 		flds = in[0].([]*fld)
+//TODO- 		ok = true
+//TODO- 		return true && !onlyNames, nil
+//TODO- 	}); err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	if onlyNames {
+//TODO- 		_, err := f(nil, []interface{}{flds})
+//TODO- 		return noEOF(err)
+//TODO- 	}
+//TODO-
+//TODO- 	it, err := t.SeekFirst()
+//TODO- 	if err != nil {
+//TODO- 		return noEOF(err)
+//TODO- 	}
+//TODO-
+//TODO- 	var data []interface{}
+//TODO- 	var more bool
+//TODO- 	for more, err = f(nil, []interface{}{flds}); more && err == nil; more, err = f(nil, data) {
+//TODO- 		data, _, err = it.Next()
+//TODO- 		if err != nil {
+//TODO- 			return noEOF(err)
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return err
+//TODO- }
 
-	defer func() {
-		if derr := t.Drop(); derr != nil && err == nil {
-			err = derr
-		}
-	}()
-
-	var flds []*fld
-	ok := false
-	if err = r.src.do(ctx, onlyNames, func(id interface{}, in []interface{}) (more bool, err error) {
-		if ok {
-			if err = t.Set(in, nil); err != nil {
-				return false, err
-			}
-
-			return true, nil
-		}
-
-		flds = in[0].([]*fld)
-		ok = true
-		return true && !onlyNames, nil
-	}); err != nil {
-		return
-	}
-
-	if onlyNames {
-		_, err := f(nil, []interface{}{flds})
-		return noEOF(err)
-	}
-
-	it, err := t.SeekFirst()
-	if err != nil {
-		return noEOF(err)
-	}
-
-	var data []interface{}
-	var more bool
-	for more, err = f(nil, []interface{}{flds}); more && err == nil; more, err = f(nil, data) {
-		data, _, err = it.Next()
-		if err != nil {
-			return noEOF(err)
-		}
-	}
-	return err
-}
+func (r *distinctRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 type orderByRset struct {
 	asc bool
@@ -419,92 +426,94 @@ func (r *orderByRset) String() string {
 	return s
 }
 
-func (r *orderByRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	t, err := ctx.db.store.CreateTemp(r.asc)
-	if err != nil {
-		return
-	}
+//TODO- func (r *orderByRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	t, err := ctx.db.store.CreateTemp(r.asc)
+//TODO- 	if err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	defer func() {
+//TODO- 		if derr := t.Drop(); derr != nil && err == nil {
+//TODO- 			err = derr
+//TODO- 		}
+//TODO- 	}()
+//TODO-
+//TODO- 	m := map[interface{}]interface{}{}
+//TODO- 	var flds []*fld
+//TODO- 	ok := false
+//TODO- 	k := make([]interface{}, len(r.by)+1)
+//TODO- 	id := int64(-1)
+//TODO- 	if err = r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		id++
+//TODO- 		if ok {
+//TODO- 			for i, fld := range flds {
+//TODO- 				if nm := fld.name; nm != "" {
+//TODO- 					m[nm] = in[i]
+//TODO- 				}
+//TODO- 			}
+//TODO- 			m["$id"] = rid
+//TODO- 			for i, expr := range r.by {
+//TODO- 				val, err := expr.eval(ctx, m, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				if val != nil {
+//TODO- 					val, ordered, err := isOrderedType(val)
+//TODO- 					if err != nil {
+//TODO- 						return false, err
+//TODO- 					}
+//TODO-
+//TODO- 					if !ordered {
+//TODO- 						return false, fmt.Errorf("cannot order by %v (type %T)", val, val)
+//TODO-
+//TODO- 					}
+//TODO- 				}
+//TODO-
+//TODO- 				k[i] = val
+//TODO- 			}
+//TODO- 			k[len(r.by)] = id
+//TODO- 			if err = t.Set(k, in); err != nil {
+//TODO- 				return false, err
+//TODO- 			}
+//TODO-
+//TODO- 			return true, nil
+//TODO- 		}
+//TODO-
+//TODO- 		ok = true
+//TODO- 		flds = in[0].([]*fld)
+//TODO- 		return true && !onlyNames, nil
+//TODO- 	}); err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	if onlyNames {
+//TODO- 		_, err = f(nil, []interface{}{flds})
+//TODO- 		return noEOF(err)
+//TODO- 	}
+//TODO-
+//TODO- 	it, err := t.SeekFirst()
+//TODO- 	if err != nil {
+//TODO- 		if err != io.EOF {
+//TODO- 			return err
+//TODO- 		}
+//TODO-
+//TODO- 		_, err = f(nil, []interface{}{flds})
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	var data []interface{}
+//TODO- 	var more bool
+//TODO- 	for more, err = f(nil, []interface{}{flds}); more && err == nil; more, err = f(nil, data) {
+//TODO- 		_, data, err = it.Next()
+//TODO- 		if err != nil {
+//TODO- 			return noEOF(err)
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return
+//TODO- }
 
-	defer func() {
-		if derr := t.Drop(); derr != nil && err == nil {
-			err = derr
-		}
-	}()
-
-	m := map[interface{}]interface{}{}
-	var flds []*fld
-	ok := false
-	k := make([]interface{}, len(r.by)+1)
-	id := int64(-1)
-	if err = r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
-		id++
-		if ok {
-			for i, fld := range flds {
-				if nm := fld.name; nm != "" {
-					m[nm] = in[i]
-				}
-			}
-			m["$id"] = rid
-			for i, expr := range r.by {
-				val, err := expr.eval(ctx, m, ctx.arg)
-				if err != nil {
-					return false, err
-				}
-
-				if val != nil {
-					val, ordered, err := isOrderedType(val)
-					if err != nil {
-						return false, err
-					}
-
-					if !ordered {
-						return false, fmt.Errorf("cannot order by %v (type %T)", val, val)
-
-					}
-				}
-
-				k[i] = val
-			}
-			k[len(r.by)] = id
-			if err = t.Set(k, in); err != nil {
-				return false, err
-			}
-
-			return true, nil
-		}
-
-		ok = true
-		flds = in[0].([]*fld)
-		return true && !onlyNames, nil
-	}); err != nil {
-		return
-	}
-
-	if onlyNames {
-		_, err = f(nil, []interface{}{flds})
-		return noEOF(err)
-	}
-
-	it, err := t.SeekFirst()
-	if err != nil {
-		if err != io.EOF {
-			return err
-		}
-
-		_, err = f(nil, []interface{}{flds})
-		return err
-	}
-
-	var data []interface{}
-	var more bool
-	for more, err = f(nil, []interface{}{flds}); more && err == nil; more, err = f(nil, data) {
-		_, data, err = it.Next()
-		if err != nil {
-			return noEOF(err)
-		}
-	}
-	return
-}
+func (r *orderByRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 var nowhere = &whereRset{}
 
@@ -513,925 +522,935 @@ type whereRset struct {
 	src  rset
 }
 
-func (r *whereRset) doIndexedBool(t *table, en indexIterator, v bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	m, err := f(nil, []interface{}{t.flds()})
-	if !m || err != nil {
-		return
-	}
+//TODO- func (r *whereRset) doIndexedBool(t *table, en indexIterator, v bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	m, err := f(nil, []interface{}{t.flds()})
+//TODO- 	if !m || err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	for {
+//TODO- 		k, h, err := en.Next()
+//TODO- 		if err != nil {
+//TODO- 			return noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		switch x := k[0].(type) {
+//TODO- 		case nil:
+//TODO- 			panic("internal error 052") // nil should sort before true
+//TODO- 		case bool:
+//TODO- 			if x != v {
+//TODO- 				return nil
+//TODO- 			}
+//TODO- 		default:
+//TODO- 			panic("internal error 078")
+//TODO- 		}
+//TODO-
+//TODO- 		if _, err := tableRset("").doOne(t, h, f); err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO- 	}
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) tryBinOp(execCtx *execCtx, t *table, id *ident, v value, op int, f func(id interface{}, data []interface{}) (more bool, err error)) (bool, error) {
+//TODO- 	c := findCol(t.cols0, id.s)
+//TODO- 	if c == nil {
+//TODO- 		return false, fmt.Errorf("undefined column: %s", id.s)
+//TODO- 	}
+//TODO-
+//TODO- 	xCol := t.indices[c.index+1]
+//TODO- 	if xCol == nil { // no index for this column
+//TODO- 		return false, nil
+//TODO- 	}
+//TODO-
+//TODO- 	data := []interface{}{v.val}
+//TODO- 	cc := *c
+//TODO- 	cc.index = 0
+//TODO- 	if err := typeCheck(data, []*col{&cc}); err != nil {
+//TODO- 		return true, err
+//TODO- 	}
+//TODO-
+//TODO- 	v.val = data[0]
+//TODO- 	ex := &binaryOperation{op, nil, v}
+//TODO- 	switch op {
+//TODO- 	case '<', le:
+//TODO- 		v.val = false // first value collating after nil
+//TODO- 		fallthrough
+//TODO- 	case eq, ge:
+//TODO- 		m, err := f(nil, []interface{}{t.flds()})
+//TODO- 		if !m || err != nil {
+//TODO- 			return true, err
+//TODO- 		}
+//TODO-
+//TODO- 		en, _, err := xCol.x.Seek([]interface{}{v.val})
+//TODO- 		if err != nil {
+//TODO- 			return true, noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		for {
+//TODO- 			k, h, err := en.Next()
+//TODO- 			if k == nil {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if err != nil {
+//TODO- 				return true, noEOF(err)
+//TODO- 			}
+//TODO-
+//TODO- 			ex.l = value{k[0]}
+//TODO- 			eval, err := ex.eval(execCtx, nil, nil)
+//TODO- 			if err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO-
+//TODO- 			if !eval.(bool) {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if _, err := tableRset("").doOne(t, h, f); err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO- 		}
+//TODO- 	case '>':
+//TODO- 		m, err := f(nil, []interface{}{t.flds()})
+//TODO- 		if !m || err != nil {
+//TODO- 			return true, err
+//TODO- 		}
+//TODO-
+//TODO- 		en, err := xCol.x.SeekLast()
+//TODO- 		if err != nil {
+//TODO- 			return true, noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		for {
+//TODO- 			k, h, err := en.Prev()
+//TODO- 			if k == nil {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if err != nil {
+//TODO- 				return true, noEOF(err)
+//TODO- 			}
+//TODO-
+//TODO- 			ex.l = value{k[0]}
+//TODO- 			eval, err := ex.eval(execCtx, nil, nil)
+//TODO- 			if err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO-
+//TODO- 			if !eval.(bool) {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if _, err := tableRset("").doOne(t, h, f); err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO- 		}
+//TODO- 	default:
+//TODO- 		panic("internal error 053")
+//TODO- 	}
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) tryBinOpID(execCtx *execCtx, t *table, v value, op int, f func(id interface{}, data []interface{}) (more bool, err error)) (bool, error) {
+//TODO- 	xCol := t.indices[0]
+//TODO- 	if xCol == nil { // no index for id()
+//TODO- 		return false, nil
+//TODO- 	}
+//TODO-
+//TODO- 	data := []interface{}{v.val}
+//TODO- 	if err := typeCheck(data, []*col{&col{typ: qInt64}}); err != nil {
+//TODO- 		return true, err
+//TODO- 	}
+//TODO-
+//TODO- 	v.val = data[0]
+//TODO- 	ex := &binaryOperation{op, nil, v}
+//TODO- 	switch op {
+//TODO- 	case '<', le:
+//TODO- 		v.val = int64(1)
+//TODO- 		fallthrough
+//TODO- 	case eq, ge:
+//TODO- 		m, err := f(nil, []interface{}{t.flds()})
+//TODO- 		if !m || err != nil {
+//TODO- 			return true, err
+//TODO- 		}
+//TODO-
+//TODO- 		en, _, err := xCol.x.Seek([]interface{}{v.val})
+//TODO- 		if err != nil {
+//TODO- 			return true, noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		for {
+//TODO- 			k, h, err := en.Next()
+//TODO- 			if k == nil {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if err != nil {
+//TODO- 				return true, noEOF(err)
+//TODO- 			}
+//TODO-
+//TODO- 			ex.l = value{k[0]}
+//TODO- 			eval, err := ex.eval(execCtx, nil, nil)
+//TODO- 			if err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO-
+//TODO- 			if !eval.(bool) {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if _, err := tableRset("").doOne(t, h, f); err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO- 		}
+//TODO- 	case '>':
+//TODO- 		m, err := f(nil, []interface{}{t.flds()})
+//TODO- 		if !m || err != nil {
+//TODO- 			return true, err
+//TODO- 		}
+//TODO-
+//TODO- 		en, err := xCol.x.SeekLast()
+//TODO- 		if err != nil {
+//TODO- 			return true, noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		for {
+//TODO- 			k, h, err := en.Prev()
+//TODO- 			if k == nil {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if err != nil {
+//TODO- 				return true, noEOF(err)
+//TODO- 			}
+//TODO-
+//TODO- 			ex.l = value{k[0]}
+//TODO- 			eval, err := ex.eval(execCtx, nil, nil)
+//TODO- 			if err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO-
+//TODO- 			if !eval.(bool) {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if _, err := tableRset("").doOne(t, h, f); err != nil {
+//TODO- 				return true, err
+//TODO- 			}
+//TODO- 		}
+//TODO- 	default:
+//TODO- 		panic("internal error 071")
+//TODO- 	}
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) tryUseIndex(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (bool, error) {
+//TODO- 	//TODO(indices) support IS [NOT] NULL
+//TODO- 	c, ok := r.src.(*crossJoinRset)
+//TODO- 	if !ok {
+//TODO- 		return false, nil
+//TODO- 	}
+//TODO-
+//TODO- 	tabName, ok := c.isSingleTable()
+//TODO- 	if !ok || isSystemName[tabName] {
+//TODO- 		return false, nil
+//TODO- 	}
+//TODO-
+//TODO- 	t := ctx.db.root.tables[tabName]
+//TODO- 	if t == nil {
+//TODO- 		return true, fmt.Errorf("table %s does not exist", tabName)
+//TODO- 	}
+//TODO-
+//TODO- 	if !t.hasIndices() {
+//TODO- 		return false, nil
+//TODO- 	}
+//TODO-
+//TODO- 	//LATER WHERE column1 boolOp column2 ...
+//TODO- 	//LATER WHERE !column (rewritable as: column == false)
+//TODO- 	switch ex := r.expr.(type) {
+//TODO- 	case *unaryOperation: // WHERE !column
+//TODO- 		if ex.op != '!' {
+//TODO- 			return false, nil
+//TODO- 		}
+//TODO-
+//TODO- 		switch operand := ex.v.(type) {
+//TODO- 		case *ident:
+//TODO- 			c := findCol(t.cols0, operand.s)
+//TODO- 			if c == nil { // no such column
+//TODO- 				return false, fmt.Errorf("unknown column %s", ex)
+//TODO- 			}
+//TODO-
+//TODO- 			if c.typ != qBool { // not a bool column
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO-
+//TODO- 			xCol := t.indices[c.index+1]
+//TODO- 			if xCol == nil { // column isn't indexed
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO-
+//TODO- 			en, _, err := xCol.x.Seek([]interface{}{false})
+//TODO- 			if err != nil {
+//TODO- 				return false, noEOF(err)
+//TODO- 			}
+//TODO-
+//TODO- 			return true, r.doIndexedBool(t, en, false, f)
+//TODO- 		default:
+//TODO- 			return false, nil
+//TODO- 		}
+//TODO- 	case *ident: // WHERE column
+//TODO- 		c := findCol(t.cols0, ex.s)
+//TODO- 		if c == nil { // no such column
+//TODO- 			return false, fmt.Errorf("unknown column %s", ex)
+//TODO- 		}
+//TODO-
+//TODO- 		if c.typ != qBool { // not a bool column
+//TODO- 			return false, nil
+//TODO- 		}
+//TODO-
+//TODO- 		xCol := t.indices[c.index+1]
+//TODO- 		if xCol == nil { // column isn't indexed
+//TODO- 			return false, nil
+//TODO- 		}
+//TODO-
+//TODO- 		en, _, err := xCol.x.Seek([]interface{}{true})
+//TODO- 		if err != nil {
+//TODO- 			return false, noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		return true, r.doIndexedBool(t, en, true, f)
+//TODO- 	case *binaryOperation:
+//TODO- 		//DONE handle id()
+//TODO- 		var invOp int
+//TODO- 		switch ex.op {
+//TODO- 		case '<':
+//TODO- 			invOp = '>'
+//TODO- 		case le:
+//TODO- 			invOp = ge
+//TODO- 		case eq:
+//TODO- 			invOp = eq
+//TODO- 		case '>':
+//TODO- 			invOp = '<'
+//TODO- 		case ge:
+//TODO- 			invOp = le
+//TODO- 		default:
+//TODO- 			return false, nil
+//TODO- 		}
+//TODO-
+//TODO- 		switch lhs := ex.l.(type) {
+//TODO- 		case *call:
+//TODO- 			if !(lhs.f == "id" && len(lhs.arg) == 0) {
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO-
+//TODO- 			switch rhs := ex.r.(type) {
+//TODO- 			case parameter:
+//TODO- 				v, err := rhs.eval(ctx, nil, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				return r.tryBinOpID(ctx, t, value{v}, ex.op, f)
+//TODO- 			case value:
+//TODO- 				return r.tryBinOpID(ctx, t, rhs, ex.op, f)
+//TODO- 			default:
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO- 		case *ident:
+//TODO- 			switch rhs := ex.r.(type) {
+//TODO- 			case parameter:
+//TODO- 				v, err := rhs.eval(ctx, nil, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				return r.tryBinOp(ctx, t, lhs, value{v}, ex.op, f)
+//TODO- 			case value:
+//TODO- 				return r.tryBinOp(ctx, t, lhs, rhs, ex.op, f)
+//TODO- 			default:
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO- 		case parameter:
+//TODO- 			switch rhs := ex.r.(type) {
+//TODO- 			case *call:
+//TODO- 				if !(rhs.f == "id" && len(rhs.arg) == 0) {
+//TODO- 					return false, nil
+//TODO- 				}
+//TODO-
+//TODO- 				v, err := lhs.eval(ctx, nil, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				return r.tryBinOpID(ctx, t, value{v}, invOp, f)
+//TODO- 			case *ident:
+//TODO- 				v, err := lhs.eval(ctx, nil, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				return r.tryBinOp(ctx, t, rhs, value{v}, invOp, f)
+//TODO- 			default:
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO- 		case value:
+//TODO- 			switch rhs := ex.r.(type) {
+//TODO- 			case *call:
+//TODO- 				if !(rhs.f == "id" && len(rhs.arg) == 0) {
+//TODO- 					return false, nil
+//TODO- 				}
+//TODO-
+//TODO- 				return r.tryBinOpID(ctx, t, lhs, invOp, f)
+//TODO- 			case *ident:
+//TODO- 				return r.tryBinOp(ctx, t, rhs, lhs, invOp, f)
+//TODO- 			default:
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO- 		default:
+//TODO- 			return false, nil
+//TODO- 		}
+//TODO- 	default:
+//TODO- 		return false, nil
+//TODO- 	}
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	//dbg("====")
+//TODO- 	if !onlyNames {
+//TODO- 		if ok, err := r.tryUseIndex(ctx, f); ok || err != nil {
+//TODO- 			//dbg("ok %t, err %v", ok, err)
+//TODO- 			return err
+//TODO- 		}
+//TODO- 	}
+//TODO-
+//TODO- 	//dbg("not using indices")
+//TODO- 	m := map[interface{}]interface{}{}
+//TODO- 	var flds []*fld
+//TODO- 	ok := false
+//TODO- 	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		if ok {
+//TODO- 			for i, fld := range flds {
+//TODO- 				if nm := fld.name; nm != "" {
+//TODO- 					m[nm] = in[i]
+//TODO- 				}
+//TODO- 			}
+//TODO- 			m["$id"] = rid
+//TODO- 			val, err := r.expr.eval(ctx, m, ctx.arg)
+//TODO- 			if err != nil {
+//TODO- 				return false, err
+//TODO- 			}
+//TODO-
+//TODO- 			if val == nil {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			x, ok := val.(bool)
+//TODO- 			if !ok {
+//TODO- 				return false, fmt.Errorf("invalid WHERE expression %s (value of type %T)", val, val)
+//TODO- 			}
+//TODO-
+//TODO- 			if !x {
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			return f(rid, in)
+//TODO- 		}
+//TODO-
+//TODO- 		flds = in[0].([]*fld)
+//TODO- 		ok = true
+//TODO- 		m, err := f(nil, in)
+//TODO- 		return m && !onlyNames, err
+//TODO- 	})
+//TODO- }
 
-	for {
-		k, h, err := en.Next()
-		if err != nil {
-			return noEOF(err)
-		}
-
-		switch x := k[0].(type) {
-		case nil:
-			panic("internal error 052") // nil should sort before true
-		case bool:
-			if x != v {
-				return nil
-			}
-		default:
-			panic("internal error 078")
-		}
-
-		if _, err := tableRset("").doOne(t, h, f); err != nil {
-			return err
-		}
-	}
-}
-
-func (r *whereRset) tryBinOp(execCtx *execCtx, t *table, id *ident, v value, op int, f func(id interface{}, data []interface{}) (more bool, err error)) (bool, error) {
-	c := findCol(t.cols0, id.s)
-	if c == nil {
-		return false, fmt.Errorf("undefined column: %s", id.s)
-	}
-
-	xCol := t.indices[c.index+1]
-	if xCol == nil { // no index for this column
-		return false, nil
-	}
-
-	data := []interface{}{v.val}
-	cc := *c
-	cc.index = 0
-	if err := typeCheck(data, []*col{&cc}); err != nil {
-		return true, err
-	}
-
-	v.val = data[0]
-	ex := &binaryOperation{op, nil, v}
-	switch op {
-	case '<', le:
-		v.val = false // first value collating after nil
-		fallthrough
-	case eq, ge:
-		m, err := f(nil, []interface{}{t.flds()})
-		if !m || err != nil {
-			return true, err
-		}
-
-		en, _, err := xCol.x.Seek([]interface{}{v.val})
-		if err != nil {
-			return true, noEOF(err)
-		}
-
-		for {
-			k, h, err := en.Next()
-			if k == nil {
-				return true, nil
-			}
-
-			if err != nil {
-				return true, noEOF(err)
-			}
-
-			ex.l = value{k[0]}
-			eval, err := ex.eval(execCtx, nil, nil)
-			if err != nil {
-				return true, err
-			}
-
-			if !eval.(bool) {
-				return true, nil
-			}
-
-			if _, err := tableRset("").doOne(t, h, f); err != nil {
-				return true, err
-			}
-		}
-	case '>':
-		m, err := f(nil, []interface{}{t.flds()})
-		if !m || err != nil {
-			return true, err
-		}
-
-		en, err := xCol.x.SeekLast()
-		if err != nil {
-			return true, noEOF(err)
-		}
-
-		for {
-			k, h, err := en.Prev()
-			if k == nil {
-				return true, nil
-			}
-
-			if err != nil {
-				return true, noEOF(err)
-			}
-
-			ex.l = value{k[0]}
-			eval, err := ex.eval(execCtx, nil, nil)
-			if err != nil {
-				return true, err
-			}
-
-			if !eval.(bool) {
-				return true, nil
-			}
-
-			if _, err := tableRset("").doOne(t, h, f); err != nil {
-				return true, err
-			}
-		}
-	default:
-		panic("internal error 053")
-	}
-}
-
-func (r *whereRset) tryBinOpID(execCtx *execCtx, t *table, v value, op int, f func(id interface{}, data []interface{}) (more bool, err error)) (bool, error) {
-	xCol := t.indices[0]
-	if xCol == nil { // no index for id()
-		return false, nil
-	}
-
-	data := []interface{}{v.val}
-	if err := typeCheck(data, []*col{&col{typ: qInt64}}); err != nil {
-		return true, err
-	}
-
-	v.val = data[0]
-	ex := &binaryOperation{op, nil, v}
-	switch op {
-	case '<', le:
-		v.val = int64(1)
-		fallthrough
-	case eq, ge:
-		m, err := f(nil, []interface{}{t.flds()})
-		if !m || err != nil {
-			return true, err
-		}
-
-		en, _, err := xCol.x.Seek([]interface{}{v.val})
-		if err != nil {
-			return true, noEOF(err)
-		}
-
-		for {
-			k, h, err := en.Next()
-			if k == nil {
-				return true, nil
-			}
-
-			if err != nil {
-				return true, noEOF(err)
-			}
-
-			ex.l = value{k[0]}
-			eval, err := ex.eval(execCtx, nil, nil)
-			if err != nil {
-				return true, err
-			}
-
-			if !eval.(bool) {
-				return true, nil
-			}
-
-			if _, err := tableRset("").doOne(t, h, f); err != nil {
-				return true, err
-			}
-		}
-	case '>':
-		m, err := f(nil, []interface{}{t.flds()})
-		if !m || err != nil {
-			return true, err
-		}
-
-		en, err := xCol.x.SeekLast()
-		if err != nil {
-			return true, noEOF(err)
-		}
-
-		for {
-			k, h, err := en.Prev()
-			if k == nil {
-				return true, nil
-			}
-
-			if err != nil {
-				return true, noEOF(err)
-			}
-
-			ex.l = value{k[0]}
-			eval, err := ex.eval(execCtx, nil, nil)
-			if err != nil {
-				return true, err
-			}
-
-			if !eval.(bool) {
-				return true, nil
-			}
-
-			if _, err := tableRset("").doOne(t, h, f); err != nil {
-				return true, err
-			}
-		}
-	default:
-		panic("internal error 071")
-	}
-}
-
-func (r *whereRset) tryUseIndex(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (bool, error) {
-	//TODO(indices) support IS [NOT] NULL
-	c, ok := r.src.(*crossJoinRset)
-	if !ok {
-		return false, nil
-	}
-
-	tabName, ok := c.isSingleTable()
-	if !ok || isSystemName[tabName] {
-		return false, nil
-	}
-
-	t := ctx.db.root.tables[tabName]
-	if t == nil {
-		return true, fmt.Errorf("table %s does not exist", tabName)
-	}
-
-	if !t.hasIndices() {
-		return false, nil
-	}
-
-	//LATER WHERE column1 boolOp column2 ...
-	//LATER WHERE !column (rewritable as: column == false)
-	switch ex := r.expr.(type) {
-	case *unaryOperation: // WHERE !column
-		if ex.op != '!' {
-			return false, nil
-		}
-
-		switch operand := ex.v.(type) {
-		case *ident:
-			c := findCol(t.cols0, operand.s)
-			if c == nil { // no such column
-				return false, fmt.Errorf("unknown column %s", ex)
-			}
-
-			if c.typ != qBool { // not a bool column
-				return false, nil
-			}
-
-			xCol := t.indices[c.index+1]
-			if xCol == nil { // column isn't indexed
-				return false, nil
-			}
-
-			en, _, err := xCol.x.Seek([]interface{}{false})
-			if err != nil {
-				return false, noEOF(err)
-			}
-
-			return true, r.doIndexedBool(t, en, false, f)
-		default:
-			return false, nil
-		}
-	case *ident: // WHERE column
-		c := findCol(t.cols0, ex.s)
-		if c == nil { // no such column
-			return false, fmt.Errorf("unknown column %s", ex)
-		}
-
-		if c.typ != qBool { // not a bool column
-			return false, nil
-		}
-
-		xCol := t.indices[c.index+1]
-		if xCol == nil { // column isn't indexed
-			return false, nil
-		}
-
-		en, _, err := xCol.x.Seek([]interface{}{true})
-		if err != nil {
-			return false, noEOF(err)
-		}
-
-		return true, r.doIndexedBool(t, en, true, f)
-	case *binaryOperation:
-		//DONE handle id()
-		var invOp int
-		switch ex.op {
-		case '<':
-			invOp = '>'
-		case le:
-			invOp = ge
-		case eq:
-			invOp = eq
-		case '>':
-			invOp = '<'
-		case ge:
-			invOp = le
-		default:
-			return false, nil
-		}
-
-		switch lhs := ex.l.(type) {
-		case *call:
-			if !(lhs.f == "id" && len(lhs.arg) == 0) {
-				return false, nil
-			}
-
-			switch rhs := ex.r.(type) {
-			case parameter:
-				v, err := rhs.eval(ctx, nil, ctx.arg)
-				if err != nil {
-					return false, err
-				}
-
-				return r.tryBinOpID(ctx, t, value{v}, ex.op, f)
-			case value:
-				return r.tryBinOpID(ctx, t, rhs, ex.op, f)
-			default:
-				return false, nil
-			}
-		case *ident:
-			switch rhs := ex.r.(type) {
-			case parameter:
-				v, err := rhs.eval(ctx, nil, ctx.arg)
-				if err != nil {
-					return false, err
-				}
-
-				return r.tryBinOp(ctx, t, lhs, value{v}, ex.op, f)
-			case value:
-				return r.tryBinOp(ctx, t, lhs, rhs, ex.op, f)
-			default:
-				return false, nil
-			}
-		case parameter:
-			switch rhs := ex.r.(type) {
-			case *call:
-				if !(rhs.f == "id" && len(rhs.arg) == 0) {
-					return false, nil
-				}
-
-				v, err := lhs.eval(ctx, nil, ctx.arg)
-				if err != nil {
-					return false, err
-				}
-
-				return r.tryBinOpID(ctx, t, value{v}, invOp, f)
-			case *ident:
-				v, err := lhs.eval(ctx, nil, ctx.arg)
-				if err != nil {
-					return false, err
-				}
-
-				return r.tryBinOp(ctx, t, rhs, value{v}, invOp, f)
-			default:
-				return false, nil
-			}
-		case value:
-			switch rhs := ex.r.(type) {
-			case *call:
-				if !(rhs.f == "id" && len(rhs.arg) == 0) {
-					return false, nil
-				}
-
-				return r.tryBinOpID(ctx, t, lhs, invOp, f)
-			case *ident:
-				return r.tryBinOp(ctx, t, rhs, lhs, invOp, f)
-			default:
-				return false, nil
-			}
-		default:
-			return false, nil
-		}
-	default:
-		return false, nil
-	}
-}
-
-func (r *whereRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	//dbg("====")
-	if !onlyNames {
-		if ok, err := r.tryUseIndex(ctx, f); ok || err != nil {
-			//dbg("ok %t, err %v", ok, err)
-			return err
-		}
-	}
-
-	//dbg("not using indices")
-	m := map[interface{}]interface{}{}
-	var flds []*fld
-	ok := false
-	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
-		if ok {
-			for i, fld := range flds {
-				if nm := fld.name; nm != "" {
-					m[nm] = in[i]
-				}
-			}
-			m["$id"] = rid
-			val, err := r.expr.eval(ctx, m, ctx.arg)
-			if err != nil {
-				return false, err
-			}
-
-			if val == nil {
-				return true, nil
-			}
-
-			x, ok := val.(bool)
-			if !ok {
-				return false, fmt.Errorf("invalid WHERE expression %s (value of type %T)", val, val)
-			}
-
-			if !x {
-				return true, nil
-			}
-
-			return f(rid, in)
-		}
-
-		flds = in[0].([]*fld)
-		ok = true
-		m, err := f(nil, in)
-		return m && !onlyNames, err
-	})
-}
+func (r *whereRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 type offsetRset struct {
 	expr expression
 	src  rset
 }
 
-func (r *offsetRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	m := map[interface{}]interface{}{}
-	var flds []*fld
-	var ok, eval bool
-	var off uint64
-	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
-		if ok {
-			if !eval {
-				for i, fld := range flds {
-					if nm := fld.name; nm != "" {
-						m[nm] = in[i]
-					}
-				}
-				m["$id"] = rid
-				val, err := r.expr.eval(ctx, m, ctx.arg)
-				if err != nil {
-					return false, err
-				}
+//TODO- func (r *offsetRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	m := map[interface{}]interface{}{}
+//TODO- 	var flds []*fld
+//TODO- 	var ok, eval bool
+//TODO- 	var off uint64
+//TODO- 	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		if ok {
+//TODO- 			if !eval {
+//TODO- 				for i, fld := range flds {
+//TODO- 					if nm := fld.name; nm != "" {
+//TODO- 						m[nm] = in[i]
+//TODO- 					}
+//TODO- 				}
+//TODO- 				m["$id"] = rid
+//TODO- 				val, err := r.expr.eval(ctx, m, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				if val == nil {
+//TODO- 					return true, nil
+//TODO- 				}
+//TODO-
+//TODO- 				if off, err = limOffExpr(val); err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				eval = true
+//TODO- 			}
+//TODO- 			if off > 0 {
+//TODO- 				off--
+//TODO- 				return true, nil
+//TODO- 			}
+//TODO-
+//TODO- 			return f(rid, in)
+//TODO- 		}
+//TODO-
+//TODO- 		flds = in[0].([]*fld)
+//TODO- 		ok = true
+//TODO- 		m, err := f(nil, in)
+//TODO- 		return m && !onlyNames, err
+//TODO- 	})
+//TODO- }
 
-				if val == nil {
-					return true, nil
-				}
-
-				if off, err = limOffExpr(val); err != nil {
-					return false, err
-				}
-
-				eval = true
-			}
-			if off > 0 {
-				off--
-				return true, nil
-			}
-
-			return f(rid, in)
-		}
-
-		flds = in[0].([]*fld)
-		ok = true
-		m, err := f(nil, in)
-		return m && !onlyNames, err
-	})
-}
+func (r *offsetRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 type limitRset struct {
 	expr expression
 	src  rset
 }
 
-func (r *limitRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	m := map[interface{}]interface{}{}
-	var flds []*fld
-	var ok, eval bool
-	var lim uint64
-	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
-		if ok {
-			if !eval {
-				for i, fld := range flds {
-					if nm := fld.name; nm != "" {
-						m[nm] = in[i]
-					}
-				}
-				m["$id"] = rid
-				val, err := r.expr.eval(ctx, m, ctx.arg)
-				if err != nil {
-					return false, err
-				}
+//TODO- func (r *limitRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	m := map[interface{}]interface{}{}
+//TODO- 	var flds []*fld
+//TODO- 	var ok, eval bool
+//TODO- 	var lim uint64
+//TODO- 	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		if ok {
+//TODO- 			if !eval {
+//TODO- 				for i, fld := range flds {
+//TODO- 					if nm := fld.name; nm != "" {
+//TODO- 						m[nm] = in[i]
+//TODO- 					}
+//TODO- 				}
+//TODO- 				m["$id"] = rid
+//TODO- 				val, err := r.expr.eval(ctx, m, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				if val == nil {
+//TODO- 					return true, nil
+//TODO- 				}
+//TODO-
+//TODO- 				if lim, err = limOffExpr(val); err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				eval = true
+//TODO- 			}
+//TODO- 			switch lim {
+//TODO- 			case 0:
+//TODO- 				return false, nil
+//TODO- 			default:
+//TODO- 				lim--
+//TODO- 				return f(rid, in)
+//TODO- 			}
+//TODO- 		}
+//TODO-
+//TODO- 		flds = in[0].([]*fld)
+//TODO- 		ok = true
+//TODO- 		m, err := f(nil, in)
+//TODO- 		return m && !onlyNames, err
+//TODO- 	})
+//TODO- }
 
-				if val == nil {
-					return true, nil
-				}
-
-				if lim, err = limOffExpr(val); err != nil {
-					return false, err
-				}
-
-				eval = true
-			}
-			switch lim {
-			case 0:
-				return false, nil
-			default:
-				lim--
-				return f(rid, in)
-			}
-		}
-
-		flds = in[0].([]*fld)
-		ok = true
-		m, err := f(nil, in)
-		return m && !onlyNames, err
-	})
-}
+func (r *limitRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 type selectRset struct {
 	flds []*fld
 	src  rset
 }
 
-func (r *selectRset) doGroup(grp *groupByRset, ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	if onlyNames {
-		if len(r.flds) != 0 {
-			_, err := f(nil, []interface{}{r.flds})
-			return err
-		}
+//TODO- func (r *selectRset) doGroup(grp *groupByRset, ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	if onlyNames {
+//TODO- 		if len(r.flds) != 0 {
+//TODO- 			_, err := f(nil, []interface{}{r.flds})
+//TODO- 			return err
+//TODO- 		}
+//TODO-
+//TODO- 		return grp.do(ctx, true, f)
+//TODO- 	}
+//TODO-
+//TODO- 	var t temp
+//TODO- 	var cols []*col
+//TODO- 	out := make([]interface{}, len(r.flds))
+//TODO- 	ok := false
+//TODO- 	rows := 0
+//TODO- 	if err = r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		if ok {
+//TODO- 			h := in[0].(int64)
+//TODO- 			m := map[interface{}]interface{}{}
+//TODO- 			for h != 0 {
+//TODO- 				in, err = t.Read(nil, h, cols...)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				rec := in[2:]
+//TODO- 				for i, c := range cols {
+//TODO- 					if nm := c.name; nm != "" {
+//TODO- 						m[nm] = rec[i]
+//TODO- 					}
+//TODO- 				}
+//TODO- 				m["$id"] = rid
+//TODO- 				for _, fld := range r.flds {
+//TODO- 					if _, err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+//TODO- 						return false, err
+//TODO- 					}
+//TODO- 				}
+//TODO-
+//TODO- 				h = in[0].(int64)
+//TODO- 			}
+//TODO- 			m["$agg"] = true
+//TODO- 			for i, fld := range r.flds {
+//TODO- 				if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO- 			}
+//TODO- 			rows++
+//TODO- 			return f(nil, out)
+//TODO- 		}
+//TODO-
+//TODO- 		ok = true
+//TODO- 		rows++
+//TODO- 		t = in[0].(temp)
+//TODO- 		cols = in[1].([]*col)
+//TODO- 		if len(r.flds) == 0 {
+//TODO- 			r.flds = make([]*fld, len(cols))
+//TODO- 			for i, v := range cols {
+//TODO- 				r.flds[i] = &fld{expr: &ident{v.name}, name: v.name}
+//TODO- 			}
+//TODO- 			out = make([]interface{}, len(r.flds))
+//TODO- 		}
+//TODO- 		m, err := f(nil, []interface{}{r.flds})
+//TODO- 		return m && !onlyNames, err
+//TODO- 	}); err != nil || onlyNames {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	switch rows {
+//TODO- 	case 0:
+//TODO- 		more, err := f(nil, []interface{}{r.flds})
+//TODO- 		if !more || err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO-
+//TODO- 		fallthrough
+//TODO- 	case 1:
+//TODO- 		m := map[interface{}]interface{}{"$agg0": true} // aggregate empty record set
+//TODO- 		for i, fld := range r.flds {
+//TODO- 			if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+//TODO- 				return
+//TODO- 			}
+//TODO- 		}
+//TODO- 		_, err = f(nil, out)
+//TODO- 	}
+//TODO- 	return
+//TODO- }
+//TODO-
+//TODO- func (r *selectRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	if grp, ok := r.src.(*groupByRset); ok {
+//TODO- 		return r.doGroup(grp, ctx, onlyNames, f)
+//TODO- 	}
+//TODO-
+//TODO- 	if len(r.flds) == 0 {
+//TODO- 		return r.src.do(ctx, onlyNames, f)
+//TODO- 	}
+//TODO-
+//TODO- 	if onlyNames {
+//TODO- 		_, err := f(nil, []interface{}{r.flds})
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	var flds []*fld
+//TODO- 	m := map[interface{}]interface{}{}
+//TODO- 	ok := false
+//TODO- 	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
+//TODO- 		if ok {
+//TODO- 			for i, fld := range flds {
+//TODO- 				if nm := fld.name; nm != "" {
+//TODO- 					m[nm] = in[i]
+//TODO- 				}
+//TODO- 			}
+//TODO- 			m["$id"] = rid
+//TODO- 			out := make([]interface{}, len(r.flds))
+//TODO- 			for i, fld := range r.flds {
+//TODO- 				if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO- 			}
+//TODO- 			m, err := f(rid, out)
+//TODO- 			return m, err
+//TODO-
+//TODO- 		}
+//TODO-
+//TODO- 		ok = true
+//TODO- 		flds = in[0].([]*fld)
+//TODO- 		m, err := f(nil, []interface{}{r.flds})
+//TODO- 		return m && !onlyNames, err
+//TODO- 	})
+//TODO- }
 
-		return grp.do(ctx, true, f)
-	}
-
-	var t temp
-	var cols []*col
-	out := make([]interface{}, len(r.flds))
-	ok := false
-	rows := 0
-	if err = r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
-		if ok {
-			h := in[0].(int64)
-			m := map[interface{}]interface{}{}
-			for h != 0 {
-				in, err = t.Read(nil, h, cols...)
-				if err != nil {
-					return false, err
-				}
-
-				rec := in[2:]
-				for i, c := range cols {
-					if nm := c.name; nm != "" {
-						m[nm] = rec[i]
-					}
-				}
-				m["$id"] = rid
-				for _, fld := range r.flds {
-					if _, err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
-						return false, err
-					}
-				}
-
-				h = in[0].(int64)
-			}
-			m["$agg"] = true
-			for i, fld := range r.flds {
-				if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
-					return false, err
-				}
-			}
-			rows++
-			return f(nil, out)
-		}
-
-		ok = true
-		rows++
-		t = in[0].(temp)
-		cols = in[1].([]*col)
-		if len(r.flds) == 0 {
-			r.flds = make([]*fld, len(cols))
-			for i, v := range cols {
-				r.flds[i] = &fld{expr: &ident{v.name}, name: v.name}
-			}
-			out = make([]interface{}, len(r.flds))
-		}
-		m, err := f(nil, []interface{}{r.flds})
-		return m && !onlyNames, err
-	}); err != nil || onlyNames {
-		return
-	}
-
-	switch rows {
-	case 0:
-		more, err := f(nil, []interface{}{r.flds})
-		if !more || err != nil {
-			return err
-		}
-
-		fallthrough
-	case 1:
-		m := map[interface{}]interface{}{"$agg0": true} // aggregate empty record set
-		for i, fld := range r.flds {
-			if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
-				return
-			}
-		}
-		_, err = f(nil, out)
-	}
-	return
-}
-
-func (r *selectRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	if grp, ok := r.src.(*groupByRset); ok {
-		return r.doGroup(grp, ctx, onlyNames, f)
-	}
-
-	if len(r.flds) == 0 {
-		return r.src.do(ctx, onlyNames, f)
-	}
-
-	if onlyNames {
-		_, err := f(nil, []interface{}{r.flds})
-		return err
-	}
-
-	var flds []*fld
-	m := map[interface{}]interface{}{}
-	ok := false
-	return r.src.do(ctx, onlyNames, func(rid interface{}, in []interface{}) (more bool, err error) {
-		if ok {
-			for i, fld := range flds {
-				if nm := fld.name; nm != "" {
-					m[nm] = in[i]
-				}
-			}
-			m["$id"] = rid
-			out := make([]interface{}, len(r.flds))
-			for i, fld := range r.flds {
-				if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
-					return false, err
-				}
-			}
-			m, err := f(rid, out)
-			return m, err
-
-		}
-
-		ok = true
-		flds = in[0].([]*fld)
-		m, err := f(nil, []interface{}{r.flds})
-		return m && !onlyNames, err
-	})
-}
+func (r *selectRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 type tableRset string
 
-func (r tableRset) doIndex(xname string, x btreeIndex, ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	flds := []*fld{&fld{name: xname}}
-	m, err := f(nil, []interface{}{flds})
-	if onlyNames {
-		return err
-	}
+//TODO- func (r tableRset) doIndex(xname string, x btreeIndex, ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	flds := []*fld{&fld{name: xname}}
+//TODO- 	m, err := f(nil, []interface{}{flds})
+//TODO- 	if onlyNames {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	if !m || err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	en, err := x.SeekFirst()
+//TODO- 	if err != nil {
+//TODO- 		return noEOF(err)
+//TODO- 	}
+//TODO-
+//TODO- 	var id int64
+//TODO- 	for {
+//TODO- 		k, _, err := en.Next()
+//TODO- 		if err != nil {
+//TODO- 			return noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		id++
+//TODO- 		m, err := f(id, k)
+//TODO- 		if !m || err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO- 	}
+//TODO- }
+//TODO-
+//TODO- func (tableRset) doOne(t *table, h int64, f func(id interface{}, data []interface{}) (more bool, err error)) ( /* next handle */ int64, error) {
+//TODO- 	cols := t.cols
+//TODO- 	ncols := len(cols)
+//TODO- 	rec, err := t.store.Read(nil, h, cols...)
+//TODO- 	if err != nil {
+//TODO- 		return -1, err
+//TODO- 	}
+//TODO-
+//TODO- 	h = rec[0].(int64)
+//TODO- 	if n := ncols + 2 - len(rec); n > 0 {
+//TODO- 		rec = append(rec, make([]interface{}, n)...)
+//TODO- 	}
+//TODO-
+//TODO- 	for i, c := range cols {
+//TODO- 		if x := c.index; 2+x < len(rec) {
+//TODO- 			rec[2+i] = rec[2+x]
+//TODO- 			continue
+//TODO- 		}
+//TODO-
+//TODO- 		rec[2+i] = nil //DONE +test (#571)
+//TODO- 	}
+//TODO- 	m, err := f(rec[1], rec[2:2+ncols]) // 0:next, 1:id
+//TODO- 	if !m || err != nil {
+//TODO- 		return -1, err
+//TODO- 	}
+//TODO-
+//TODO- 	return h, nil
+//TODO- }
+//TODO-
+//TODO- func (r tableRset) doSysTable(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	flds := []*fld{&fld{name: "Name"}, &fld{name: "Schema"}}
+//TODO- 	m, err := f(nil, []interface{}{flds})
+//TODO- 	if onlyNames {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	if !m || err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	rec := make([]interface{}, 2)
+//TODO- 	di, err := ctx.db.info()
+//TODO- 	if err != nil {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	var id int64
+//TODO- 	for _, ti := range di.Tables {
+//TODO- 		rec[0] = ti.Name
+//TODO- 		a := []string{}
+//TODO- 		for _, ci := range ti.Columns {
+//TODO- 			s := ""
+//TODO- 			if ci.NotNull {
+//TODO- 				s += " NOT NULL"
+//TODO- 			}
+//TODO- 			if c := ci.Constraint; c != "" {
+//TODO- 				s += " " + c
+//TODO- 			}
+//TODO- 			if d := ci.Default; d != "" {
+//TODO- 				s += " DEFAULT " + d
+//TODO- 			}
+//TODO- 			a = append(a, fmt.Sprintf("%s %s%s", ci.Name, ci.Type, s))
+//TODO- 		}
+//TODO- 		rec[1] = fmt.Sprintf("CREATE TABLE %s (%s);", ti.Name, strings.Join(a, ", "))
+//TODO- 		id++
+//TODO- 		m, err := f(id, rec)
+//TODO- 		if !m || err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return
+//TODO- }
+//TODO-
+//TODO- func (r tableRset) doSysColumn(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	flds := []*fld{&fld{name: "TableName"}, &fld{name: "Ordinal"}, &fld{name: "Name"}, &fld{name: "Type"}}
+//TODO- 	m, err := f(nil, []interface{}{flds})
+//TODO- 	if onlyNames {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	if !m || err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	rec := make([]interface{}, 4)
+//TODO- 	di, err := ctx.db.info()
+//TODO- 	if err != nil {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	var id int64
+//TODO- 	for _, ti := range di.Tables {
+//TODO- 		rec[0] = ti.Name
+//TODO- 		var ix int64
+//TODO- 		for _, ci := range ti.Columns {
+//TODO- 			ix++
+//TODO- 			rec[1] = ix
+//TODO- 			rec[2] = ci.Name
+//TODO- 			rec[3] = ci.Type.String()
+//TODO- 			id++
+//TODO- 			m, err := f(id, rec)
+//TODO- 			if !m || err != nil {
+//TODO- 				return err
+//TODO- 			}
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return
+//TODO- }
+//TODO-
+//TODO- func (r tableRset) doSysIndex(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	flds := []*fld{&fld{name: "TableName"}, &fld{name: "ColumnName"}, &fld{name: "Name"}, &fld{name: "IsUnique"}}
+//TODO- 	m, err := f(nil, []interface{}{flds})
+//TODO- 	if onlyNames {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	if !m || err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	rec := make([]interface{}, 4)
+//TODO- 	di, err := ctx.db.info()
+//TODO- 	if err != nil {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	var id int64
+//TODO- 	for _, xi := range di.Indices {
+//TODO- 		rec[0] = xi.Table
+//TODO- 		rec[1] = xi.Column
+//TODO- 		rec[2] = xi.Name
+//TODO- 		rec[3] = xi.Unique
+//TODO- 		id++
+//TODO- 		m, err := f(id, rec)
+//TODO- 		if !m || err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return
+//TODO- }
+//TODO-
+//TODO- func (r tableRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	switch r {
+//TODO- 	case "__Table":
+//TODO- 		return r.doSysTable(ctx, onlyNames, f)
+//TODO- 	case "__Column":
+//TODO- 		return r.doSysColumn(ctx, onlyNames, f)
+//TODO- 	case "__Index":
+//TODO- 		return r.doSysIndex(ctx, onlyNames, f)
+//TODO- 	}
+//TODO-
+//TODO- 	t, ok := ctx.db.root.tables[string(r)]
+//TODO- 	if !ok && isTesting {
+//TODO- 		if _, x0 := ctx.db.root.findIndexByName(string(r)); x0 != nil {
+//TODO- 			switch x := x0.(type) {
+//TODO- 			case *indexedCol:
+//TODO- 				return r.doIndex(x.name, x.x, ctx, onlyNames, f)
+//TODO- 			case *index2:
+//TODO- 				return r.doIndex(string(r), x.x, ctx, onlyNames, f)
+//TODO- 			default:
+//TODO- 				panic("internal error 079")
+//TODO- 			}
+//TODO- 		}
+//TODO- 	}
+//TODO-
+//TODO- 	if !ok {
+//TODO- 		return fmt.Errorf("table %s does not exist", r)
+//TODO- 	}
+//TODO-
+//TODO- 	m, err := f(nil, []interface{}{t.flds()})
+//TODO- 	if onlyNames {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	if !m || err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	for h := t.head; h > 0 && err == nil; h, err = r.doOne(t, h, f) {
+//TODO- 	}
+//TODO- 	return
+//TODO- }
 
-	if !m || err != nil {
-		return
-	}
-
-	en, err := x.SeekFirst()
-	if err != nil {
-		return noEOF(err)
-	}
-
-	var id int64
-	for {
-		k, _, err := en.Next()
-		if err != nil {
-			return noEOF(err)
-		}
-
-		id++
-		m, err := f(id, k)
-		if !m || err != nil {
-			return err
-		}
-	}
-}
-
-func (tableRset) doOne(t *table, h int64, f func(id interface{}, data []interface{}) (more bool, err error)) ( /* next handle */ int64, error) {
-	cols := t.cols
-	ncols := len(cols)
-	rec, err := t.store.Read(nil, h, cols...)
-	if err != nil {
-		return -1, err
-	}
-
-	h = rec[0].(int64)
-	if n := ncols + 2 - len(rec); n > 0 {
-		rec = append(rec, make([]interface{}, n)...)
-	}
-
-	for i, c := range cols {
-		if x := c.index; 2+x < len(rec) {
-			rec[2+i] = rec[2+x]
-			continue
-		}
-
-		rec[2+i] = nil //DONE +test (#571)
-	}
-	m, err := f(rec[1], rec[2:2+ncols]) // 0:next, 1:id
-	if !m || err != nil {
-		return -1, err
-	}
-
-	return h, nil
-}
-
-func (r tableRset) doSysTable(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	flds := []*fld{&fld{name: "Name"}, &fld{name: "Schema"}}
-	m, err := f(nil, []interface{}{flds})
-	if onlyNames {
-		return err
-	}
-
-	if !m || err != nil {
-		return
-	}
-
-	rec := make([]interface{}, 2)
-	di, err := ctx.db.info()
-	if err != nil {
-		return err
-	}
-
-	var id int64
-	for _, ti := range di.Tables {
-		rec[0] = ti.Name
-		a := []string{}
-		for _, ci := range ti.Columns {
-			s := ""
-			if ci.NotNull {
-				s += " NOT NULL"
-			}
-			if c := ci.Constraint; c != "" {
-				s += " " + c
-			}
-			if d := ci.Default; d != "" {
-				s += " DEFAULT " + d
-			}
-			a = append(a, fmt.Sprintf("%s %s%s", ci.Name, ci.Type, s))
-		}
-		rec[1] = fmt.Sprintf("CREATE TABLE %s (%s);", ti.Name, strings.Join(a, ", "))
-		id++
-		m, err := f(id, rec)
-		if !m || err != nil {
-			return err
-		}
-	}
-	return
-}
-
-func (r tableRset) doSysColumn(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	flds := []*fld{&fld{name: "TableName"}, &fld{name: "Ordinal"}, &fld{name: "Name"}, &fld{name: "Type"}}
-	m, err := f(nil, []interface{}{flds})
-	if onlyNames {
-		return err
-	}
-
-	if !m || err != nil {
-		return
-	}
-
-	rec := make([]interface{}, 4)
-	di, err := ctx.db.info()
-	if err != nil {
-		return err
-	}
-
-	var id int64
-	for _, ti := range di.Tables {
-		rec[0] = ti.Name
-		var ix int64
-		for _, ci := range ti.Columns {
-			ix++
-			rec[1] = ix
-			rec[2] = ci.Name
-			rec[3] = ci.Type.String()
-			id++
-			m, err := f(id, rec)
-			if !m || err != nil {
-				return err
-			}
-		}
-	}
-	return
-}
-
-func (r tableRset) doSysIndex(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	flds := []*fld{&fld{name: "TableName"}, &fld{name: "ColumnName"}, &fld{name: "Name"}, &fld{name: "IsUnique"}}
-	m, err := f(nil, []interface{}{flds})
-	if onlyNames {
-		return err
-	}
-
-	if !m || err != nil {
-		return
-	}
-
-	rec := make([]interface{}, 4)
-	di, err := ctx.db.info()
-	if err != nil {
-		return err
-	}
-
-	var id int64
-	for _, xi := range di.Indices {
-		rec[0] = xi.Table
-		rec[1] = xi.Column
-		rec[2] = xi.Name
-		rec[3] = xi.Unique
-		id++
-		m, err := f(id, rec)
-		if !m || err != nil {
-			return err
-		}
-	}
-	return
-}
-
-func (r tableRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	switch r {
-	case "__Table":
-		return r.doSysTable(ctx, onlyNames, f)
-	case "__Column":
-		return r.doSysColumn(ctx, onlyNames, f)
-	case "__Index":
-		return r.doSysIndex(ctx, onlyNames, f)
-	}
-
-	t, ok := ctx.db.root.tables[string(r)]
-	if !ok && isTesting {
-		if _, x0 := ctx.db.root.findIndexByName(string(r)); x0 != nil {
-			switch x := x0.(type) {
-			case *indexedCol:
-				return r.doIndex(x.name, x.x, ctx, onlyNames, f)
-			case *index2:
-				return r.doIndex(string(r), x.x, ctx, onlyNames, f)
-			default:
-				panic("internal error 079")
-			}
-		}
-	}
-
-	if !ok {
-		return fmt.Errorf("table %s does not exist", r)
-	}
-
-	m, err := f(nil, []interface{}{t.flds()})
-	if onlyNames {
-		return err
-	}
-
-	if !m || err != nil {
-		return
-	}
-
-	for h := t.head; h > 0 && err == nil; h, err = r.doOne(t, h, f) {
-	}
-	return
-}
+func (r *tableRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 type crossJoinRset struct {
 	sources []interface{}
 }
 
-func (r *crossJoinRset) tables() []struct {
-	i            int
-	name, rename string
-} {
-	var ret []struct {
-		i            int
-		name, rename string
-	}
-	//dbg("---- %p", r)
-	for i, pair0 := range r.sources {
-		//dbg("%d/%d, %#v", i, len(r.sources), pair0)
-		pair := pair0.([]interface{})
-		altName := pair[1].(string)
-		switch x := pair[0].(type) {
-		case string: // table name
-			if altName == "" {
-				altName = x
-			}
-			ret = append(ret, struct {
-				i            int
-				name, rename string
-			}{i, x, altName})
-		}
-	}
-	return ret
-}
+//TODO- func (r *crossJoinRset) tables() []struct {
+//TODO- 	i            int
+//TODO- 	name, rename string
+//TODO- } {
+//TODO- 	var ret []struct {
+//TODO- 		i            int
+//TODO- 		name, rename string
+//TODO- 	}
+//TODO- 	//dbg("---- %p", r)
+//TODO- 	for i, pair0 := range r.sources {
+//TODO- 		//dbg("%d/%d, %#v", i, len(r.sources), pair0)
+//TODO- 		pair := pair0.([]interface{})
+//TODO- 		altName := pair[1].(string)
+//TODO- 		switch x := pair[0].(type) {
+//TODO- 		case string: // table name
+//TODO- 			if altName == "" {
+//TODO- 				altName = x
+//TODO- 			}
+//TODO- 			ret = append(ret, struct {
+//TODO- 				i            int
+//TODO- 				name, rename string
+//TODO- 			}{i, x, altName})
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return ret
+//TODO- }
 
 func (r *crossJoinRset) String() string {
 	a := make([]string, len(r.sources))
@@ -1460,104 +1479,106 @@ func (r *crossJoinRset) String() string {
 	return strings.Join(a, ", ")
 }
 
-func (r *crossJoinRset) isSingleTable() (string, bool) {
-	sources := r.sources
-	if len(sources) != 1 {
-		return "", false
-	}
+//TODO- func (r *crossJoinRset) isSingleTable() (string, bool) {
+//TODO- 	sources := r.sources
+//TODO- 	if len(sources) != 1 {
+//TODO- 		return "", false
+//TODO- 	}
+//TODO-
+//TODO- 	pair := sources[0].([]interface{})
+//TODO- 	s, ok := pair[0].(string)
+//TODO- 	return s, ok
+//TODO- }
+//TODO-
+//TODO- func (r *crossJoinRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+//TODO- 	rsets := make([]rset, len(r.sources))
+//TODO- 	altNames := make([]string, len(r.sources))
+//TODO- 	//dbg(".... %p", r)
+//TODO- 	for i, pair0 := range r.sources {
+//TODO- 		pair := pair0.([]interface{})
+//TODO- 		//dbg("%d: %#v", len(pair), pair)
+//TODO- 		altName := pair[1].(string)
+//TODO- 		switch x := pair[0].(type) {
+//TODO- 		case string: // table name
+//TODO- 			rsets[i] = tableRset(x)
+//TODO- 			if altName == "" {
+//TODO- 				altName = x
+//TODO- 			}
+//TODO- 		case *selectStmt:
+//TODO- 			rsets[i] = x
+//TODO- 		default:
+//TODO- 			log.Panic("internal error 055")
+//TODO- 		}
+//TODO- 		altNames[i] = altName
+//TODO- 	}
+//TODO-
+//TODO- 	if len(rsets) == 1 {
+//TODO- 		return rsets[0].do(ctx, onlyNames, f)
+//TODO- 	}
+//TODO-
+//TODO- 	var flds []*fld
+//TODO- 	fldsSent := false
+//TODO- 	iq := 0
+//TODO- 	stop := false
+//TODO- 	ids := map[string]interface{}{}
+//TODO- 	var g func([]interface{}, []rset, int) error
+//TODO- 	g = func(prefix []interface{}, rsets []rset, x int) (err error) {
+//TODO- 		rset := rsets[0]
+//TODO- 		rsets = rsets[1:]
+//TODO- 		ok := false
+//TODO- 		return rset.do(ctx, onlyNames, func(id interface{}, in []interface{}) (more bool, err error) {
+//TODO- 			if onlyNames && fldsSent {
+//TODO- 				stop = true
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if ok {
+//TODO- 				ids[altNames[x]] = id
+//TODO- 				if len(rsets) != 0 {
+//TODO- 					return true, g(append(prefix, in...), rsets, x+1)
+//TODO- 				}
+//TODO-
+//TODO- 				m, err := f(ids, append(prefix, in...))
+//TODO- 				if !m {
+//TODO- 					stop = true
+//TODO- 				}
+//TODO- 				return m && !stop, err
+//TODO- 			}
+//TODO-
+//TODO- 			ok = true
+//TODO- 			if !fldsSent {
+//TODO- 				f0 := append([]*fld(nil), in[0].([]*fld)...)
+//TODO- 				q := altNames[iq]
+//TODO- 				for i, elem := range f0 {
+//TODO- 					nf := &fld{}
+//TODO- 					*nf = *elem
+//TODO- 					switch {
+//TODO- 					case q == "":
+//TODO- 						nf.name = ""
+//TODO- 					case nf.name != "":
+//TODO- 						nf.name = fmt.Sprintf("%s.%s", altNames[iq], nf.name)
+//TODO- 					}
+//TODO- 					f0[i] = nf
+//TODO- 				}
+//TODO- 				iq++
+//TODO- 				flds = append(flds, f0...)
+//TODO- 			}
+//TODO- 			if len(rsets) == 0 && !fldsSent {
+//TODO- 				fldsSent = true
+//TODO- 				more, err = f(nil, []interface{}{flds})
+//TODO- 				if !more {
+//TODO- 					stop = true
+//TODO- 				}
+//TODO- 				return more && !stop, err
+//TODO- 			}
+//TODO-
+//TODO- 			return !stop, nil
+//TODO- 		})
+//TODO- 	}
+//TODO- 	return g(nil, rsets, 0)
+//TODO- }
 
-	pair := sources[0].([]interface{})
-	s, ok := pair[0].(string)
-	return s, ok
-}
-
-func (r *crossJoinRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-	rsets := make([]rset, len(r.sources))
-	altNames := make([]string, len(r.sources))
-	//dbg(".... %p", r)
-	for i, pair0 := range r.sources {
-		pair := pair0.([]interface{})
-		//dbg("%d: %#v", len(pair), pair)
-		altName := pair[1].(string)
-		switch x := pair[0].(type) {
-		case string: // table name
-			rsets[i] = tableRset(x)
-			if altName == "" {
-				altName = x
-			}
-		case *selectStmt:
-			rsets[i] = x
-		default:
-			log.Panic("internal error 055")
-		}
-		altNames[i] = altName
-	}
-
-	if len(rsets) == 1 {
-		return rsets[0].do(ctx, onlyNames, f)
-	}
-
-	var flds []*fld
-	fldsSent := false
-	iq := 0
-	stop := false
-	ids := map[string]interface{}{}
-	var g func([]interface{}, []rset, int) error
-	g = func(prefix []interface{}, rsets []rset, x int) (err error) {
-		rset := rsets[0]
-		rsets = rsets[1:]
-		ok := false
-		return rset.do(ctx, onlyNames, func(id interface{}, in []interface{}) (more bool, err error) {
-			if onlyNames && fldsSent {
-				stop = true
-				return false, nil
-			}
-
-			if ok {
-				ids[altNames[x]] = id
-				if len(rsets) != 0 {
-					return true, g(append(prefix, in...), rsets, x+1)
-				}
-
-				m, err := f(ids, append(prefix, in...))
-				if !m {
-					stop = true
-				}
-				return m && !stop, err
-			}
-
-			ok = true
-			if !fldsSent {
-				f0 := append([]*fld(nil), in[0].([]*fld)...)
-				q := altNames[iq]
-				for i, elem := range f0 {
-					nf := &fld{}
-					*nf = *elem
-					switch {
-					case q == "":
-						nf.name = ""
-					case nf.name != "":
-						nf.name = fmt.Sprintf("%s.%s", altNames[iq], nf.name)
-					}
-					f0[i] = nf
-				}
-				iq++
-				flds = append(flds, f0...)
-			}
-			if len(rsets) == 0 && !fldsSent {
-				fldsSent = true
-				more, err = f(nil, []interface{}{flds})
-				if !more {
-					stop = true
-				}
-				return more && !stop, err
-			}
-
-			return !stop, nil
-		})
-	}
-	return g(nil, rsets, 0)
-}
+func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
 type fld struct {
 	expr expression
@@ -2269,35 +2290,36 @@ func (db *DB) do(r recordset, names int, f func(data []interface{}) (more bool, 
 		}
 	}
 
-	ok := false
-	return r.do(r.ctx, names == onlyNames, func(id interface{}, data []interface{}) (more bool, err error) {
-		if ok {
-			if err = expand(data); err != nil {
-				return
-			}
+	panic("TODO")
+	//ok := false
+	//return r.do(r.ctx, names == onlyNames, func(id interface{}, data []interface{}) (more bool, err error) {
+	//	if ok {
+	//		if err = expand(data); err != nil {
+	//			return
+	//		}
 
-			return f(data)
-		}
+	//		return f(data)
+	//	}
 
-		ok = true
-		done := false
-		switch names {
-		case noNames:
-			return true, nil
-		case onlyNames:
-			done = true
-			fallthrough
-		default: // returnNames
-			flds := data[0].([]*fld)
-			a := make([]interface{}, len(flds))
-			for i, v := range flds {
-				a[i] = v.name
-			}
-			more, err := f(a)
-			return more && !done, err
+	//	ok = true
+	//	done := false
+	//	switch names {
+	//	case noNames:
+	//		return true, nil
+	//	case onlyNames:
+	//		done = true
+	//		fallthrough
+	//	default: // returnNames
+	//		flds := data[0].([]*fld)
+	//		a := make([]interface{}, len(flds))
+	//		for i, v := range flds {
+	//			a[i] = v.name
+	//		}
+	//		more, err := f(a)
+	//		return more && !done, err
 
-		}
-	})
+	//	}
+	//})
 }
 
 func (db *DB) beginTransaction() { //TODO Rewrite, must use much smaller undo info!
@@ -2398,72 +2420,73 @@ type DbInfo struct {
 }
 
 func (db *DB) info() (r *DbInfo, err error) {
-	_, hasColumn2 := db.root.tables["__Column2"]
-	r = &DbInfo{Name: db.Name()}
-	for nm, t := range db.root.tables {
-		ti := TableInfo{Name: nm}
-		m := map[string]*ColumnInfo{}
-		if hasColumn2 {
-			rs, err := selectColumn2.l[0].exec(&execCtx{db: db})
-			if err != nil {
-				return nil, err
-			}
-			ok := false
-			if err := rs.(recordset).do(
-				&execCtx{db: db, arg: []interface{}{nm}},
-				false,
-				func(id interface{}, data []interface{}) (more bool, err error) {
-					if ok {
-						ci := &ColumnInfo{NotNull: data[1].(bool), Constraint: data[2].(string), Default: data[3].(string)}
-						m[data[0].(string)] = ci
-						return true, nil
-					}
+	panic("TODO")
+	//_, hasColumn2 := db.root.tables["__Column2"]
+	//r = &DbInfo{Name: db.Name()}
+	//for nm, t := range db.root.tables {
+	//	ti := TableInfo{Name: nm}
+	//	m := map[string]*ColumnInfo{}
+	//	if hasColumn2 {
+	//		rs, err := selectColumn2.l[0].exec(&execCtx{db: db})
+	//		if err != nil {
+	//			return nil, err
+	//		}
+	//		ok := false
+	//		if err := rs.(recordset).do(
+	//			&execCtx{db: db, arg: []interface{}{nm}},
+	//			false,
+	//			func(id interface{}, data []interface{}) (more bool, err error) {
+	//				if ok {
+	//					ci := &ColumnInfo{NotNull: data[1].(bool), Constraint: data[2].(string), Default: data[3].(string)}
+	//					m[data[0].(string)] = ci
+	//					return true, nil
+	//				}
 
-					ok = true
-					return true, nil
-				},
-			); err != nil {
-				return nil, err
-			}
-		}
-		for _, c := range t.cols {
-			ci := ColumnInfo{Name: c.name, Type: Type(c.typ)}
-			if c2 := m[c.name]; c2 != nil {
-				ci.NotNull = c2.NotNull
-				ci.Constraint = c2.Constraint
-				ci.Default = c2.Default
-			}
-			ti.Columns = append(ti.Columns, ci)
-		}
-		r.Tables = append(r.Tables, ti)
-		for i, x := range t.indices {
-			if x == nil {
-				continue
-			}
+	//				ok = true
+	//				return true, nil
+	//			},
+	//		); err != nil {
+	//			return nil, err
+	//		}
+	//	}
+	//	for _, c := range t.cols {
+	//		ci := ColumnInfo{Name: c.name, Type: Type(c.typ)}
+	//		if c2 := m[c.name]; c2 != nil {
+	//			ci.NotNull = c2.NotNull
+	//			ci.Constraint = c2.Constraint
+	//			ci.Default = c2.Default
+	//		}
+	//		ti.Columns = append(ti.Columns, ci)
+	//	}
+	//	r.Tables = append(r.Tables, ti)
+	//	for i, x := range t.indices {
+	//		if x == nil {
+	//			continue
+	//		}
 
-			var cn string
-			switch {
-			case i == 0:
-				cn = "id()"
-			default:
-				cn = t.cols0[i-1].name
-			}
-			r.Indices = append(r.Indices, IndexInfo{x.name, nm, cn, x.unique, []string{cn}})
-		}
-		var a []string
-		for k := range t.indices2 {
-			a = append(a, k)
-		}
-		for _, k := range a {
-			x := t.indices2[k]
-			a = a[:0]
-			for _, e := range x.exprList {
-				a = append(a, e.String())
-			}
-			r.Indices = append(r.Indices, IndexInfo{k, nm, "", x.unique, a})
-		}
-	}
-	return
+	//		var cn string
+	//		switch {
+	//		case i == 0:
+	//			cn = "id()"
+	//		default:
+	//			cn = t.cols0[i-1].name
+	//		}
+	//		r.Indices = append(r.Indices, IndexInfo{x.name, nm, cn, x.unique, []string{cn}})
+	//	}
+	//	var a []string
+	//	for k := range t.indices2 {
+	//		a = append(a, k)
+	//	}
+	//	for _, k := range a {
+	//		x := t.indices2[k]
+	//		a = a[:0]
+	//		for _, e := range x.exprList {
+	//			a = append(a, e.String())
+	//		}
+	//		r.Indices = append(r.Indices, IndexInfo{k, nm, "", x.unique, a})
+	//	}
+	//}
+	//return
 }
 
 // Info provides meta data describing a DB or an error if any. It locks the DB
@@ -2485,225 +2508,227 @@ type outerJoinRset struct {
 	on        expression
 }
 
-func (o *outerJoinRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error {
-	sources := append(o.crossJoin.sources, o.source)
-	var b3 *b.Tree
-	switch o.typ {
-	case rightJoin: // switch last two sources
-		n := len(sources)
-		sources[n-2], sources[n-1] = sources[n-1], sources[n-2]
-	case fullJoin:
-		b3 = b.TreeNew(func(a, b interface{}) int {
-			x := a.(int64)
-			y := b.(int64)
-			if x < y {
-				return -1
-			}
+//TODO- func (o *outerJoinRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error {
+//TODO- 	sources := append(o.crossJoin.sources, o.source)
+//TODO- 	var b3 *b.Tree
+//TODO- 	switch o.typ {
+//TODO- 	case rightJoin: // switch last two sources
+//TODO- 		n := len(sources)
+//TODO- 		sources[n-2], sources[n-1] = sources[n-1], sources[n-2]
+//TODO- 	case fullJoin:
+//TODO- 		b3 = b.TreeNew(func(a, b interface{}) int {
+//TODO- 			x := a.(int64)
+//TODO- 			y := b.(int64)
+//TODO- 			if x < y {
+//TODO- 				return -1
+//TODO- 			}
+//TODO-
+//TODO- 			if x == y {
+//TODO- 				return 0
+//TODO- 			}
+//TODO-
+//TODO- 			return 1
+//TODO- 		})
+//TODO- 	}
+//TODO- 	rsets := make([]rset, len(sources))
+//TODO- 	altNames := make([]string, len(sources))
+//TODO- 	for i, pair0 := range sources {
+//TODO- 		pair := pair0.([]interface{})
+//TODO- 		altName := pair[1].(string)
+//TODO- 		switch x := pair[0].(type) {
+//TODO- 		case string: // table name
+//TODO- 			rsets[i] = tableRset(x)
+//TODO- 			if altName == "" {
+//TODO- 				altName = x
+//TODO- 			}
+//TODO- 		case *selectStmt:
+//TODO- 			rsets[i] = x
+//TODO- 		default:
+//TODO- 			log.Panic("internal error 074")
+//TODO- 		}
+//TODO- 		altNames[i] = altName
+//TODO- 	}
+//TODO-
+//TODO- 	var flds, leftFlds, rightFlds []*fld
+//TODO- 	var nF, nP, nL, nR int
+//TODO- 	fldsSent := false
+//TODO- 	iq := 0
+//TODO- 	stop := false
+//TODO- 	ids := map[string]interface{}{}
+//TODO- 	m := map[interface{}]interface{}{}
+//TODO- 	var g func([]interface{}, []rset, int) error
+//TODO- 	var match bool
+//TODO- 	var rid int64
+//TODO- 	firstR := true
+//TODO- 	g = func(prefix []interface{}, rsets []rset, x int) (err error) {
+//TODO- 		rset := rsets[0]
+//TODO- 		rsets = rsets[1:]
+//TODO- 		ok := false
+//TODO- 		return rset.do(ctx, onlyNames, func(id interface{}, in []interface{}) (bool, error) {
+//TODO- 			if onlyNames && fldsSent {
+//TODO- 				stop = true
+//TODO- 				return false, nil
+//TODO- 			}
+//TODO-
+//TODO- 			if ok {
+//TODO- 				ids[altNames[x]] = id
+//TODO- 				if len(rsets) != 0 {
+//TODO- 					newPrefix := append(prefix, in...)
+//TODO- 					match = false
+//TODO- 					rid = 0
+//TODO- 					if err := g(newPrefix, rsets, x+1); err != nil {
+//TODO- 						return false, err
+//TODO- 					}
+//TODO-
+//TODO- 					if len(newPrefix) < nP+nL {
+//TODO- 						return true, nil
+//TODO- 					}
+//TODO-
+//TODO- 					firstR = false
+//TODO- 					if match {
+//TODO- 						return true, nil
+//TODO- 					}
+//TODO-
+//TODO- 					row := append(newPrefix, make([]interface{}, len(rightFlds))...)
+//TODO- 					switch o.typ {
+//TODO- 					case rightJoin:
+//TODO- 						row2 := row[:nP:nP]
+//TODO- 						row2 = append(row2, row[nP+nL:]...)
+//TODO- 						row2 = append(row2, row[nP:nP+nL]...)
+//TODO- 						row = row2
+//TODO- 					}
+//TODO- 					more, err := f(ids, row)
+//TODO- 					if !more {
+//TODO- 						stop = true
+//TODO- 					}
+//TODO- 					return more && !stop, err
+//TODO- 				}
+//TODO-
+//TODO- 				// prefix: left "table" row
+//TODO- 				// in: right "table" row
+//TODO- 				row := append(prefix, in...)
+//TODO- 				switch o.typ {
+//TODO- 				case rightJoin:
+//TODO- 					row2 := row[:nP:nP]
+//TODO- 					row2 = append(row2, row[nP+nL:]...)
+//TODO- 					row2 = append(row2, row[nP:nP+nL]...)
+//TODO- 					row = row2
+//TODO- 				case fullJoin:
+//TODO- 					rid++
+//TODO- 					if !firstR {
+//TODO- 						break
+//TODO- 					}
+//TODO-
+//TODO- 					b3.Set(rid, in)
+//TODO- 				}
+//TODO- 				for i, fld := range flds {
+//TODO- 					if nm := fld.name; nm != "" {
+//TODO- 						m[nm] = row[i]
+//TODO- 					}
+//TODO- 				}
+//TODO-
+//TODO- 				val, err := o.on.eval(ctx, m, ctx.arg)
+//TODO- 				if err != nil {
+//TODO- 					return false, err
+//TODO- 				}
+//TODO-
+//TODO- 				if val == nil {
+//TODO- 					return true && !stop, nil
+//TODO- 				}
+//TODO-
+//TODO- 				x, ok := val.(bool)
+//TODO- 				if !ok {
+//TODO- 					return false, fmt.Errorf("invalid ON expression %s (value of type %T)", val, val)
+//TODO- 				}
+//TODO-
+//TODO- 				if !x {
+//TODO- 					return true && !stop, nil
+//TODO- 				}
+//TODO-
+//TODO- 				match = true
+//TODO- 				if o.typ == fullJoin {
+//TODO- 					b3.Delete(rid)
+//TODO- 				}
+//TODO- 				more, err := f(ids, row)
+//TODO- 				if !more {
+//TODO- 					stop = true
+//TODO- 				}
+//TODO- 				return more && !stop, err
+//TODO- 			}
+//TODO-
+//TODO- 			ok = true
+//TODO- 			if !fldsSent {
+//TODO- 				f0 := append([]*fld(nil), in[0].([]*fld)...)
+//TODO- 				q := altNames[iq]
+//TODO- 				for i, elem := range f0 {
+//TODO- 					nf := &fld{}
+//TODO- 					*nf = *elem
+//TODO- 					switch {
+//TODO- 					case q == "":
+//TODO- 						nf.name = ""
+//TODO- 					case nf.name != "":
+//TODO- 						nf.name = fmt.Sprintf("%s.%s", altNames[iq], nf.name)
+//TODO- 					}
+//TODO- 					f0[i] = nf
+//TODO- 				}
+//TODO- 				iq++
+//TODO- 				flds = append(flds, f0...)
+//TODO- 				leftFlds = append([]*fld(nil), rightFlds...)
+//TODO- 				rightFlds = append([]*fld(nil), f0...)
+//TODO- 			}
+//TODO- 			if len(rsets) == 0 && !fldsSent {
+//TODO- 				fldsSent = true
+//TODO- 				nF = len(flds)
+//TODO- 				nL = len(leftFlds)
+//TODO- 				nR = len(rightFlds)
+//TODO- 				nP = nF - nL - nR
+//TODO- 				x := flds
+//TODO- 				switch o.typ {
+//TODO- 				case rightJoin:
+//TODO- 					x = x[:nP:nP]
+//TODO- 					x = append(x, rightFlds...)
+//TODO- 					x = append(x, leftFlds...)
+//TODO- 					flds = x
+//TODO- 				}
+//TODO- 				more, err := f(nil, []interface{}{x})
+//TODO- 				if !more {
+//TODO- 					stop = true
+//TODO- 				}
+//TODO- 				return more && !stop, err
+//TODO- 			}
+//TODO-
+//TODO- 			return !stop, nil
+//TODO- 		})
+//TODO- 	}
+//TODO- 	if err := g(nil, rsets, 0); err != nil {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	if o.typ != fullJoin {
+//TODO- 		return nil
+//TODO- 	}
+//TODO-
+//TODO- 	it, err := b3.SeekFirst()
+//TODO- 	if err != nil {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	pref := make([]interface{}, nP+nL)
+//TODO- 	for {
+//TODO- 		_, v, err := it.Next()
+//TODO- 		if err != nil { // No more items
+//TODO- 			return nil
+//TODO- 		}
+//TODO-
+//TODO- 		more, err := f(nil, append(pref, v.([]interface{})...))
+//TODO- 		if err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO-
+//TODO- 		if !more {
+//TODO- 			return nil
+//TODO- 		}
+//TODO- 	}
+//TODO- }
 
-			if x == y {
-				return 0
-			}
-
-			return 1
-		})
-	}
-	rsets := make([]rset, len(sources))
-	altNames := make([]string, len(sources))
-	for i, pair0 := range sources {
-		pair := pair0.([]interface{})
-		altName := pair[1].(string)
-		switch x := pair[0].(type) {
-		case string: // table name
-			rsets[i] = tableRset(x)
-			if altName == "" {
-				altName = x
-			}
-		case *selectStmt:
-			rsets[i] = x
-		default:
-			log.Panic("internal error 074")
-		}
-		altNames[i] = altName
-	}
-
-	var flds, leftFlds, rightFlds []*fld
-	var nF, nP, nL, nR int
-	fldsSent := false
-	iq := 0
-	stop := false
-	ids := map[string]interface{}{}
-	m := map[interface{}]interface{}{}
-	var g func([]interface{}, []rset, int) error
-	var match bool
-	var rid int64
-	firstR := true
-	g = func(prefix []interface{}, rsets []rset, x int) (err error) {
-		rset := rsets[0]
-		rsets = rsets[1:]
-		ok := false
-		return rset.do(ctx, onlyNames, func(id interface{}, in []interface{}) (bool, error) {
-			if onlyNames && fldsSent {
-				stop = true
-				return false, nil
-			}
-
-			if ok {
-				ids[altNames[x]] = id
-				if len(rsets) != 0 {
-					newPrefix := append(prefix, in...)
-					match = false
-					rid = 0
-					if err := g(newPrefix, rsets, x+1); err != nil {
-						return false, err
-					}
-
-					if len(newPrefix) < nP+nL {
-						return true, nil
-					}
-
-					firstR = false
-					if match {
-						return true, nil
-					}
-
-					row := append(newPrefix, make([]interface{}, len(rightFlds))...)
-					switch o.typ {
-					case rightJoin:
-						row2 := row[:nP:nP]
-						row2 = append(row2, row[nP+nL:]...)
-						row2 = append(row2, row[nP:nP+nL]...)
-						row = row2
-					}
-					more, err := f(ids, row)
-					if !more {
-						stop = true
-					}
-					return more && !stop, err
-				}
-
-				// prefix: left "table" row
-				// in: right "table" row
-				row := append(prefix, in...)
-				switch o.typ {
-				case rightJoin:
-					row2 := row[:nP:nP]
-					row2 = append(row2, row[nP+nL:]...)
-					row2 = append(row2, row[nP:nP+nL]...)
-					row = row2
-				case fullJoin:
-					rid++
-					if !firstR {
-						break
-					}
-
-					b3.Set(rid, in)
-				}
-				for i, fld := range flds {
-					if nm := fld.name; nm != "" {
-						m[nm] = row[i]
-					}
-				}
-
-				val, err := o.on.eval(ctx, m, ctx.arg)
-				if err != nil {
-					return false, err
-				}
-
-				if val == nil {
-					return true && !stop, nil
-				}
-
-				x, ok := val.(bool)
-				if !ok {
-					return false, fmt.Errorf("invalid ON expression %s (value of type %T)", val, val)
-				}
-
-				if !x {
-					return true && !stop, nil
-				}
-
-				match = true
-				if o.typ == fullJoin {
-					b3.Delete(rid)
-				}
-				more, err := f(ids, row)
-				if !more {
-					stop = true
-				}
-				return more && !stop, err
-			}
-
-			ok = true
-			if !fldsSent {
-				f0 := append([]*fld(nil), in[0].([]*fld)...)
-				q := altNames[iq]
-				for i, elem := range f0 {
-					nf := &fld{}
-					*nf = *elem
-					switch {
-					case q == "":
-						nf.name = ""
-					case nf.name != "":
-						nf.name = fmt.Sprintf("%s.%s", altNames[iq], nf.name)
-					}
-					f0[i] = nf
-				}
-				iq++
-				flds = append(flds, f0...)
-				leftFlds = append([]*fld(nil), rightFlds...)
-				rightFlds = append([]*fld(nil), f0...)
-			}
-			if len(rsets) == 0 && !fldsSent {
-				fldsSent = true
-				nF = len(flds)
-				nL = len(leftFlds)
-				nR = len(rightFlds)
-				nP = nF - nL - nR
-				x := flds
-				switch o.typ {
-				case rightJoin:
-					x = x[:nP:nP]
-					x = append(x, rightFlds...)
-					x = append(x, leftFlds...)
-					flds = x
-				}
-				more, err := f(nil, []interface{}{x})
-				if !more {
-					stop = true
-				}
-				return more && !stop, err
-			}
-
-			return !stop, nil
-		})
-	}
-	if err := g(nil, rsets, 0); err != nil {
-		return err
-	}
-
-	if o.typ != fullJoin {
-		return nil
-	}
-
-	it, err := b3.SeekFirst()
-	if err != nil {
-		return err
-	}
-
-	pref := make([]interface{}, nP+nL)
-	for {
-		_, v, err := it.Next()
-		if err != nil { // No more items
-			return nil
-		}
-
-		more, err := f(nil, append(pref, v.([]interface{})...))
-		if err != nil {
-			return err
-		}
-
-		if !more {
-			return nil
-		}
-	}
-}
+func (r *outerJoinRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
