@@ -2519,7 +2519,11 @@ yynewstate:
 		}
 	case 200:
 		{
-			yyVAL.item = &updateStmt{tableName: yyS[yypt-3].item.(string), list: yyS[yypt-1].item.([]assignment), where: yyS[yypt-0].item.(*whereRset).expr}
+			var expr expression
+			if w := yyS[yypt-0].item; w != nil {
+				expr = w.(*whereRset).expr
+			}
+			yyVAL.item = &updateStmt{tableName: yyS[yypt-3].item.(string), list: yyS[yypt-1].item.([]assignment), where: expr}
 
 			if yylex.(*lexer).root {
 				break
@@ -2532,7 +2536,7 @@ yynewstate:
 		}
 	case 201:
 		{
-			yyVAL.item = nowhere
+			yyVAL.item = nil
 		}
 	case 204:
 		{

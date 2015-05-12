@@ -1216,7 +1216,11 @@ Type:
 UpdateStmt:
 	update TableName SetOpt AssignmentList UpdateStmt1
 	{
-		$$ = &updateStmt{tableName: $2.(string), list: $4.([]assignment), where: $5.(*whereRset).expr}
+		var expr expression
+		if w := $5; w != nil {
+			expr = w.(*whereRset).expr
+		}
+		$$ = &updateStmt{tableName: $2.(string), list: $4.([]assignment), where: expr}
 
 		if yylex.(*lexer).root {
 			break
@@ -1231,7 +1235,7 @@ UpdateStmt:
 UpdateStmt1:
 	/* EMPTY */
 	{
-		$$ = nowhere
+		$$ = nil
 	}
 |	WhereClause
 

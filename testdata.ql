@@ -282,7 +282,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2, "b");
 COMMIT;
 SELECT * FROM t WHERE c1 == 1;
-|lc1, sc2
+|c1, c2
 [1 a]
 
 -- 34

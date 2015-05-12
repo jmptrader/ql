@@ -119,49 +119,6 @@ type exprTab struct {
 	table string
 }
 
-func isPossiblyRewriteableCrossJoinWhereExpression(expr expression) (bool, []exprTab) {
-	//dbg("....\n\texpr %v", expr)
-	//defer func() { dbg("\t\t%v: %v %v", expr, TODOb, TODOl) }()
-	switch x := expr.(type) {
-	case *binaryOperation:
-		if ok, tab, nx := x.isQIdentRelOpFixedValue(); ok {
-			return true, []exprTab{{nx, tab}}
-		}
-
-		if x.op != andand {
-			return false, nil
-		}
-
-		ok, rlist := isPossiblyRewriteableCrossJoinWhereExpression(x.r)
-		if !ok {
-			return false, nil
-		}
-
-		ok, llist := isPossiblyRewriteableCrossJoinWhereExpression(x.l)
-		if !ok {
-			return false, nil
-		}
-
-		return true, append(llist, rlist...)
-	case *ident:
-		if !x.isQualified() {
-			return false, nil
-		}
-
-		return true, []exprTab{{&ident{mustSelector(x.s)}, mustQualifier(x.s)}}
-	case *unaryOperation:
-		ok, tab, nx := x.isNotQIdent()
-		if !ok {
-			return false, nil
-		}
-
-		return true, []exprTab{{nx, tab}}
-	default:
-		//dbg("%T: %v", x, x)
-		return false, nil
-	}
-}
-
 type pexpr struct {
 	expr expression
 }
