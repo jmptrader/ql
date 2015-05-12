@@ -3025,50 +3025,55 @@ func (n *pIn) eval(execCtx *execCtx, ctx map[interface{}]interface{}, arg []inte
 	var ev *pInEval
 	ev0 := ctx[n]
 	if ev0 == nil { // SELECT not yet evaluated.
-		r := n.sel.exec0()
-		ev = &pInEval{m: map[interface{}]struct{}{}}
-		ctx[n] = ev
-		m := ev.m
-		ok := false
-		typechecked := false
-		if err := r.do(execCtx, false, func(id interface{}, data []interface{}) (more bool, err error) {
-			if typechecked {
-				if data[0] == nil {
-					return true, nil
-				}
+		panic("TODO")
+		//r, err := n.sel.plan(execCtx)
+		//if err != nil {
+		//	return nil, err
+		//}
 
-				m[data[0]] = struct{}{}
-			}
+		//ev = &pInEval{m: map[interface{}]struct{}{}}
+		//ctx[n] = ev
+		//m := ev.m
+		//ok := false
+		//typechecked := false
+		//if err := r.do(execCtx, false, func(id interface{}, data []interface{}) (more bool, err error) {
+		//	if typechecked {
+		//		if data[0] == nil {
+		//			return true, nil
+		//		}
 
-			if ok {
-				if data[0] == nil {
-					return true, nil
-				}
+		//		m[data[0]] = struct{}{}
+		//	}
 
-				ev.sample = data[0]
-				switch ev.sample.(type) {
-				case bool, byte, complex128, complex64, float32,
-					float64, int16, int32, int64, int8,
-					string, uint16, uint32, uint64:
-					typechecked = true
-					m[ev.sample] = struct{}{}
-					return true, nil
-				default:
-					return false, fmt.Errorf("IN (%s): invalid field type: %T", n.sel, data[0])
-				}
+		//	if ok {
+		//		if data[0] == nil {
+		//			return true, nil
+		//		}
 
-			}
+		//		ev.sample = data[0]
+		//		switch ev.sample.(type) {
+		//		case bool, byte, complex128, complex64, float32,
+		//			float64, int16, int32, int64, int8,
+		//			string, uint16, uint32, uint64:
+		//			typechecked = true
+		//			m[ev.sample] = struct{}{}
+		//			return true, nil
+		//		default:
+		//			return false, fmt.Errorf("IN (%s): invalid field type: %T", n.sel, data[0])
+		//		}
 
-			flds := data[0].([]*fld)
-			if g, e := len(flds), 1; g != e {
-				return false, fmt.Errorf("IN (%s): mismatched field count, have %d, need %d", n.sel, g, e)
-			}
+		//	}
 
-			ok = true
-			return true, nil
-		}); err != nil {
-			return nil, err
-		}
+		//	flds := data[0].([]*fld)
+		//	if g, e := len(flds), 1; g != e {
+		//		return false, fmt.Errorf("IN (%s): mismatched field count, have %d, need %d", n.sel, g, e)
+		//	}
+
+		//	ok = true
+		//	return true, nil
+		//}); err != nil {
+		//	return nil, err
+		//}
 	} else {
 		ev = ev0.(*pInEval)
 	}
