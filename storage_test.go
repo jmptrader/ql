@@ -117,43 +117,58 @@ func dumpFlds(flds []*fld) string {
 	return strings.Join(a, ",")
 }
 
+//TODO- func recSetDump(rs Recordset) (s string, err error) {
+//TODO- 	var state int
+//TODO- 	var a []string
+//TODO- 	var flds []*fld
+//TODO- 	rs2 := rs.(recordset)
+//TODO- 	if err = rs2.do(rs2.ctx, false, func(_ interface{}, rec []interface{}) (bool, error) {
+//TODO- 		switch state {
+//TODO- 		case 0:
+//TODO- 			flds = rec[0].([]*fld)
+//TODO- 			state++
+//TODO- 		case 1:
+//TODO- 			for i, v := range flds {
+//TODO- 				a = append(a, stypeof(v.name, rec[i]))
+//TODO- 			}
+//TODO- 			a = []string{strings.Join(a, ", ")}
+//TODO- 			state++
+//TODO- 			fallthrough
+//TODO- 		default:
+//TODO- 			if err = expand(rec); err != nil {
+//TODO- 				return false, err
+//TODO- 			}
+//TODO-
+//TODO- 			a = append(a, fmt.Sprintf("%v", rec))
+//TODO- 		}
+//TODO- 		return true, nil
+//TODO- 	}); err != nil {
+//TODO- 		return
+//TODO- 	}
+//TODO-
+//TODO- 	if state == 1 {
+//TODO- 		for _, v := range flds {
+//TODO- 			a = append(a, stypeof(v.name, nil))
+//TODO- 		}
+//TODO- 		a = []string{strings.Join(a, ", ")}
+//TODO- 	}
+//TODO- 	return strings.Join(a, "\n"), nil
+//TODO- }
 func recSetDump(rs Recordset) (s string, err error) {
-	panic("TODO")
-	//var state int
-	//var a []string
-	//var flds []*fld
-	//rs2 := rs.(recordset)
-	//if err = rs2.do(rs2.ctx, false, func(_ interface{}, rec []interface{}) (bool, error) {
-	//	switch state {
-	//	case 0:
-	//		flds = rec[0].([]*fld)
-	//		state++
-	//	case 1:
-	//		for i, v := range flds {
-	//			a = append(a, stypeof(v.name, rec[i]))
-	//		}
-	//		a = []string{strings.Join(a, ", ")}
-	//		state++
-	//		fallthrough
-	//	default:
-	//		if err = expand(rec); err != nil {
-	//			return false, err
-	//		}
+	recset := rs.(recordset)
+	rs2 := recset.rset2
+	a := []string{strings.Join(rs2.fieldNames(), ", ")}
+	if err := rs2.do(recset.ctx, func(id interface{}, data []interface{}) (bool, error) {
+		if err = expand(data); err != nil {
+			return false, err
+		}
 
-	//		a = append(a, fmt.Sprintf("%v", rec))
-	//	}
-	//	return true, nil
-	//}); err != nil {
-	//	return
-	//}
-
-	//if state == 1 {
-	//	for _, v := range flds {
-	//		a = append(a, stypeof(v.name, nil))
-	//	}
-	//	a = []string{strings.Join(a, ", ")}
-	//}
-	//return strings.Join(a, "\n"), nil
+		a = append(a, fmt.Sprintf("%v", data))
+		return true, nil
+	}); err != nil {
+		return "", err
+	}
+	return strings.Join(a, "\n"), nil
 }
 
 // http://en.wikipedia.org/wiki/Join_(SQL)#Sample_tables
@@ -256,7 +271,7 @@ func test(t *testing.T, s testDB) (panicked error) {
 		max = n
 	}
 	for itest, test := range testdata[*oN:max] {
-		//dbg("---------------------------------------- itest %d", itest)
+		dbg("---------------------------------------- itest %d", itest)
 		var re *regexp.Regexp
 		a := strings.Split(test+"|", "|")
 		q, rset := a[0], strings.TrimSpace(a[1])

@@ -764,7 +764,103 @@ func (s *selectStmt) String() string {
 //}
 
 func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping goroutines/pipelines
-	panic("TODO")
+	r, err := s.from.plan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if o := s.outer; o != nil {
+		panic("TODO")
+		//o.crossJoin = r.(*crossJoinRset)
+		//r = o
+	}
+	if w := s.where; w != nil {
+		panic("TODO")
+		//switch ok, list := isPossiblyRewriteableCrossJoinWhereExpression(w.expr); ok && len(s.from.sources) > 1 {
+		//case true:
+		//	//dbg("====(in, %d)\n%s\n----", len(list), s)
+		//	tables := s.from.tables()
+		//	if len(list) != len(tables) {
+		//		r = &whereRset{expr: w.expr, src: r}
+		//		break
+		//	}
+
+		//	m := map[string]int{}
+		//	for i, v := range tables {
+		//		m[v.name] = i
+		//	}
+		//	list2 := make([]int, len(list))
+		//	for i, v := range list {
+		//		itab, ok := m[v.table]
+		//		if !ok {
+		//			break
+		//		}
+
+		//		delete(m, v.table)
+		//		list2[i] = itab
+		//		if i == len(list)-1 { // last cycle
+		//			if len(m) != 0 { // all tabs "consumed" exactly once
+		//				break
+		//			}
+
+		//			// Can rewrite
+		//			crs := s.from
+		//			for i, v := range list {
+		//				sel := &selectStmt{
+		//					flds:  []*fld{}, // SELECT *
+		//					from:  &crossJoinRset{sources: []interface{}{[]interface{}{v.table, ""}}},
+		//					where: &whereRset{expr: v.expr},
+		//				}
+		//				info := tables[list2[i]]
+		//				crs.sources[info.i] = []interface{}{sel, info.rename}
+		//			}
+		//			r = rset(crs)
+		//			s.where = nil
+		//			//dbg("====(out)\n%s\n----", s)
+		//		}
+		//	}
+		//	if s.where == nil {
+		//		break
+		//	}
+
+		//	fallthrough
+		//default:
+		//	r = &whereRset{expr: w.expr, src: r}
+		//}
+	}
+	switch {
+	case !s.hasAggregates && s.group == nil: // nop
+	case !s.hasAggregates && s.group != nil:
+		panic("TODO")
+		//r = &groupByRset{colNames: s.group.colNames, src: r}
+	case s.hasAggregates && s.group == nil:
+		panic("TODO")
+		//r = &groupByRset{src: r}
+	case s.hasAggregates && s.group != nil:
+		panic("TODO")
+		//r = &groupByRset{colNames: s.group.colNames, src: r}
+	}
+	if r, err = (&selectRset2{flds: s.flds, src: r}).plan(ctx); err != nil {
+		return nil, err
+	}
+
+	if s.distinct {
+		panic("TODO")
+		//r = &distinctRset{src: r}
+	}
+	if s := s.order; s != nil {
+		panic("TODO")
+		//r = &orderByRset{asc: s.asc, by: s.by, src: r}
+	}
+	if s := s.offset; s != nil {
+		panic("TODO")
+		//r = &offsetRset{s.expr, r}
+	}
+	if s := s.limit; s != nil {
+		panic("TODO")
+		//r = &limitRset{s.expr, r}
+	}
+	return r, nil
 }
 
 func (s *selectStmt) exec(ctx *execCtx) (rs Recordset, err error) {
@@ -895,73 +991,66 @@ var (
 )
 
 func constraintsAndDefaults(ctx *execCtx, table string) (constraints []*constraint, defaults []expression, _ error) {
-	panic("TODO")
-	//if isSystemName[table] {
-	//	return nil, nil, nil
-	//}
+	if isSystemName[table] {
+		return nil, nil, nil
+	}
 
-	//_, ok := ctx.db.root.tables["__Column2"]
-	//if !ok {
-	//	return nil, nil, nil
-	//}
+	_, ok := ctx.db.root.tables["__Column2"]
+	if !ok {
+		return nil, nil, nil
+	}
 
-	//t, ok := ctx.db.root.tables[table]
-	//if !ok {
-	//	return nil, nil, fmt.Errorf("table %q does not exist", table)
-	//}
+	t, ok := ctx.db.root.tables[table]
+	if !ok {
+		return nil, nil, fmt.Errorf("table %q does not exist", table)
+	}
 
-	//cols := t.cols
-	//constraints = make([]*constraint, len(cols))
-	//defaults = make([]expression, len(cols))
-	//arg := []interface{}{table}
-	//rs, err := selectColumn2.l[0].exec(&execCtx{db: ctx.db})
-	//if err != nil {
-	//	return nil, nil, err
-	//}
+	cols := t.cols
+	constraints = make([]*constraint, len(cols))
+	defaults = make([]expression, len(cols))
+	arg := []interface{}{table}
+	rs, err := selectColumn2.l[0].exec(&execCtx{db: ctx.db})
+	if err != nil {
+		return nil, nil, err
+	}
 
-	//ok = false
-	//if err := rs.(recordset).do(
-	//	&execCtx{db: ctx.db, arg: arg},
-	//	false,
-	//	func(id interface{}, data []interface{}) (more bool, err error) {
-	//		if ok {
-	//			rows = append(rows, data)
-	//			return true, nil
-	//		}
+	var rows [][]interface{}
+	if err := rs.(recordset).do(
+		&execCtx{db: ctx.db, arg: arg},
+		func(id interface{}, data []interface{}) (more bool, err error) {
+			rows = append(rows, data)
+			return true, nil
+		},
+	); err != nil {
+		return nil, nil, err
+	}
 
-	//		ok = true
-	//		return true, nil
-	//	},
-	//); err != nil {
-	//	return nil, nil, err
-	//}
-
-	//for _, row := range rows {
-	//	nm := row[0].(string)
-	//	nonNull := row[1].(bool)
-	//	cexpr := row[2].(string)
-	//	dexpr := row[3].(string)
-	//	for i, c := range cols {
-	//		if c.name == nm {
-	//			var co *constraint
-	//			if nonNull || cexpr != "" {
-	//				co = &constraint{}
-	//				if cexpr != "" {
-	//					if co.expr, err = ctx.db.str2expr(cexpr); err != nil {
-	//						return nil, nil, fmt.Errorf("constraint %q: %v", cexpr, err)
-	//					}
-	//				}
-	//			}
-	//			constraints[i] = co
-	//			if dexpr != "" {
-	//				if defaults[i], err = ctx.db.str2expr(dexpr); err != nil {
-	//					return nil, nil, fmt.Errorf("constraint %q: %v", dexpr, err)
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	//return constraints, defaults, nil
+	for _, row := range rows {
+		nm := row[0].(string)
+		nonNull := row[1].(bool)
+		cexpr := row[2].(string)
+		dexpr := row[3].(string)
+		for i, c := range cols {
+			if c.name == nm {
+				var co *constraint
+				if nonNull || cexpr != "" {
+					co = &constraint{}
+					if cexpr != "" {
+						if co.expr, err = ctx.db.str2expr(cexpr); err != nil {
+							return nil, nil, fmt.Errorf("constraint %q: %v", cexpr, err)
+						}
+					}
+				}
+				constraints[i] = co
+				if dexpr != "" {
+					if defaults[i], err = ctx.db.str2expr(dexpr); err != nil {
+						return nil, nil, fmt.Errorf("constraint %q: %v", dexpr, err)
+					}
+				}
+			}
+		}
+	}
+	return constraints, defaults, nil
 }
 
 func checkConstraintsAndDefaults(
@@ -1041,76 +1130,76 @@ func checkConstraintsAndDefaults(
 	return nil
 }
 
-func (s *insertIntoStmt) exec(ctx *execCtx) (_ Recordset, err error) {
-	panic("TODO")
-	//t, ok := ctx.db.root.tables[s.tableName]
-	//if !ok {
-	//	return nil, fmt.Errorf("INSERT INTO %s: table does not exist", s.tableName)
-	//}
+func (s *insertIntoStmt) exec(ctx *execCtx) (Recordset, error) {
+	t, ok := ctx.db.root.tables[s.tableName]
+	if !ok {
+		return nil, fmt.Errorf("INSERT INTO %s: table does not exist", s.tableName)
+	}
 
-	//var cols []*col
-	//switch len(s.colNames) {
-	//case 0:
-	//	cols = t.cols
-	//default:
-	//	for _, colName := range s.colNames {
-	//		if col := findCol(t.cols, colName); col != nil {
-	//			cols = append(cols, col)
-	//			continue
-	//		}
+	var cols []*col
+	switch len(s.colNames) {
+	case 0:
+		cols = t.cols
+	default:
+		for _, colName := range s.colNames {
+			if col := findCol(t.cols, colName); col != nil {
+				cols = append(cols, col)
+				continue
+			}
 
-	//		return nil, fmt.Errorf("INSERT INTO %s: unknown column %s", s.tableName, colName)
-	//	}
-	//}
+			return nil, fmt.Errorf("INSERT INTO %s: unknown column %s", s.tableName, colName)
+		}
+	}
 
-	//constraints, defaults, err := constraintsAndDefaults(ctx, s.tableName)
-	//if err != nil {
-	//	return nil, err
-	//}
+	constraints, defaults, err := constraintsAndDefaults(ctx, s.tableName)
+	if err != nil {
+		return nil, err
+	}
 
-	//if s.sel != nil {
-	//	return s.execSelect(t, cols, ctx, constraints, defaults)
-	//}
+	if s.sel != nil {
+		panic("TODO")
+		//return s.execSelect(t, cols, ctx, constraints, defaults)
+	}
 
-	//for _, list := range s.lists {
-	//	if g, e := len(list), len(cols); g != e {
-	//		return nil, fmt.Errorf("INSERT INTO %s: expected %d value(s), have %d", s.tableName, e, g)
-	//	}
-	//}
+	for _, list := range s.lists {
+		if g, e := len(list), len(cols); g != e {
+			return nil, fmt.Errorf("INSERT INTO %s: expected %d value(s), have %d", s.tableName, e, g)
+		}
+	}
 
-	//arg := ctx.arg
-	//root := ctx.db.root
-	//cc := ctx.db.cc
-	//r := make([]interface{}, len(t.cols0))
-	//m := map[interface{}]interface{}{}
-	//for _, list := range s.lists {
-	//	for i, expr := range list {
-	//		val, err := expr.eval(ctx, m, arg)
-	//		if err != nil {
-	//			return nil, err
-	//		}
+	arg := ctx.arg
+	root := ctx.db.root
+	cc := ctx.db.cc
+	r := make([]interface{}, len(t.cols0))
+	m := map[interface{}]interface{}{}
+	for _, list := range s.lists {
+		for i, expr := range list {
+			val, err := expr.eval(ctx, m, arg)
+			if err != nil {
+				return nil, err
+			}
 
-	//		r[cols[i].index] = val
-	//	}
-	//	if err = typeCheck(r, cols); err != nil {
-	//		return
-	//	}
+			r[cols[i].index] = val
+		}
+		if err = typeCheck(r, cols); err != nil {
+			return nil, err
+		}
 
-	//	if len(constraints) != 0 { // => len(defaults) != 0 as well
-	//		if err = checkConstraintsAndDefaults(ctx, r, t.cols, m, constraints, defaults); err != nil {
-	//			return nil, err
-	//		}
-	//	}
+		if len(constraints) != 0 { // => len(defaults) != 0 as well
+			if err = checkConstraintsAndDefaults(ctx, r, t.cols, m, constraints, defaults); err != nil {
+				return nil, err
+			}
+		}
 
-	//	id, err := t.addRecord(ctx, r)
-	//	if err != nil {
-	//		return nil, err
-	//	}
+		id, err := t.addRecord(ctx, r)
+		if err != nil {
+			return nil, err
+		}
 
-	//	cc.RowsAffected++
-	//	root.lastInsertID = id
-	//}
-	//return
+		cc.RowsAffected++
+		root.lastInsertID = id
+	}
+	return nil, nil
 }
 
 func (s *insertIntoStmt) isUpdating() bool { return true }
