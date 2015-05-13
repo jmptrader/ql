@@ -55,7 +55,7 @@ var (
 	_ rset2 = (*crossJoinRset2)(nil)
 	_ rset2 = (*distinctRset2)(nil)
 	_ rset2 = (*groupByRset2)(nil)
-	//_ rset2 = (*limitRset2)(nil)
+	_ rset2 = (*limitRset2)(nil)
 	_ rset2 = (*offsetRset2)(nil)
 	_ rset2 = (*orderByRset2)(nil)
 	//_ rset2 = (*outerJoinRset2)(nil)
@@ -1301,14 +1301,13 @@ func (r *offsetRset2) fieldNames() []string { return r.fields }
 
 func (r *offsetRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	m := map[interface{}]interface{}{}
-	var flds []*fld
 	var eval bool
 	var off uint64
 	return r.src.do(ctx, func(rid interface{}, in []interface{}) (bool, error) {
 		if !eval {
-			for i, fld := range flds {
-				if nm := fld.name; nm != "" {
-					m[nm] = in[i]
+			for i, fld := range r.fields {
+				if fld != "" {
+					m[fld] = in[i]
 				}
 			}
 			m["$id"] = rid
@@ -1338,7 +1337,13 @@ func (r *offsetRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}
 
 type limitRset struct {
 	expr expression
-	src  rset
+	src  rset2
+}
+
+func (r *limitRset) plan(ctx *execCtx) (rset2, error) {
+	rs2 := &limitRset2{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
+	//TODO optimize here
+	return rs2, nil
 }
 
 //TODO- func (r *limitRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
@@ -1386,7 +1391,50 @@ type limitRset struct {
 //TODO- 	})
 //TODO- }
 
-func (r *limitRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+type limitRset2 struct {
+	expr   expression
+	src    rset2
+	fields []string
+}
+
+func (r *limitRset2) fieldNames() []string { return r.fields }
+
+func (r *limitRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+	m := map[interface{}]interface{}{}
+	var eval bool
+	var lim uint64
+	return r.src.do(ctx, func(rid interface{}, in []interface{}) (more bool, err error) {
+		if !eval {
+			for i, fld := range r.fields {
+				if fld != "" {
+					m[fld] = in[i]
+				}
+			}
+			m["$id"] = rid
+			val, err := r.expr.eval(ctx, m, ctx.arg)
+			if err != nil {
+				return false, err
+			}
+
+			if val == nil {
+				return true, nil
+			}
+
+			if lim, err = limOffExpr(val); err != nil {
+				return false, err
+			}
+
+			eval = true
+		}
+		switch lim {
+		case 0:
+			return false, nil
+		default:
+			lim--
+			return f(rid, in)
+		}
+	})
+}
 
 type selectRset struct {
 	flds []*fld
