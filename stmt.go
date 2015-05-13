@@ -847,8 +847,9 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 	}
 
 	if s.distinct {
-		panic("TODO")
-		//r = &distinctRset{src: r}
+		if r, err = (&distinctRset{src: r}).plan(ctx); err != nil {
+			return nil, err
+		}
 	}
 	if s := s.order; s != nil {
 		if r, err = (&orderByRset{asc: s.asc, by: s.by, src: r}).plan(ctx); err != nil {
@@ -985,6 +986,75 @@ func (s *insertIntoStmt) String() string {
 //TODO- 	return
 //TODO- }
 
+func (s *insertIntoStmt) execSelect(t *table, cols []*col, ctx *execCtx, constraints []*constraint, defaults []expression) (Recordset, error) {
+	r, err := s.sel.plan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	h := t.head
+	data0 := make([]interface{}, len(t.cols0)+2)
+	cc := ctx.db.cc
+	m := map[interface{}]interface{}{}
+	if err = r.do(ctx, func(_ interface{}, data []interface{}) (bool, error) {
+		for i, d := range data {
+			data0[cols[i].index+2] = d
+		}
+		if err = typeCheck(data0[2:], cols); err != nil {
+			return false, err
+		}
+
+		if len(constraints) != 0 { // => len(defaults) != 0 as well
+			if err = checkConstraintsAndDefaults(ctx, data0[2:], t.cols, m, constraints, defaults); err != nil {
+				return false, err
+			}
+		}
+
+		id, err := t.store.ID()
+		if err != nil {
+			return false, err
+		}
+
+		data0[0] = h
+		data0[1] = id
+
+		// Any overflow chunks are written here.
+		if h, err = t.store.Create(data0...); err != nil {
+			return false, err
+		}
+
+		for i, v := range t.indices {
+			if v == nil {
+				continue
+			}
+
+			// Any overflow chunks are shared with the BTree key
+			if err = v.x.Create([]interface{}{data0[i+1]}, h); err != nil {
+				return false, err
+			}
+		}
+		for _, ix := range t.indices2 {
+			vlist, err := ix.eval(ctx, t.cols, id, data0[2:])
+			if err != nil {
+				return false, err
+			}
+
+			if err := ix.x.Create(vlist, h); err != nil {
+				return false, err
+			}
+		}
+
+		cc.RowsAffected++
+		ctx.db.root.lastInsertID = id
+		return true, nil
+	}); err != nil {
+		return nil, err
+	}
+
+	t.head = h
+	return nil, t.store.Update(t.hhead, h)
+}
+
 var (
 	selectColumn2 = MustCompile(`
 		select Name, NotNull, ConstraintExpr, DefaultExpr
@@ -1020,7 +1090,7 @@ func constraintsAndDefaults(ctx *execCtx, table string) (constraints []*constrai
 	var rows [][]interface{}
 	if err := rs.(recordset).do(
 		&execCtx{db: ctx.db, arg: arg},
-		func(id interface{}, data []interface{}) (more bool, err error) {
+		func(id interface{}, data []interface{}) (bool, error) {
 			rows = append(rows, data)
 			return true, nil
 		},
@@ -1160,8 +1230,7 @@ func (s *insertIntoStmt) exec(ctx *execCtx) (Recordset, error) {
 	}
 
 	if s.sel != nil {
-		panic("TODO")
-		//return s.execSelect(t, cols, ctx, constraints, defaults)
+		return s.execSelect(t, cols, ctx, constraints, defaults)
 	}
 
 	for _, list := range s.lists {
