@@ -56,7 +56,7 @@ var (
 	_ rset2 = (*distinctRset2)(nil)
 	_ rset2 = (*groupByRset2)(nil)
 	//_ rset2 = (*limitRset2)(nil)
-	//_ rset2 = (*offsetRset2)(nil)
+	_ rset2 = (*offsetRset2)(nil)
 	_ rset2 = (*orderByRset2)(nil)
 	//_ rset2 = (*outerJoinRset2)(nil)
 	_ rset2 = (*selectRset2)(nil)
@@ -1238,7 +1238,13 @@ func (r *whereRset2) do(ctx *execCtx, f func(id interface{}, data []interface{})
 
 type offsetRset struct {
 	expr expression
-	src  rset
+	src  rset2
+}
+
+func (r *offsetRset) plan(ctx *execCtx) (rset2, error) {
+	rs2 := &offsetRset2{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
+	//TODO optimize here
+	return rs2, nil
 }
 
 //TODO- func (r *offsetRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
@@ -1285,7 +1291,50 @@ type offsetRset struct {
 //TODO- 	})
 //TODO- }
 
-func (r *offsetRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+type offsetRset2 struct {
+	expr   expression
+	src    rset2
+	fields []string
+}
+
+func (r *offsetRset2) fieldNames() []string { return r.fields }
+
+func (r *offsetRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+	m := map[interface{}]interface{}{}
+	var flds []*fld
+	var eval bool
+	var off uint64
+	return r.src.do(ctx, func(rid interface{}, in []interface{}) (bool, error) {
+		if !eval {
+			for i, fld := range flds {
+				if nm := fld.name; nm != "" {
+					m[nm] = in[i]
+				}
+			}
+			m["$id"] = rid
+			val, err := r.expr.eval(ctx, m, ctx.arg)
+			if err != nil {
+				return false, err
+			}
+
+			if val == nil {
+				return true, nil
+			}
+
+			if off, err = limOffExpr(val); err != nil {
+				return false, err
+			}
+
+			eval = true
+		}
+		if off > 0 {
+			off--
+			return true, nil
+		}
+
+		return f(rid, in)
+	})
+}
 
 type limitRset struct {
 	expr expression
