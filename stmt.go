@@ -848,8 +848,9 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 	}
 
 	if s.distinct {
-		panic("TODO")
-		//r = &distinctRset{src: r}
+		if r, err = (&distinctRset{src: r}).plan(ctx); err != nil {
+			return nil, err
+		}
 	}
 	if s := s.order; s != nil {
 		if r, err = (&orderByRset{asc: s.asc, by: s.by, src: r}).plan(ctx); err != nil {
