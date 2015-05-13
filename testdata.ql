@@ -6439,7 +6439,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(10, "foo");
 COMMIT;
 SELECT * FROM t WHERE i < "30";
-||cannot.*compar
+||int64 .* string
 
 -- 580
 BEGIN TRANSACTION;
