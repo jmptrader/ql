@@ -1992,7 +1992,7 @@ func (r sysColumnRset2) do(ctx *execCtx, f func(id interface{}, data []interface
 
 type sysTableRset2 struct{}
 
-func (r sysTableRset2) fieldNames() []string { return []string{"Name", "Scheme"} }
+func (r sysTableRset2) fieldNames() []string { return []string{"Name", "Schema"} }
 
 func (r sysTableRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	rec := make([]interface{}, 2)
@@ -2285,8 +2285,15 @@ func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) {
 		}
 		r2.names[i] = nm
 		var rs2 rset2
-		if rs2, err = src.(rset).plan(ctx); err != nil {
-			return nil, err
+		switch x := src.(type) {
+		case rset:
+			if rs2, err = x.plan(ctx); err != nil {
+				return nil, err
+			}
+		case rset2:
+			rs2 = x
+		default:
+			panic("internal error 008")
 		}
 
 		switch {
@@ -2307,13 +2314,8 @@ func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) {
 				r2.fields = append(r2.fields, f)
 			}
 		}
-		//dbg("r2.fields %v", r2.fields)
 		r2.rsets[i] = rs2
 	}
-	if len(r2.rsets) == 1 {
-		return r2.rsets[0], nil
-	}
-
 	return &r2, nil
 }
 
@@ -2324,15 +2326,17 @@ type crossJoinRset2 struct {
 }
 
 func (r *crossJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+	if len(r.rsets) == 1 {
+		return r.rsets[0].do(ctx, f)
+	}
+
 	ids := map[string]interface{}{}
 	var g func([]interface{}, []rset2, int) error
 	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
-		rset := rsets[0]
-		rsets = rsets[1:]
-		return rset.do(ctx, func(id interface{}, in []interface{}) (bool, error) {
+		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
 			ids[r.names[x]] = id
-			if len(rsets) != 0 {
-				return true, g(append(prefix, in...), rsets, x+1)
+			if len(rsets) > 1 {
+				return true, g(append(prefix, in...), rsets[1:], x+1)
 			}
 
 			return f(ids, append(prefix, in...))
@@ -3258,11 +3262,42 @@ type constraint struct {
 }
 
 type outerJoinRset struct {
-	typ       int // leftJoin, rightJoin, fullJoin
-	crossJoin *crossJoinRset
-	source    []interface{}
-	on        expression
+	typ    int // leftJoin, rightJoin, fullJoin
+	src    *crossJoinRset2
+	source []interface{}
+	on     expression
 }
+
+func (r *outerJoinRset) plan(ctx *execCtx) (rset2, error) {
+	c := &crossJoinRset{}
+	for i, v := range r.src.rsets {
+		c.sources = append(c.sources, []interface{}{v, r.src.names[i]})
+	}
+	c.sources = append(c.sources, r.source)
+	rs2, err := c.plan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	c2 := rs2.(*crossJoinRset2)
+	return &outerJoinRset2{
+		typ:    r.typ,
+		on:     r.on,
+		rsets:  c2.rsets,
+		names:  c2.names,
+		fields: rs2.fieldNames(),
+	}, nil
+}
+
+type outerJoinRset2 struct {
+	typ    int // leftJoin, rightJoin, fullJoin
+	on     expression
+	rsets  []rset2
+	names  []string
+	fields []string
+}
+
+func (r *outerJoinRset2) fieldNames() []string { return r.fields }
 
 //TODO- func (o *outerJoinRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error {
 //TODO- 	sources := append(o.crossJoin.sources, o.source)
@@ -3487,4 +3522,67 @@ type outerJoinRset struct {
 //TODO- 	}
 //TODO- }
 
-func (r *outerJoinRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+func (r *outerJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
+	//var b3 *b.Tree
+	switch r.typ {
+	case rightJoin: // switch last two sources
+		panic("TODO")
+		//n := len(sources)
+		//sources[n-2], sources[n-1] = sources[n-1], sources[n-2]
+	case fullJoin:
+		panic("TODO")
+		//b3 = b.TreeNew(func(a, b interface{}) int {
+		//	x := a.(int64)
+		//	y := b.(int64)
+		//	if x < y {
+		//		return -1
+		//	}
+
+		//	if x == y {
+		//		return 0
+		//	}
+
+		//	return 1
+		//})
+	}
+
+	m := map[interface{}]interface{}{}
+	ids := map[string]interface{}{}
+	var g func([]interface{}, []rset2, int) error
+	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
+			ids[r.names[x]] = id
+			row := append(prefix, in...)
+			if len(rsets) > 1 {
+				return true, g(append(prefix, in...), rsets[1:], x+1)
+			}
+
+			for i, fld := range r.fields {
+				if fld != "" {
+					m[fld] = row[i]
+				}
+			}
+
+			val, err := r.on.eval(ctx, m, ctx.arg)
+			if err != nil {
+				return false, err
+			}
+
+			if val == nil {
+				return true, nil
+			}
+
+			x, ok := val.(bool)
+			if !ok {
+				return false, fmt.Errorf("invalid ON expression %s (value of type %T)", val, val)
+			}
+
+			if !x {
+				return true, nil
+			}
+
+			return f(ids, row)
+		})
+	}
+	return g(nil, r.rsets, 0)
+}
