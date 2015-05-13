@@ -10,7 +10,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(11, 22, 33);
 COMMIT;
 SELECT * FROM t;
-|c1, c2, c3
+|"c1", "c2", "c3"
 [11 22 33]
 
 -- 1
@@ -33,7 +33,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2, 3, "foo");
 COMMIT;
 SELECT * FROM t;
-|c1, c2, c3, c4
+|"c1", "c2", "c3", "c4"
 [1 2 3 foo]
 
 -- 4
@@ -69,7 +69,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2);
 COMMIT;
 SELECT * FROM t;
-|c1, c3
+|"c1", "c3"
 [1 2]
 
 -- 9
@@ -119,7 +119,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2+3*4, 2*3+4);
 COMMIT;
 SELECT * FROM t;
-|c1, c2
+|"c1", "c2"
 [14 10]
 
 -- 16
@@ -150,7 +150,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2, 3, 4, );
 COMMIT;
 SELECT * FROM t;
-|c1, c2, c3, c4
+|"c1", "c2", "c3", "c4"
 [1 2 3 4]
 [<nil> 14 10 <nil>]
 
@@ -163,7 +163,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, 2, 3);
 COMMIT;
 SELECT * FROM t;
-|c1, c2, c4
+|"c1", "c2", "c4"
 [1 2 3]
 [14 10 <nil>]
 [42 <nil> 314]
@@ -182,7 +182,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(314);
 COMMIT;
 SELECT * FROM t;
-|c1
+|"c1"
 [314]
 
 -- 23
@@ -196,7 +196,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT * FROM t;
-|c1, c2
+|"c1", "c2"
 [1 a]
 [2 b]
 
@@ -229,7 +229,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT 3*c1 AS v FROM t;
-|v
+|"v"
 [3]
 [6]
 
@@ -240,7 +240,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT c2 FROM t;
-|c2
+|"c2"
 [a]
 [b]
 
@@ -251,7 +251,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT c1 AS X, c2 FROM t;
-|X, c2
+|"X", "c2"
 [1 a]
 [2 b]
 
@@ -262,7 +262,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "a");
 COMMIT;
 SELECT c2, c1 AS Y FROM t;
-|c2, Y
+|"c2", "Y"
 [a 1]
 [b 2]
 
@@ -282,7 +282,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2, "b");
 COMMIT;
 SELECT * FROM t WHERE c1 == 1;
-|c1, c2
+|"c1", "c2"
 [1 a]
 
 -- 34
@@ -302,7 +302,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (33, "cd");
 COMMIT;
 SELECT * FROM t ORDER BY c1;
-|kc1, sc2
+|"c1", "c2"
 [11 ab]
 [22 bc]
 [33 cd]
@@ -314,7 +314,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2, "b");
 COMMIT;
 SELECT * FROM t ORDER BY c1 ASC;
-|lc1, sc2
+|"c1", "c2"
 [1 a]
 [2 b]
 
@@ -325,7 +325,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2, "b");
 COMMIT;
 SELECT * FROM t ORDER BY c1 DESC;
-|lc1, sc2
+|"c1", "c2"
 [2 b]
 [1 a]
 
@@ -343,7 +343,7 @@ COMMIT;
 SELECT * FROM t
 WHERE c1 % 2 == 0
 ORDER BY c2 DESC;
-|lc1, sc2
+|"c1", "c2"
 [6 f]
 [4 d]
 [2 b]
@@ -361,7 +361,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t
 ORDER BY c1, c2;
-|lc1, sc2
+|"c1", "c2"
 [1 a]
 [2 a]
 [3 b]
@@ -383,7 +383,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t
 ORDER BY c2, c1
-|lc1, sc2
+|"c1", "c2"
 [6 a]
 [7 a]
 [4 b]
@@ -406,7 +406,7 @@ SELECT none FROM employee, department;
 
 -- S 44
 SELECT employee.LastName FROM employee, department;
-|semployee.LastName
+|"employee.LastName"
 [Williams]
 [Williams]
 [Williams]
@@ -435,7 +435,7 @@ SELECT employee.LastName FROM employee, department;
 -- S 45
 SELECT * FROM employee, department
 ORDER by employee.LastName;
-|semployee.LastName, lemployee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [Heisenberg 33 35 Marketing]
 [Heisenberg 33 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -465,7 +465,7 @@ ORDER by employee.LastName;
 SELECT *
 FROM employee, department
 WHERE employee.DepartmentID == department.DepartmentID;
-|semployee.LastName, lemployee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [Smith 34 34 Clerical]
 [Robinson 34 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -477,7 +477,7 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 FROM employee, department
 WHERE employee.DepartmentID == department.DepartmentID
 ORDER BY department.DepartmentName, employee.LastName;
-|sdepartment.DepartmentName, ldepartment.DepartmentID, semployee.LastName, lemployee.DepartmentID
+|"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Clerical 34 Robinson 34]
 [Clerical 34 Smith 34]
 [Engineering 33 Heisenberg 33]
@@ -489,7 +489,7 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 FROM employee, department
 WHERE department.DepartmentName IN ("Sales", "Engineering", "HR", "Clerical")
 ORDER BY employee.LastName;
-|sdepartment.DepartmentName, ldepartment.DepartmentID, semployee.LastName, lemployee.DepartmentID
+|"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Clerical 34 Heisenberg 33]
 [Engineering 33 Heisenberg 33]
 [Sales 31 Heisenberg 33]
@@ -514,7 +514,7 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 FROM employee, department
 WHERE (department.DepartmentID+1000) IN (1031, 1035, 1036)
 ORDER BY employee.LastName;
-|sdepartment.DepartmentName, ldepartment.DepartmentID, semployee.LastName, lemployee.DepartmentID
+|"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Marketing 35 Heisenberg 33]
 [Sales 31 Heisenberg 33]
 [Marketing 35 Jones 33]
@@ -532,7 +532,7 @@ ORDER BY employee.LastName;
 SELECT department.DepartmentName, department.DepartmentID, employee.LastName, employee.DepartmentID
 FROM employee, department
 WHERE department.DepartmentName NOT IN ("Engineering", "HR", "Clerical");
-|sdepartment.DepartmentName, ldepartment.DepartmentID, semployee.LastName, ?employee.DepartmentID
+|"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Marketing 35 Williams <nil>]
 [Sales 31 Williams <nil>]
 [Marketing 35 Smith 34]
@@ -551,7 +551,7 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 FROM employee, department
 WHERE department.DepartmentID BETWEEN 34 AND 36
 ORDER BY employee.LastName;
-|sdepartment.DepartmentName, ldepartment.DepartmentID, semployee.LastName, lemployee.DepartmentID
+|"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Marketing 35 Heisenberg 33]
 [Clerical 34 Heisenberg 33]
 [Marketing 35 Jones 33]
@@ -570,7 +570,7 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 FROM employee, department
 WHERE department.DepartmentID BETWEEN int64(34) AND int64(36)
 ORDER BY employee.LastName;
-|sdepartment.DepartmentName, ldepartment.DepartmentID, semployee.LastName, lemployee.DepartmentID
+|"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Marketing 35 Heisenberg 33]
 [Clerical 34 Heisenberg 33]
 [Marketing 35 Jones 33]
@@ -589,7 +589,7 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 FROM employee, department
 WHERE department.DepartmentID NOT BETWEEN 33 AND 34
 ORDER BY employee.LastName;
-|sdepartment.DepartmentName, ldepartment.DepartmentID, semployee.LastName, lemployee.DepartmentID
+|"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Marketing 35 Heisenberg 33]
 [Sales 31 Heisenberg 33]
 [Marketing 35 Jones 33]
@@ -614,7 +614,7 @@ SELECT LastName+", " AS a, LastName AS a FROM employee;
 -- S 56
 SELECT LastName AS a, LastName AS b FROM employee
 ORDER by a, b;
-|sa, sb
+|"a", "b"
 [Heisenberg Heisenberg]
 [Jones Jones]
 [Rafferty Rafferty]
@@ -627,7 +627,7 @@ SELECT employee.LastName AS name, employee.DepartmentID AS id, department.Depart
 FROM employee, department
 WHERE employee.DepartmentID == department.DepartmentID
 ORDER BY name, id, department, id2;
-|sname, lid, sdepartment, lid2
+|"name", "id", "department", "id2"
 [Heisenberg 33 Engineering 33]
 [Jones 33 Engineering 33]
 [Rafferty 31 Sales 31]
@@ -641,7 +641,7 @@ SELECT * FROM;
 -- S 59
 SELECT * FROM employee
 ORDER BY LastName;
-|sLastName, lDepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 33]
 [Jones 33]
 [Rafferty 31]
@@ -652,7 +652,7 @@ ORDER BY LastName;
 -- S 60
 SELECT * FROM employee AS e
 ORDER BY LastName;
-|sLastName, lDepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 33]
 [Jones 33]
 [Rafferty 31]
@@ -690,7 +690,7 @@ SELECT * FROM (
 	SELECT * FROM employee
 )
 ORDER BY LastName;
-|sLastName, lDepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 33]
 [Jones 33]
 [Rafferty 31]
@@ -703,7 +703,7 @@ SELECT * FROM (
 	SELECT LastName AS Name FROM employee
 )
 ORDER BY Name;
-|sName
+|"Name"
 [Heisenberg]
 [Jones]
 [Rafferty]
@@ -723,7 +723,7 @@ SELECT name AS Name FROM (
 	FROM employee AS e
 )
 ORDER BY Name;
-|sName
+|"Name"
 [Heisenberg]
 [Jones]
 [Rafferty]
@@ -736,7 +736,7 @@ SELECT name AS Name FROM (
 	SELECT LastName AS name FROM employee
 )
 ORDER BY Name;
-|sName
+|"Name"
 [Heisenberg]
 [Jones]
 [Rafferty]
@@ -751,7 +751,7 @@ SELECT employee.LastName, department.DepartmentName, department.DepartmentID FRO
 	WHERE employee.DepartmentID == department.DepartmentID
 )
 ORDER BY department.DepartmentName, employee.LastName
-|semployee.LastName, sdepartment.DepartmentName, ldepartment.DepartmentID
+|"employee.LastName", "department.DepartmentName", "department.DepartmentID"
 [Robinson Clerical 34]
 [Smith Clerical 34]
 [Heisenberg Engineering 33]
@@ -765,7 +765,7 @@ SELECT e.LastName, d.DepartmentName, d.DepartmentID FROM (
 	WHERE e.DepartmentID == d.DepartmentID
 )
 ORDER by d.DepartmentName, e.LastName;
-|se.LastName, sd.DepartmentName, ld.DepartmentID
+|"e.LastName", "d.DepartmentName", "d.DepartmentID"
 [Robinson Clerical 34]
 [Smith Clerical 34]
 [Heisenberg Engineering 33]
@@ -779,7 +779,7 @@ SELECT e.LastName AS name, d.DepartmentName AS department, d.DepartmentID AS id 
 	WHERE e.DepartmentID == d.DepartmentID
 )
 ORDER by department, name
-|sname, sdepartment, lid
+|"name", "department", "id"
 [Robinson Clerical 34]
 [Smith Clerical 34]
 [Heisenberg Engineering 33]
@@ -793,7 +793,7 @@ SELECT name, department, id FROM (
 	WHERE e.DepartmentID == d.DepartmentID
 )
 ORDER by department, name;
-|sname, sdepartment, lid
+|"name", "department", "id"
 [Robinson Clerical 34]
 [Smith Clerical 34]
 [Heisenberg Engineering 33]
@@ -811,7 +811,7 @@ FROM
 	SELECT *
 	FROM department
 );
-|s, ?, l, s
+|"", "", "", ""
 [Williams <nil> 35 Marketing]
 [Williams <nil> 34 Clerical]
 [Williams <nil> 33 Engineering]
@@ -849,7 +849,7 @@ FROM
 	FROM department
 )
 ORDER BY e.LastName, e.DepartmentID;
-|se.LastName, le.DepartmentID, l, s
+|"e.LastName", "e.DepartmentID", "", ""
 [Heisenberg 33 35 Marketing]
 [Heisenberg 33 34 Clerical]
 [Heisenberg 33 33 Engineering]

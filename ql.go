@@ -57,12 +57,12 @@ var (
 	//_ rset2 = (*groupByRset2)(nil)
 	//_ rset2 = (*limitRset2)(nil)
 	//_ rset2 = (*offsetRset2)(nil)
-	//_ rset2 = (*orderByRset2)(nil)
+	_ rset2 = (*orderByRset2)(nil)
 	//_ rset2 = (*outerJoinRset2)(nil)
 	_ rset2 = (*selectRset2)(nil)
 	//_ rset2 = (*selectStmt2)(nil) // There's no selectStmt2.
 	_ rset2 = (*tableRset2)(nil)
-	//_ rset2 = (*whereRset2)(nil)
+	_ rset2 = (*whereRset2)(nil)
 
 	isTesting bool // enables test hook: select from an index
 )
@@ -434,7 +434,7 @@ func (r *distinctRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 type orderByRset struct {
 	asc bool
 	by  []expression
-	src rset
+	src rset2
 }
 
 func (r *orderByRset) String() string {
@@ -536,9 +536,91 @@ func (r *orderByRset) String() string {
 //TODO- 	return
 //TODO- }
 
-func (r *orderByRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+func (r *orderByRset) plan(ctx *execCtx) (rset2, error) {
+	r2 := &orderByRset2{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}
+	//TODO optimize here
+	return r2, nil
+}
 
-//TODO- var nowhere = &whereRset{}
+type orderByRset2 struct {
+	asc    bool
+	by     []expression
+	src    rset2
+	fields []string
+}
+
+func (r *orderByRset2) fieldNames() []string { return r.fields }
+
+func (r *orderByRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
+	t, err := ctx.db.store.CreateTemp(r.asc)
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		if derr := t.Drop(); derr != nil && err == nil {
+			err = derr
+		}
+	}()
+
+	m := map[interface{}]interface{}{}
+	flds := r.fields
+	k := make([]interface{}, len(r.by)+1)
+	id := int64(-1)
+	if err = r.src.do(ctx, func(rid interface{}, in []interface{}) (more bool, err error) {
+		id++
+		for i, fld := range flds {
+			if fld != "" {
+				m[fld] = in[i]
+			}
+		}
+		m["$id"] = rid
+		for i, expr := range r.by {
+			val, err := expr.eval(ctx, m, ctx.arg)
+			if err != nil {
+				return false, err
+			}
+
+			if val != nil {
+				val, ordered, err := isOrderedType(val)
+				if err != nil {
+					return false, err
+				}
+
+				if !ordered {
+					return false, fmt.Errorf("cannot order by %v (type %T)", val, val)
+
+				}
+			}
+
+			k[i] = val
+		}
+		k[len(r.by)] = id
+		if err = t.Set(k, in); err != nil {
+			return false, err
+		}
+
+		return true, nil
+	}); err != nil {
+		return
+	}
+
+	it, err := t.SeekFirst()
+	if err != nil {
+		return noEOF(err)
+	}
+
+	var data []interface{}
+	more := true
+	for more && err == nil {
+		if _, data, err = it.Next(); err != nil {
+			break
+		}
+
+		more, err = f(nil, data)
+	}
+	return noEOF(err)
+}
 
 type whereRset struct {
 	expr expression
@@ -1769,7 +1851,9 @@ func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) {
 			return nil, fmt.Errorf("%s: duplicate name %s", r.String(), nm)
 		}
 
-		m[nm] = true
+		if nm != "" {
+			m[nm] = true
+		}
 		r2.names[i] = nm
 		var rs2 rset2
 		if rs2, err = src.(rset).plan(ctx); err != nil {
@@ -1788,9 +1872,13 @@ func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) {
 				if f != "" && nm != "" {
 					f = fmt.Sprintf("%s.%s", nm, f)
 				}
+				if nm == "" {
+					f = ""
+				}
 				r2.fields = append(r2.fields, f)
 			}
 		}
+		//dbg("r2.fields %v", r2.fields)
 		r2.rsets[i] = rs2
 	}
 	if len(r2.rsets) == 1 {
@@ -1813,10 +1901,8 @@ func (r *crossJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interfac
 		rset := rsets[0]
 		rsets = rsets[1:]
 		return rset.do(ctx, func(id interface{}, in []interface{}) (more bool, err error) {
-			dbg("", id, in)
 			ids[r.names[x]] = id
 			if len(rsets) != 0 {
-				dbg("")
 				return true, g(append(prefix, in...), rsets, x+1)
 			}
 
