@@ -1812,11 +1812,11 @@ type tableRset string
 func (r tableRset) plan(ctx *execCtx) (rset2, error) {
 	switch r {
 	case "__Table":
-		panic("TODO")
+		return sysTableRset2{}, nil
 	case "__Column":
-		panic("TODO")
+		return sysColumnRset2{}, nil
 	case "__Index":
-		panic("TODO")
+		return sysIndexRset2{}, nil
 	}
 
 	t, ok := ctx.db.root.tables[string(r)]
@@ -1835,6 +1835,99 @@ func (r tableRset) plan(ctx *execCtx) (rset2, error) {
 		rs.fields = append(rs.fields, col.name)
 	}
 	return rs, nil
+}
+
+type sysIndexRset2 struct{}
+
+func (r sysIndexRset2) fieldNames() []string {
+	return []string{"TableName", "ColumnName", "Name", "IsUnique"}
+}
+
+func (r sysIndexRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+	rec := make([]interface{}, 4)
+	di, err := ctx.db.info()
+	if err != nil {
+		return err
+	}
+
+	var id int64
+	for _, xi := range di.Indices {
+		rec[0] = xi.Table
+		rec[1] = xi.Column
+		rec[2] = xi.Name
+		rec[3] = xi.Unique
+		id++
+		if more, err := f(id, rec); !more || err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type sysColumnRset2 struct{}
+
+func (r sysColumnRset2) fieldNames() []string { return []string{"TableName", "Ordinal", "Name", "Type"} }
+
+func (r sysColumnRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+	rec := make([]interface{}, 4)
+	di, err := ctx.db.info()
+	if err != nil {
+		return err
+	}
+
+	var id int64
+	for _, ti := range di.Tables {
+		rec[0] = ti.Name
+		var ix int64
+		for _, ci := range ti.Columns {
+			ix++
+			rec[1] = ix
+			rec[2] = ci.Name
+			rec[3] = ci.Type.String()
+			id++
+			if more, err := f(id, rec); !more || err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+type sysTableRset2 struct{}
+
+func (r sysTableRset2) fieldNames() []string { return []string{"Name", "Scheme"} }
+
+func (r sysTableRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+	rec := make([]interface{}, 2)
+	di, err := ctx.db.info()
+	if err != nil {
+		return err
+	}
+
+	var id int64
+	for _, ti := range di.Tables {
+		rec[0] = ti.Name
+		a := []string{}
+		for _, ci := range ti.Columns {
+			s := ""
+			if ci.NotNull {
+				s += " NOT NULL"
+			}
+			if c := ci.Constraint; c != "" {
+				s += " " + c
+			}
+			if d := ci.Default; d != "" {
+				s += " DEFAULT " + d
+			}
+			a = append(a, fmt.Sprintf("%s %s%s", ci.Name, ci.Type, s))
+		}
+		rec[1] = fmt.Sprintf("CREATE TABLE %s (%s);", ti.Name, strings.Join(a, ", "))
+		id++
+		if more, err := f(id, rec); !more || err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 type indexRset2 struct {
