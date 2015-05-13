@@ -53,8 +53,8 @@ var (
 	_ rset = (*whereRset)(nil)
 
 	_ rset2 = (*crossJoinRset2)(nil)
-	//_ rset2 = (*distinctRset2)(nil)
-	//_ rset2 = (*groupByRset2)(nil)
+	_ rset2 = (*distinctRset2)(nil)
+	_ rset2 = (*groupByRset2)(nil)
 	//_ rset2 = (*limitRset2)(nil)
 	//_ rset2 = (*offsetRset2)(nil)
 	_ rset2 = (*orderByRset2)(nil)
@@ -176,7 +176,7 @@ func (l List) String() string {
 
 type groupByRset struct {
 	colNames []string
-	src      rset
+	src      rset2
 }
 
 //TODO- func (r *groupByRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
@@ -268,14 +268,94 @@ type groupByRset struct {
 //TODO- 	return err
 //TODO- }
 
-func (r *groupByRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
+func (r *groupByRset) plan(ctx *execCtx) (rset2, error) {
+	return &groupByRset2{colNames: r.colNames, src: r.src, fields: r.src.fieldNames()}, nil
+}
 
-type groupByRset2 struct { //TODO
-	fields []string
+type groupByRset2 struct {
+	colNames []string
+	src      rset2
+	fields   []string
 }
 
 func (r *groupByRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-	panic("TODO")
+	t, err := ctx.db.store.CreateTemp(true)
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		if derr := t.Drop(); derr != nil && err == nil {
+			err = derr
+		}
+	}()
+
+	var gcols []*col
+	var cols []*col
+	m := map[string]int{}
+	for i, v := range r.src.fieldNames() {
+		m[v] = i
+	}
+	for _, c := range r.colNames {
+		i, ok := m[c]
+		if !ok {
+			return fmt.Errorf("unknown column %s", c)
+		}
+
+		gcols = append(gcols, &col{name: c, index: i})
+	}
+	k := make([]interface{}, len(r.colNames)) //LATER optimize when len(r.cols) == 0
+	if err = r.src.do(ctx, func(rid interface{}, in []interface{}) (more bool, err error) {
+		infer(in, &cols)
+		for i, c := range gcols {
+			k[i] = in[c.index]
+		}
+		h0, err := t.Get(k)
+		if err != nil {
+			return false, err
+		}
+
+		var h int64
+		if len(h0) != 0 {
+			h, _ = h0[0].(int64)
+		}
+		nh, err := t.Create(append([]interface{}{h, nil}, in...)...)
+		if err != nil {
+			return false, err
+		}
+
+		for i, c := range gcols {
+			k[i] = in[c.index]
+		}
+		err = t.Set(k, []interface{}{nh})
+		if err != nil {
+			return false, err
+		}
+
+		return true, nil
+	}); err != nil {
+		return
+	}
+
+	for i, v := range r.src.fieldNames() {
+		cols[i].name = v
+		cols[i].index = i
+	}
+	if more, err := f(nil, []interface{}{t, cols}); !more || err != nil {
+		return err
+	}
+
+	it, err := t.SeekFirst()
+	more := true
+	var data []interface{}
+	for more && err == nil {
+		if _, data, err = it.Next(); err != nil {
+			break
+		}
+
+		more, err = f(nil, data)
+	}
+	return noEOF(err)
 }
 
 func (r *groupByRset2) fieldNames() []string { return r.fields }
@@ -1413,8 +1493,8 @@ func (r *selectRset2) plan(ctx *execCtx) (rset2, error) {
 }
 
 func (r *selectRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-	if _, ok := r.src.(*groupByRset2); ok {
-		panic("TODO")
+	if _, ok := r.src.(*groupByRset2); ok { //TODO different plan, also possible conflict with optimizer
+		return r.doGroup(ctx, f)
 	}
 
 	fields := r.src.fieldNames()
@@ -1434,6 +1514,78 @@ func (r *selectRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		}
 		return f(rid, out)
 	})
+}
+
+func (r *selectRset2) doGroup(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+	var t temp
+	var cols []*col
+	var err error
+	out := make([]interface{}, len(r.flds))
+	ok := false
+	rows := false
+	if err = r.src.do(ctx, func(rid interface{}, in []interface{}) (bool, error) {
+		if ok {
+			h := in[0].(int64)
+			m := map[interface{}]interface{}{}
+			for h != 0 {
+				in, err = t.Read(nil, h, cols...)
+				if err != nil {
+					return false, err
+				}
+
+				rec := in[2:]
+				for i, c := range cols {
+					if nm := c.name; nm != "" {
+						m[nm] = rec[i]
+					}
+				}
+				m["$id"] = rid
+				for _, fld := range r.flds {
+					if _, err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+						return false, err
+					}
+				}
+
+				h = in[0].(int64)
+			}
+			m["$agg"] = true
+			for i, fld := range r.flds {
+				if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+					return false, err
+				}
+			}
+			rows = true
+			return f(nil, out)
+		}
+
+		ok = true
+		t = in[0].(temp)
+		cols = in[1].([]*col)
+		if len(r.flds) == 0 { // SELECT *
+			r.flds = make([]*fld, len(cols))
+			for i, v := range cols {
+				r.flds[i] = &fld{expr: &ident{v.name}, name: v.name}
+			}
+			out = make([]interface{}, len(r.flds))
+		}
+		return true, nil
+	}); err != nil {
+		return err
+	}
+
+	if rows {
+		return nil
+	}
+
+	m := map[interface{}]interface{}{"$agg0": true} // aggregate empty record set
+	for i, fld := range r.flds {
+		if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+			return err
+		}
+	}
+	_, err = f(nil, out)
+
+	return err
 }
 
 func (r *selectRset2) fieldNames() []string { return r.fields }
