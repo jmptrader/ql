@@ -770,9 +770,10 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 	}
 
 	if o := s.outer; o != nil {
-		panic("TODO")
-		//o.crossJoin = r.(*crossJoinRset)
-		//r = o
+		o.src = r.(*crossJoinRset2)
+		if r, err = o.plan(ctx); err != nil {
+			return nil, err
+		}
 	}
 	if w := s.where; w != nil {
 		//switch ok, list := isPossiblyRewriteableCrossJoinWhereExpression(w.expr); ok && len(s.from.sources) > 1 {
