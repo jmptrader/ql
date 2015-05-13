@@ -1496,9 +1496,9 @@ func (r *selectRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		return r.doGroup(ctx, f)
 	}
 
- 	if len(r.flds) == 0 {
- 		return r.src.do(ctx, f)
- 	}
+	if len(r.flds) == 0 {
+		return r.src.do(ctx, f)
+	}
 
 	fields := r.src.fieldNames()
 	m := map[interface{}]interface{}{}
@@ -1822,7 +1822,7 @@ func (r tableRset) plan(ctx *execCtx) (rset2, error) {
 	t, ok := ctx.db.root.tables[string(r)]
 	if !ok && isTesting {
 		if _, x0 := ctx.db.root.findIndexByName(string(r)); x0 != nil {
-			panic("TODO")
+			return &indexRset2{nm: string(r), x: x0}, nil
 		}
 	}
 
@@ -1835,6 +1835,45 @@ func (r tableRset) plan(ctx *execCtx) (rset2, error) {
 		rs.fields = append(rs.fields, col.name)
 	}
 	return rs, nil
+}
+
+type indexRset2 struct {
+	nm string
+	x  interface{}
+}
+
+func (r *indexRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	var x btreeIndex
+	switch ix := r.x.(type) {
+	case *indexedCol:
+		x = ix.x
+	case *index2:
+		x = ix.x
+	default:
+		panic("internal error 007")
+	}
+
+	en, err := x.SeekFirst()
+	if err != nil {
+		return noEOF(err)
+	}
+
+	var id int64
+	for {
+		k, _, err := en.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		id++
+		if more, err := f(id, k); !more || err != nil {
+			return err
+		}
+	}
+}
+
+func (r *indexRset2) fieldNames() []string {
+	return []string{r.nm}
 }
 
 type tableRset2 struct {
