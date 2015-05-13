@@ -834,8 +834,9 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 	switch {
 	case !s.hasAggregates && s.group == nil: // nop
 	case !s.hasAggregates && s.group != nil:
-		panic("TODO")
-		//r = &groupByRset{colNames: s.group.colNames, src: r}
+		if r, err = (&groupByRset{colNames: s.group.colNames, src: r}).plan(ctx); err != nil {
+			return nil, err
+		}
 	case s.hasAggregates && s.group == nil:
 		if r, err = (&groupByRset{src: r}).plan(ctx); err != nil {
 			return nil, err
