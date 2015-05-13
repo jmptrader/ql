@@ -830,6 +830,15 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 			return nil, err
 		}
 	}
+	//	switch {
+	//	case !s.hasAggregates && s.group == nil: // nop
+	//	case !s.hasAggregates && s.group != nil:
+	//		r = &groupByRset{colNames: s.group.colNames, src: r}
+	//	case s.hasAggregates && s.group == nil:
+	//		r = &groupByRset{src: r}
+	//	case s.hasAggregates && s.group != nil:
+	//		r = &groupByRset{colNames: s.group.colNames, src: r}
+	//	}
 	switch {
 	case !s.hasAggregates && s.group == nil: // nop
 	case !s.hasAggregates && s.group != nil:
@@ -841,10 +850,11 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 			return nil, err
 		}
 	case s.hasAggregates && s.group != nil:
-		panic("TODO")
-		//r = &groupByRset{colNames: s.group.colNames, src: r}
+		if r, err = (&groupByRset{colNames: s.group.colNames, src: r}).plan(ctx); err != nil {
+			return nil, err
+		}
 	}
-	if r, err = (&selectRset2{flds: s.flds, src: r}).plan(ctx); err != nil {
+	if r, err = (&selectRset{flds: s.flds, src: r}).plan(ctx); err != nil {
 		return nil, err
 	}
 
