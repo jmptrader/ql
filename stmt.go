@@ -874,8 +874,9 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 		}
 	}
 	if s := s.limit; s != nil {
-		panic("TODO")
-		//r = &limitRset{s.expr, r}
+		if r, err = (&limitRset{s.expr, r}).plan(ctx); err != nil {
+			return nil, err
+		}
 	}
 	return r, nil
 }
