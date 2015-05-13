@@ -887,7 +887,7 @@ FROM
 	FROM department
 ) AS d
 ORDER BY d.DepartmentID DESC;
-|, , d.DepartmentID, d.DepartmentName
+|"", "", "d.DepartmentID", "d.DepartmentName"
 [Rafferty 31 35 Marketing]
 [Jones 33 35 Marketing]
 [Heisenberg 33 35 Marketing]
@@ -922,7 +922,7 @@ FROM
 		FROM department
 	)
 ORDER BY employee.LastName;
-|employee.LastName, employee.DepartmentID, , 
+|"employee.LastName", "employee.DepartmentID", "", ""
 [Heisenberg 33 35 Marketing]
 [Heisenberg 33 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -961,7 +961,7 @@ FROM
 ) AS d
 WHERE e.DepartmentID == d.DepartmentID
 ORDER BY d.DepartmentName, e.LastName;
-|e.LastName, e.DepartmentID, d.DepartmentID, d.DepartmentName
+|"e.LastName", "e.DepartmentID", "d.DepartmentID", "d.DepartmentName"
 [Robinson 34 34 Clerical]
 [Smith 34 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -978,7 +978,7 @@ FROM
 	) AS d
 WHERE employee.DepartmentID == d.DepartmentID
 ORDER BY d.DepartmentName, employee.LastName;
-|employee.LastName, employee.DepartmentID, d.DepartmentID, d.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "d.DepartmentID", "d.DepartmentName"
 [Robinson 34 34 Clerical]
 [Smith 34 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -995,7 +995,7 @@ FROM
 	) AS d
 WHERE e.DepartmentID == d.DepartmentID
 ORDER BY d.DepartmentName, e.LastName;
-|e.LastName, e.DepartmentID, d.DepartmentID, d.DepartmentName
+|"e.LastName", "e.DepartmentID", "d.DepartmentID", "d.DepartmentName"
 [Robinson 34 34 Clerical]
 [Smith 34 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -1012,7 +1012,7 @@ FROM
 	) AS d
 WHERE e.DepartmentID == d.DepartmentID == true
 ORDER BY e.DepartmentID, e.LastName;
-|e.LastName, e.DepartmentID, d.DepartmentID, d.DepartmentName
+|"e.LastName", "e.DepartmentID", "d.DepartmentID", "d.DepartmentName"
 [Rafferty 31 31 Sales]
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
@@ -1029,7 +1029,7 @@ FROM
 	) AS d
 WHERE e.DepartmentID != d.DepartmentID == false
 ORDER BY e.DepartmentID, e.LastName;
-|e.LastName, e.DepartmentID, d.DepartmentID, d.DepartmentName
+|"e.LastName", "e.DepartmentID", "d.DepartmentID", "d.DepartmentName"
 [Rafferty 31 31 Sales]
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
@@ -1049,7 +1049,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (true);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [true]
 
 -- 85
@@ -1073,7 +1073,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (87);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [87]
 
 -- 88
@@ -1082,7 +1082,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (int16(0x12345678));
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [22136]
 
 -- 89
@@ -1113,7 +1113,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [1]
 
 -- 93
@@ -1129,7 +1129,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (94);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [94]
 
 -- 95
@@ -1138,7 +1138,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (95);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [95]
 
 -- 96
@@ -1147,7 +1147,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (uint8(0x1234));
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [52]
 
 -- 97
@@ -1163,7 +1163,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (byte(0x1234));
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [52]
 
 -- 99
@@ -1194,7 +1194,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (uint32(0xabcd12345678));
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [305419896]
 
 -- 103
@@ -1210,7 +1210,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (uint64(1));
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [1]
 
 -- 105
@@ -1226,7 +1226,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [1]
 
 -- 107
@@ -1235,7 +1235,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (107);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [107]
 
 -- 108
@@ -1252,7 +1252,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1.2);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [1.2]
 
 -- 110
@@ -1261,7 +1261,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1.2);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [1.2]
 
 -- 111
@@ -1270,7 +1270,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (111.1);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [111.1]
 
 -- 112
@@ -1279,7 +1279,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-112.1);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [-112.1]
 
 -- 113
@@ -1288,7 +1288,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (complex(1, 0.5));
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [(1+0.5i)]
 
 -- 114
@@ -1305,7 +1305,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1);
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [(1+0i)]
 
 -- 116
@@ -1314,7 +1314,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (complex(1, 0.5));
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [(1+0.5i)]
 
 -- 117
@@ -1330,7 +1330,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES ("a"+"b");
 COMMIT;
 SELECT * from t;
-|c1
+|"c1"
 [ab]
 
 -- 119
@@ -1349,7 +1349,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1;
-|c1
+|"c1"
 [true]
 
 -- 121
@@ -1368,7 +1368,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == int8(1);
-|c1
+|"c1"
 [1]
 
 -- 123
@@ -1387,7 +1387,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 125
@@ -1406,7 +1406,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 127
@@ -1425,7 +1425,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 129
@@ -1435,7 +1435,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 130
@@ -1454,7 +1454,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 132
@@ -1473,7 +1473,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 134
@@ -1483,7 +1483,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 135
@@ -1502,7 +1502,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 137
@@ -1512,7 +1512,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 1;
-|c1
+|"c1"
 [1]
 
 -- 138
@@ -1531,7 +1531,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 8;
-|c1
+|"c1"
 [8]
 
 -- 140
@@ -1550,7 +1550,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 2;
-|c1
+|"c1"
 [2]
 
 -- 142
@@ -1560,7 +1560,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 2;
-|c1
+|"c1"
 [2]
 
 -- 143
@@ -1579,7 +1579,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == 2+5i;
-|c1
+|"c1"
 [(2+5i)]
 
 -- 145
@@ -1598,7 +1598,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == complex(2, 5);
-|c1
+|"c1"
 [(2+5i)]
 
 -- 147
@@ -1617,7 +1617,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * from t
 WHERE c1 == "fo"+"o";
-|c1
+|"c1"
 [foo]
 
 -- 149
@@ -1640,7 +1640,7 @@ SELECT 2/(3*5-x) AS foo FROM bar;
 SELECT 314, 42 AS AUQLUE, DepartmentID, DepartmentID+1000, LastName AS Name
 FROM employee
 ORDER BY Name;
-|, AUQLUE, DepartmentID, , Name
+|"", "AUQLUE", "DepartmentID", "", "Name"
 [314 42 33 1033 Heisenberg]
 [314 42 33 1033 Jones]
 [314 42 31 1031 Rafferty]
@@ -1654,7 +1654,7 @@ FROM
 	employee AS e,
 	( SELECT * FROM department)
 ORDER BY e.LastName;
-|e.LastName, e.DepartmentID, , 
+|"e.LastName", "e.DepartmentID", "", ""
 [Heisenberg 33 35 Marketing]
 [Heisenberg 33 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -1683,7 +1683,7 @@ ORDER BY e.LastName;
 -- S 155
 SELECT * FROM employee AS e, ( SELECT * FROM department) AS d
 ORDER BY e.LastName;
-|e.LastName, e.DepartmentID, d.DepartmentID, d.DepartmentName
+|"e.LastName", "e.DepartmentID", "d.DepartmentID", "d.DepartmentName"
 [Heisenberg 33 35 Marketing]
 [Heisenberg 33 34 Clerical]
 [Heisenberg 33 33 Engineering]
@@ -1724,7 +1724,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(1);
 COMMIT;
 SELECT * FROM t;
-|c1
+|"c1"
 [(1+0i)]
 
 -- 158
@@ -1733,7 +1733,7 @@ BEGIN TRANSACTION;
 	INSERT INTO p VALUES (NULL), (false), (true);
 COMMIT;
 SELECT * FROM p;
-|p
+|"p"
 [true]
 [false]
 [<nil>]
@@ -1744,7 +1744,7 @@ BEGIN TRANSACTION;
 	INSERT INTO p VALUES (NULL), (false), (true);
 COMMIT;
 SELECT p.p AS p, q.p AS q, p.p OR q.p AS p_or_q, p.p && q.p aS p_and_q FROM p, p AS q;
-|p, q, p_or_q, p_and_q
+|"p", "q", "p_or_q", "p_and_q"
 [true true true true]
 [true false true false]
 [true <nil> true <nil>]
@@ -1761,7 +1761,7 @@ BEGIN TRANSACTION;
 	INSERT INTO p VALUES (NULL), (false), (true);
 COMMIT;
 SELECT p, !p AS not_p FROM p;
-|p, not_p
+|"p", "not_p"
 [true false]
 [false true]
 [<nil> <nil>]
@@ -1769,7 +1769,7 @@ SELECT p, !p AS not_p FROM p;
 -- S 161
 SELECT * FROM department WHERE DepartmentID >= 33
 ORDER BY DepartmentID;
-|DepartmentID, DepartmentName
+|"DepartmentID", "DepartmentName"
 [33 Engineering]
 [34 Clerical]
 [35 Marketing]
@@ -1777,7 +1777,7 @@ ORDER BY DepartmentID;
 -- S 162
 SELECT * FROM department WHERE DepartmentID <= 34
 ORDER BY DepartmentID;
-|DepartmentID, DepartmentName
+|"DepartmentID", "DepartmentName"
 [31 Sales]
 [33 Engineering]
 [34 Clerical]
@@ -1785,7 +1785,7 @@ ORDER BY DepartmentID;
 -- S 163
 SELECT * FROM department WHERE DepartmentID < 34
 ORDER BY DepartmentID;
-|DepartmentID, DepartmentName
+|"DepartmentID", "DepartmentName"
 [31 Sales]
 [33 Engineering]
 
@@ -1802,7 +1802,7 @@ SELECT +DepartmentID FROM employee;
 -- S 165
 SELECT * FROM employee
 ORDER BY LastName;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 33]
 [Jones 33]
 [Rafferty 31]
@@ -1814,7 +1814,7 @@ ORDER BY LastName;
 SELECT *
 FROM employee
 ORDER BY LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -1825,7 +1825,7 @@ ORDER BY LastName DESC;
 -- S 167
 SELECT 1023+DepartmentID AS y FROM employee
 ORDER BY y DESC;
-|y
+|"y"
 [1057]
 [1057]
 [1056]
@@ -1836,7 +1836,7 @@ ORDER BY y DESC;
 -- S 168
 SELECT +DepartmentID AS y FROM employee
 ORDER BY y DESC;
-|y
+|"y"
 [34]
 [34]
 [33]
@@ -1846,7 +1846,7 @@ ORDER BY y DESC;
 
 -- S 169
 SELECT * FROM employee ORDER BY DepartmentID, LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Smith 34]
 [Robinson 34]
 [Jones 33]
@@ -1856,7 +1856,7 @@ SELECT * FROM employee ORDER BY DepartmentID, LastName DESC;
 
 -- S 170
 SELECT * FROM employee ORDER BY 0+DepartmentID DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Robinson 34]
 [Smith 34]
 [Jones 33]
@@ -1866,7 +1866,7 @@ SELECT * FROM employee ORDER BY 0+DepartmentID DESC;
 
 -- S 171
 SELECT * FROM employee ORDER BY +DepartmentID DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Robinson 34]
 [Smith 34]
 [Jones 33]
@@ -1877,7 +1877,7 @@ SELECT * FROM employee ORDER BY +DepartmentID DESC;
 -- S 172
 SELECT ^DepartmentID AS y FROM employee
 ORDER BY y DESC;
-|y
+|"y"
 [-32]
 [-34]
 [-34]
@@ -1887,7 +1887,7 @@ ORDER BY y DESC;
 
 -- S 173
 SELECT ^byte(DepartmentID) AS y FROM employee ORDER BY y DESC;
-|y
+|"y"
 [224]
 [222]
 [222]
@@ -1902,7 +1902,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t
 ORDER BY r;
-|r
+|"r"
 [1]
 [33]
 [65]
@@ -1914,7 +1914,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT i^1 AS y FROM t
 ORDER by y;
-|y
+|"y"
 [-2]
 [-1]
 [0]
@@ -1928,7 +1928,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT i&or;1 AS y FROM t
 ORDER BY y;
-|y
+|"y"
 [-1]
 [-1]
 [1]
@@ -1941,7 +1941,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-2), (-1), (0), (1), (2);
 COMMIT;
 SELECT i&1 FROM t;
-|
+|""
 [0]
 [1]
 [0]
@@ -1955,7 +1955,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT i&^1 AS y FROM t
 ORDER BY y;
-|y
+|"y"
 [-2]
 [-2]
 [0]
@@ -1965,14 +1965,14 @@ ORDER BY y;
 -- S 179
 SELECT * from employee WHERE LastName == "Jones" OR DepartmentID IS NULL
 ORDER by LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Jones 33]
 
 -- S 180
 SELECT * from employee WHERE LastName != "Jones" && DepartmentID IS NOT NULL
 ORDER BY LastName;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 33]
 [Rafferty 31]
 [Robinson 34]
@@ -2008,7 +2008,7 @@ SELECT LastName[100] FROM employee;
 
 -- S 188
 SELECT LastName[0], LastName FROM employee ORDER BY LastName;
-|, LastName
+|"", "LastName"
 [72 Heisenberg]
 [74 Jones]
 [82 Rafferty]
@@ -2020,7 +2020,7 @@ SELECT LastName[0], LastName FROM employee ORDER BY LastName;
 SELECT LastName, string(LastName[0]), string(LastName[1]), string(LastName[2]), string(LastName[3])
 FROM employee
 ORDER BY LastName;
-|LastName, , , , 
+|"LastName", "", "", "", ""
 [Heisenberg H e i s]
 [Jones J o n e]
 [Rafferty R a f f]
@@ -2032,7 +2032,7 @@ ORDER BY LastName;
 SELECT LastName, LastName[:], LastName[:2], LastName[2:], LastName[1:3]
 FROM employee
 ORDER by LastName;
-|LastName, , , , 
+|"LastName", "", "", "", ""
 [Heisenberg Heisenberg He isenberg ei]
 [Jones Jones Jo nes on]
 [Rafferty Rafferty Ra fferty af]
@@ -2057,7 +2057,7 @@ SELECT
 FROM
 	employee,
 ORDER BY LastName DESC;
-|DepartmentID, LastName, , , , 
+|"DepartmentID", "LastName", "", "", "", ""
 [<nil> Williams Will <nil> <nil> <nil>]
 [34 Smith Smit   ]
 [34 Robinson Robi   ]
@@ -2074,7 +2074,7 @@ FROM
 	employee,
 WHERE DepartmentID IS NOT NULL
 ORDER BY x;
-|x, a, b
+|"x", "a", "b"
 [31 62 2147483648]
 [33 66 8589934592]
 [33 66 8589934592]
@@ -2090,7 +2090,7 @@ FROM
 	employee,
 WHERE DepartmentID IS NOT NULL
 ORDER BY x;
-|x, a, b
+|"x", "a", "b"
 [31 15 4294967296]
 [33 16 1073741824]
 [33 16 1073741824]
@@ -2101,7 +2101,7 @@ ORDER BY x;
 SELECT DISTINCT DepartmentID
 FROM employee
 WHERE DepartmentID IS NOT NULL;
-|DepartmentID
+|"DepartmentID"
 [31]
 [33]
 [34]
@@ -2110,7 +2110,7 @@ WHERE DepartmentID IS NOT NULL;
 SELECT DISTINCT e.DepartmentID, d.DepartmentID, e.LastName
 FROM employee AS e, department AS d
 WHERE e.DepartmentID == d.DepartmentID;
-|e.DepartmentID, d.DepartmentID, e.LastName
+|"e.DepartmentID", "d.DepartmentID", "e.LastName"
 [31 31 Rafferty]
 [33 33 Heisenberg]
 [33 33 Jones]
@@ -2122,7 +2122,7 @@ SELECT DISTINCT e.DepartmentID, d.DepartmentID, e.LastName
 FROM employee AS e, department AS d
 WHERE e.DepartmentID == d.DepartmentID
 ORDER BY e.LastName;
-|e.DepartmentID, d.DepartmentID, e.LastName
+|"e.DepartmentID", "d.DepartmentID", "e.LastName"
 [33 33 Heisenberg]
 [33 33 Jones]
 [31 31 Rafferty]
@@ -2133,7 +2133,7 @@ ORDER BY e.LastName;
 SELECT *
 FROM employee, department
 ORDER BY employee.LastName, department.DepartmentID;
-|employee.LastName, employee.DepartmentID, department.DepartmentID, department.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [Heisenberg 33 31 Sales]
 [Heisenberg 33 33 Engineering]
 [Heisenberg 33 34 Clerical]
@@ -2164,7 +2164,7 @@ SELECT *
 FROM employee, department
 WHERE employee.DepartmentID == department.DepartmentID
 ORDER BY employee.LastName, department.DepartmentID;
-|employee.LastName, employee.DepartmentID, department.DepartmentID, department.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
 [Rafferty 31 31 Sales]
@@ -2179,7 +2179,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM department
 ORDER BY DepartmentID;
-|DepartmentID, DepartmentName
+|"DepartmentID", "DepartmentName"
 [31 Sales]
 [33 Engineering]
 [34 Clerical]
@@ -2197,7 +2197,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM department
 ORDER BY DepartmentID;
-|DepartmentID, DepartmentName
+|"DepartmentID", "DepartmentName"
 [31 Sales]
 [33 Engineering]
 [34 Clerical]
@@ -2212,7 +2212,7 @@ BEGIN TRANSACTION;
 	DELETE FROM department;
 COMMIT;
 SELECT * FROM department
-|DepartmentID, DepartmentName
+|"DepartmentID", "DepartmentName"
 
 -- S 203
 BEGIN TRANSACTION;
@@ -2221,7 +2221,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM department
 ORDER BY DepartmentID;
-|DepartmentID, DepartmentName
+|"DepartmentID", "DepartmentName"
 [31 Sales]
 [33 Engineering]
 
@@ -2229,7 +2229,7 @@ ORDER BY DepartmentID;
 SELECT id(), LastName
 FROM employee
 ORDER BY id();
-|, LastName
+|"", "LastName"
 [5 Rafferty]
 [6 Jones]
 [7 Heisenberg]
@@ -2245,7 +2245,7 @@ COMMIT;
 SELECT id(), LastName
 FROM employee
 ORDER BY id();
-|, LastName
+|"", "LastName"
 [5 Rafferty]
 [7 Heisenberg]
 [8 Robinson]
@@ -2261,7 +2261,7 @@ COMMIT;
 SELECT id(), LastName
 FROM employee
 ORDER BY id();
-|, LastName
+|"", "LastName"
 [5 Rafferty]
 [7 Heisenberg]
 [8 Robinson]
@@ -2276,7 +2276,7 @@ FROM
 	department AS d,
 WHERE e.DepartmentID == d.DepartmentID
 ORDER BY e.LastName;
-|, e.LastName, e.DepartmentID, d.DepartmentID
+|"", "e.LastName", "e.DepartmentID", "d.DepartmentID"
 [<nil> Heisenberg 33 33]
 [<nil> Jones 33 33]
 [<nil> Rafferty 31 31]
@@ -2290,7 +2290,7 @@ FROM
 	department AS d,
 WHERE e.DepartmentID == d.DepartmentID
 ORDER BY e.ID;
-|e.ID, e.LastName, e.DepartmentID, d.DepartmentID
+|"e.ID", "e.LastName", "e.DepartmentID", "d.DepartmentID"
 [5 Rafferty 31 31]
 [6 Jones 33 33]
 [7 Heisenberg 33 33]
@@ -2323,7 +2323,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 1033]
 [Jones 1033]
 [Rafferty 31]
@@ -2340,7 +2340,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2357,7 +2357,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2372,7 +2372,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 1033]
 [Jones 1033]
 [Rafferty 1031]
@@ -2427,7 +2427,7 @@ SELECT LastName[len("baz")-4] FROM employee;
 -- S 223
 SELECT LastName[:len(LastName)-3] AS y FROM employee
 ORDER BY y;
-|y
+|"y"
 [Heisenb]
 [Jo]
 [Raffe]
@@ -2439,7 +2439,7 @@ ORDER BY y;
 SELECT complex(float32(DepartmentID+int(id())), 0) AS x, complex(DepartmentID+int(id()), 0)
 FROM employee
 ORDER by real(x) DESC;
-|x, 
+|"x", ""
 [(43+0i) (43+0i)]
 [(42+0i) (42+0i)]
 [(40+0i) (40+0i)]
@@ -2451,7 +2451,7 @@ ORDER by real(x) DESC;
 SELECT real(complex(float32(DepartmentID+int(id())), 0)) AS x, real(complex(DepartmentID+int(id()), 0))
 FROM employee
 ORDER BY x DESC;
-|x, 
+|"x", ""
 [43 43]
 [42 42]
 [40 40]
@@ -2463,7 +2463,7 @@ ORDER BY x DESC;
 SELECT imag(complex(0, float32(DepartmentID+int(id())))) AS x, imag(complex(0, DepartmentID+int(id())))
 FROM employee
 ORDER BY x DESC;
-|x, 
+|"x", ""
 [43 43]
 [42 42]
 [40 40]
@@ -2478,7 +2478,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE c == "foo";
 COMMIT;
 SELECT 100*id(), c FROM t;
-|, c
+|"", "c"
 [200 bar]
 
 -- 228
@@ -2499,7 +2499,7 @@ BEGIN TRANSACTION;
 	DROP TABLE a;
 COMMIT;
 SELECT * FROM b;
-|b
+|"b"
 
 -- 230
 BEGIN TRANSACTION;
@@ -2509,7 +2509,7 @@ BEGIN TRANSACTION;
 	DROP TABLE a;
 COMMIT;
 SELECT * FROM c;
-|c
+|"c"
 
 -- 231
 BEGIN TRANSACTION;
@@ -2519,7 +2519,7 @@ BEGIN TRANSACTION;
 	DROP TABLE b;
 COMMIT;
 SELECT * FROM a;
-|a
+|"a"
 
 -- 232
 BEGIN TRANSACTION;
@@ -2539,7 +2539,7 @@ BEGIN TRANSACTION;
 	DROP TABLE b;
 COMMIT;
 SELECT * FROM c;
-|c
+|"c"
 
 -- 234
 BEGIN TRANSACTION;
@@ -2549,7 +2549,7 @@ BEGIN TRANSACTION;
 	DROP TABLE c;
 COMMIT;
 SELECT * FROM a;
-|a
+|"a"
 
 -- 235
 BEGIN TRANSACTION;
@@ -2559,7 +2559,7 @@ BEGIN TRANSACTION;
 	DROP TABLE c;
 COMMIT;
 SELECT * FROM b;
-|b
+|"b"
 
 -- 236
 BEGIN TRANSACTION;
@@ -2579,7 +2579,7 @@ BEGIN TRANSACTION;
 	INSERT INTO b VALUES (20), (21), (22), (23);
 COMMIT;
 SELECT * FROM a, b;
-|a.c, lb.d
+|"a.c", "b.d"
 [12 23]
 [12 22]
 [12 21]
@@ -2608,7 +2608,7 @@ FROM
 	a AS x1,
 	a AS x0,
 ORDER BY y;
-|x2, x1, x0, y
+|"x2", "x1", "x0", "y"
 [0 0 0 0]
 [0 0 1 1]
 [0 0 2 2]
@@ -2644,7 +2644,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE c != 0;
 COMMIT;
 SELECT * FROM t
-|c
+|"c"
 
 -- 240
 BEGIN TRANSACTION;
@@ -2685,7 +2685,7 @@ BEGIN TRANSACTION;
 	DROP TABLE t;
 ROLLBACK;
 SELECT * from t;
-|i
+|"i"
 
 -- 245
 BEGIN TRANSACTION;
@@ -2709,7 +2709,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (string(65));
 COMMIT;
 SELECT * FROM t;
-|s
+|"s"
 [A]
 
 -- 248
@@ -2718,7 +2718,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (uint32(int8(uint16(0x10F0))));
 COMMIT;
 SELECT i == 0xFFFFFFF0 FROM t;
-|
+|""
 [true]
 
 -- 249
@@ -2737,7 +2737,7 @@ SELECT
 	id() == 3 && s == "\u00f8" && s == "ø" && s == "\xc3\xb8" OR 
 	id() == 4 && s == "\u65e5" && s == "日" && s == "\xe6\x97\xa5"
 FROM t;
-|
+|""
 [true]
 [true]
 [true]
@@ -2749,7 +2749,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0);
 COMMIT;
 SELECT 2.3+1, 1+2.3 FROM t;
-|, 
+|"", ""
 [3.3 3.3]
 
 -- 251
@@ -2766,7 +2766,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1+byte(2));
 COMMIT;
 SELECT * FROM t;
-|i
+|"i"
 [3]
 
 -- 253
@@ -2775,7 +2775,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (255+byte(2));
 COMMIT;
 SELECT * FROM t;
-|i
+|"i"
 [1]
 
 -- 254
@@ -2792,7 +2792,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (127+int8(2));
 COMMIT;
 SELECT * FROM t;
-|i
+|"i"
 [-127]
 
 -- 256
@@ -2809,7 +2809,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-128+int8(2));
 COMMIT;
 SELECT * FROM t;
-|i
+|"i"
 [-126]
 
 -- 258
@@ -2826,42 +2826,42 @@ SELECT count(none) FROM employee;
 
 -- S 260
 SELECT count() FROM employee;
-|
+|""
 [6]
 
 -- S 261
 SELECT count() AS y FROM employee;
-|y
+|"y"
 [6]
 
 -- S 262
 SELECT 3*count() AS y FROM employee;
-|y
+|"y"
 [18]
 
 -- S 263
 SELECT count(LastName) FROM employee;
-|
+|""
 [6]
 
 -- S 264
 SELECT count(DepartmentID) FROM employee;
-|
+|""
 [5]
 
 -- S 265
 SELECT count() - count(DepartmentID) FROM employee;
-|
+|""
 [1]
 
 -- S 266
 SELECT min(LastName), min(DepartmentID) FROM employee;
-|, 
+|"", ""
 [Heisenberg 31]
 
 -- S 267
 SELECT max(LastName), max(DepartmentID) FROM employee;
-|, 
+|"", ""
 [Williams 34]
 
 -- S 268
@@ -2870,12 +2870,12 @@ SELECT sum(LastName), sum(DepartmentID) FROM employee;
 
 -- S 269
 SELECT sum(DepartmentID) FROM employee;
-|
+|""
 [165]
 
 -- S 270
 SELECT avg(DepartmentID) FROM employee;
-|
+|""
 [33]
 
 -- S 271
@@ -2884,7 +2884,7 @@ SELECT DepartmentID FROM employee GROUP BY none;
 
 -- S 272
 SELECT DepartmentID, sum(DepartmentID) AS s FROM employee GROUP BY DepartmentID ORDER BY s DESC;
-|DepartmentID, s
+|"DepartmentID", "s"
 [34 68]
 [33 66]
 [31 31]
@@ -2892,7 +2892,7 @@ SELECT DepartmentID, sum(DepartmentID) AS s FROM employee GROUP BY DepartmentID 
 
 -- S 273
 SELECT DepartmentID, count(LastName+string(DepartmentID)) AS y FROM employee GROUP BY DepartmentID ORDER BY y DESC ;
-|DepartmentID, y
+|"DepartmentID", "y"
 [34 2]
 [33 2]
 [31 1]
@@ -2900,7 +2900,7 @@ SELECT DepartmentID, count(LastName+string(DepartmentID)) AS y FROM employee GRO
 
 -- S 274
 SELECT DepartmentID, sum(2*DepartmentID) AS s FROM employee GROUP BY DepartmentID ORDER BY s DESC;
-|DepartmentID, s
+|"DepartmentID", "s"
 [34 136]
 [33 132]
 [31 62]
@@ -2908,22 +2908,22 @@ SELECT DepartmentID, sum(2*DepartmentID) AS s FROM employee GROUP BY DepartmentI
 
 -- S 275
 SELECT min(2*DepartmentID) FROM employee;
-|
+|""
 [62]
 
 -- S 276
 SELECT max(2*DepartmentID) FROM employee;
-|
+|""
 [68]
 
 -- S 277
 SELECT avg(2*DepartmentID) FROM employee;
-|
+|""
 [66]
 
 -- S 278
 SELECT * FROM employee GROUP BY DepartmentID;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Rafferty 31]
 [Heisenberg 33]
@@ -2931,7 +2931,7 @@ SELECT * FROM employee GROUP BY DepartmentID;
 
 -- S 279
 SELECT * FROM employee GROUP BY DepartmentID ORDER BY LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Smith 34]
 [Rafferty 31]
@@ -2939,7 +2939,7 @@ SELECT * FROM employee GROUP BY DepartmentID ORDER BY LastName DESC;
 
 -- S 280
 SELECT * FROM employee GROUP BY DepartmentID, LastName ORDER BY LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2949,7 +2949,7 @@ SELECT * FROM employee GROUP BY DepartmentID, LastName ORDER BY LastName DESC;
 
 -- S 281
 SELECT * FROM employee GROUP BY LastName, DepartmentID  ORDER BY LastName DESC;
-|LastName, DepartmentID
+|"LastName", "DepartmentID"
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2966,14 +2966,14 @@ BEGIN TRANSACTION;
 	DROP TABLE s;
 COMMIT;
 SELECT * FROM t;
-|i
+|"i"
 
 -- 283
 BEGIN TRANSACTION;
 	CREATE TABLE t (n int);
 COMMIT;
 SELECT count() FROM t;
-|
+|""
 [0]
 
 -- 284
@@ -2982,7 +2982,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t;
-|
+|""
 [2]
 
 -- 285
@@ -2991,7 +2991,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t WHERE n < 2;
-|
+|""
 [2]
 
 -- 286
@@ -3000,7 +3000,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t WHERE n < 1;
-|
+|""
 [1]
 
 -- 287
@@ -3009,7 +3009,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t WHERE n < 0;
-|
+|""
 [0]
 
 -- 288
@@ -3018,7 +3018,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT s+10 FROM (SELECT sum(n) AS s FROM t WHERE n < 2);
-|
+|""
 [11]
 
 -- 289
@@ -3027,7 +3027,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT s+10 FROM (SELECT sum(n) AS s FROM t WHERE n < 1);
-|
+|""
 [10]
 
 -- 290
@@ -3036,7 +3036,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT s+10 FROM (SELECT sum(n) AS s FROM t WHERE n < 0);
-|
+|""
 [<nil>]
 
 -- 291
@@ -3045,7 +3045,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT sum(n) AS s FROM t WHERE n < 2;
-|s
+|"s"
 [1]
 
 -- 292
@@ -3054,7 +3054,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT sum(n) AS s FROM t WHERE n < 1;
-|s
+|"s"
 [0]
 
 -- 293
@@ -3063,7 +3063,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT sum(n) AS s FROM t WHERE n < 0;
-|s
+|"s"
 [<nil>]
 
 -- 294
@@ -3074,7 +3074,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT count() FROM t;
 COMMIT;
 SELECT count() FROM t;
-|
+|""
 [3]
 
 -- 295
@@ -3086,7 +3086,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT * FROM t;
 COMMIT;
 SELECT count() FROM t;
-|
+|""
 [6]
 
 -- 296
@@ -3096,7 +3096,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT * FROM t;
 COMMIT;
 SELECT count() FROM t;
-|
+|""
 [6]
 
 -- 297
@@ -3105,7 +3105,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT "perfect!" FROM (SELECT count() AS cnt FROM t WHERE S == "perfect!") WHERE cnt == 0;
 COMMIT;
 SELECT count() FROM t;
-|
+|""
 [1]
 
 -- 298
@@ -3115,7 +3115,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT "perfect!" FROM (SELECT count() AS cnt FROM t WHERE S == "perfect!") WHERE cnt == 0;
 COMMIT;
 SELECT count() FROM t;
-|
+|""
 [1]
 
 -- 299
@@ -3124,7 +3124,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("a"));
 COMMIT;
 SELECT * FROM t;
-|c
+|"c"
 [[97]]
 
 -- 300
@@ -3135,7 +3135,7 @@ BEGIN TRANSACTION;
 `));
 COMMIT;
 SELECT * FROM t;
-|c
+|"c"
 [[10 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 10]]
 
 -- 301
@@ -3148,7 +3148,7 @@ BEGIN TRANSACTION;
 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF"));
 COMMIT;
 SELECT * FROM t;
-|c
+|"c"
 [[48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 65 66 67 68 69 70]]
 
 -- 302
@@ -3162,7 +3162,7 @@ BEGIN TRANSACTION;
 "!"));
 COMMIT;
 SELECT * FROM t;
-|c
+|"c"
 [[48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 65 66 67 68 69 70 33]]
 
 -- 303
@@ -3171,7 +3171,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("hell\xc3\xb8"));
 COMMIT;
 SELECT string(c) FROM t;
-|
+|""
 [hellø]
 
 -- 304
@@ -3185,7 +3185,7 @@ BEGIN TRANSACTION;
 "!"));
 COMMIT;
 SELECT string(c) FROM t;
-|
+|""
 [0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 
 -- 305
@@ -3194,7 +3194,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob(""));
 COMMIT;
 SELECT string(c) FROM t;
-|
+|""
 []
 
 -- 306
@@ -3203,7 +3203,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("hellø"));
 COMMIT;
 SELECT * FROM t;
-|c
+|"c"
 [[104 101 108 108 195 184]]
 
 -- 307
@@ -3212,7 +3212,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob(""));
 COMMIT;
 SELECT * FROM t;
-|c
+|"c"
 [[]]
 
 -- 308
@@ -3223,7 +3223,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [0 [48]]
 
 -- 309
@@ -3235,7 +3235,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [1 [49]]
 [0 [48]]
 
@@ -3249,7 +3249,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [2 [50]]
 [1 [49]]
 [0 [48]]
@@ -3263,7 +3263,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 0;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 
 -- 312
 BEGIN TRANSACTION;
@@ -3275,7 +3275,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 0;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [1 [49]]
 
 -- 313
@@ -3288,7 +3288,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [0 [48]]
 
 -- 314
@@ -3302,7 +3302,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 0;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [2 [50]]
 [1 [49]]
 
@@ -3317,7 +3317,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [2 [50]]
 [0 [48]]
 
@@ -3332,7 +3332,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT * FROM t;
-|i, b
+|"i", "b"
 [1 [49]]
 [0 [48]]
 
@@ -3349,7 +3349,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 0;
 COMMIT;
 SELECT i, string(b) FROM t;
-|i, 
+|"i", ""
 
 -- 318
 BEGIN TRANSACTION;
@@ -3369,7 +3369,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 0;
 COMMIT;
 SELECT i, string(b) FROM t;
-|i, 
+|"i", ""
 [1 1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 
 -- 319
@@ -3390,7 +3390,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT i, string(b) FROM t;
-|i, 
+|"i", ""
 [0 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 
 -- 320
@@ -3416,7 +3416,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 0;
 COMMIT;
 SELECT i, string(b) FROM t;
-|i, 
+|"i", ""
 [2 2123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef2123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef2123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef2123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 [1 1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 
@@ -3443,7 +3443,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT i, string(b) FROM t;
-|i, 
+|"i", ""
 [2 2123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef2123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef2123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef2123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 [0 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 
@@ -3470,7 +3470,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT i, string(b) FROM t;
-|i, 
+|"i", ""
 [1 1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef1123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 [0 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF!]
 
@@ -3488,7 +3488,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (false, 1), (true, 2), (false, 10), (true, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [false 11]
 [true 22]
 
@@ -3498,7 +3498,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1), (2);
 COMMIT;
 SELECT * FROM t ORDER BY 42, c, 24;
-|c
+|"c"
 [1]
 [2]
 
@@ -3508,7 +3508,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (99, 1), (100, 2), (99, 10), (100, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [99 11]
 [100 22]
 
@@ -3526,7 +3526,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("A"), 1), (blob("B"), 2);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [[65] 1]
 [[66] 2]
 
@@ -3536,7 +3536,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("A"), 10), (blob("B"), 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [[65] 10]
 [[66] 20]
 
@@ -3546,7 +3546,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("A"), 1), (blob("B"), 2), (blob("A"), 10), (blob("B"), 20);
 COMMIT;
 SELECT * FROM t;
-|c, i
+|"c", "i"
 [[66] 20]
 [[65] 10]
 [[66] 2]
@@ -3558,7 +3558,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES ("A", 1), ("B", 2), ("A", 10), ("B", 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [A 11]
 [B 22]
 
@@ -3568,7 +3568,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("A"), 1), (blob("B"), 2), (blob("A"), 10), (blob("B"), 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [[65] 11]
 [[66] 22]
 
@@ -3586,7 +3586,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3596,7 +3596,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3622,7 +3622,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [(100+0i) 11]
 [(101+0i) 22]
 
@@ -3640,7 +3640,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [(100+0i) 11]
 [(101+0i) 22]
 
@@ -3650,7 +3650,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3660,7 +3660,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3670,7 +3670,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3680,7 +3680,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3690,7 +3690,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3700,7 +3700,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3710,7 +3710,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3720,7 +3720,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3730,7 +3730,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3740,7 +3740,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3750,7 +3750,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3760,7 +3760,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3770,7 +3770,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3780,7 +3780,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3790,7 +3790,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3800,7 +3800,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3810,7 +3810,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3820,7 +3820,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3830,7 +3830,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3840,7 +3840,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|c, 
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3850,7 +3850,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|c
+|"c"
 [42]
 [114]
 
@@ -3860,7 +3860,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|uc, l
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3870,7 +3870,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|vc
+|"c"
 [42]
 [114]
 
@@ -3880,7 +3880,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|vc, l
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3890,7 +3890,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|wc
+|"c"
 [42]
 [114]
 
@@ -3900,7 +3900,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|wc, l
+|"c", ""
 [100 11]
 [101 22]
 
@@ -3911,7 +3911,7 @@ BEGIN TRANSACTION;
 	UPDATE t c = blob("C") WHERE i == 2;
 COMMIT;
 SELECT * FROM t;
-|?c, li
+|"c", "i"
 [[67] 2]
 [[65] 1]
 
@@ -3939,7 +3939,7 @@ BEGIN TRANSACTION;
 	) WHERE i == 2;
 COMMIT;
 SELECT * FROM t;
-|?c, li
+|"c", "i"
 [[50 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 50 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 50 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 50 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 65 66 67 68 69 70 33] 2]
 [[48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 65 66 67 68 69 70 33] 1]
 
@@ -3962,7 +3962,7 @@ BEGIN TRANSACTION;
 	UPDATE t i = 42 WHERE i == 2;
 COMMIT;
 SELECT * FROM t;
-|?c, li
+|"c", "i"
 [[49 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 49 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 49 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 49 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 65 66 67 68 69 70 33] 42]
 [[48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 65 66 67 68 69 70 33] 1]
 
@@ -3972,7 +3972,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1);
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [1]
 
 -- 371
@@ -3981,7 +3981,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint("1"));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [1]
 
 -- 372
@@ -3990,7 +3990,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint("12345678901234567890123456789"));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [12345678901234567890123456789]
 
 -- 373
@@ -3999,7 +3999,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint(2e10));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [20000000000]
 
 -- 374
@@ -4008,7 +4008,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint(2e18));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [2000000000000000000]
 
 -- 375
@@ -4017,7 +4017,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint(2e19));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [20000000000000000000]
 
 -- 376
@@ -4026,7 +4026,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint(2e20));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [200000000000000000000]
 
 -- 377
@@ -4035,7 +4035,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint("0x1fffffffffffffff"));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [2305843009213693951]
 
 -- 378
@@ -4044,7 +4044,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint("0x1ffffffffffffffffffffff"));
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 [618970019642690137449562111]
 
 -- 379
@@ -4053,7 +4053,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|?c
+|"c"
 [42]
 [114]
 
@@ -4063,7 +4063,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|?c, l
+|"c", ""
 [100 11]
 [101 22]
 
@@ -4073,7 +4073,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT * FROM t WHERE c > 100 ORDER BY c DESC;
-|?c
+|"c"
 [111]
 [110]
 [101]
@@ -4084,7 +4084,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT * FROM t WHERE c < 110 ORDER BY c;
-|?c
+|"c"
 [100]
 [101]
 
@@ -4094,7 +4094,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT * FROM t WHERE c <= 110 ORDER BY c;
-|?c
+|"c"
 [100]
 [101]
 [110]
@@ -4105,7 +4105,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT * FROM t WHERE c >= 110 ORDER BY c;
-|?c
+|"c"
 [110]
 [111]
 
@@ -4115,7 +4115,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT * FROM t WHERE c != 110 ORDER BY c;
-|?c
+|"c"
 [100]
 [101]
 [111]
@@ -4126,7 +4126,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT * FROM t WHERE c == 110 ORDER BY c;
-|?c
+|"c"
 [110]
 
 -- 387
@@ -4135,7 +4135,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT (c+1000) as s FROM t ORDER BY s;
-|?s
+|"s"
 [1100]
 [1101]
 [1110]
@@ -4147,7 +4147,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT (1000-c) as s FROM t ORDER BY s;
-|?s
+|"s"
 [889]
 [890]
 [899]
@@ -4159,7 +4159,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT (c>>1) as s FROM t ORDER BY s;
-|?s
+|"s"
 [50]
 [50]
 [55]
@@ -4171,7 +4171,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100), (101), (110), (111);
 COMMIT;
 SELECT (c<<1) as s FROM t ORDER BY s;
-|?s
+|"s"
 [200]
 [202]
 [220]
@@ -4183,7 +4183,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE c&0x55555 == 0x11550;
-|?c
+|"c"
 [79856]
 
 -- 392
@@ -4192,7 +4192,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE c&or;0x55555 == 0x577f5;
-|?c
+|"c"
 [79856]
 
 -- 393
@@ -4201,7 +4201,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE c&^0x55555 == 0x022a0;
-|?c
+|"c"
 [79856]
 
 -- 394
@@ -4210,7 +4210,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE c^0x55555 == 0x462a5;
-|?c
+|"c"
 [79856]
 
 -- 395
@@ -4219,7 +4219,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE c%256 == 0xf0;
-|?c
+|"c"
 [79856]
 
 -- 396
@@ -4228,7 +4228,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE c*16 == 0x137f00;
-|?c
+|"c"
 [79856]
 
 -- 397
@@ -4237,7 +4237,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE ^c == -(0x137f0+1);
-|?c
+|"c"
 [79856]
 
 -- 398
@@ -4246,7 +4246,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE +c == 0x137f0;
-|?c
+|"c"
 [79856]
 
 -- 399
@@ -4255,7 +4255,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0x137f0);
 COMMIT;
 SELECT * FROM t WHERE -c == -79856;
-|?c
+|"c"
 [79856]
 
 -- 400
@@ -4264,7 +4264,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42), (114);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|?c
+|"c"
 [42/1]
 [114/1]
 
@@ -4274,7 +4274,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 1), (101, 2), (100, 10), (101, 20);
 COMMIT;
 SELECT c, sum(i) FROM t GROUP BY c;
-|?c, l
+|"c", ""
 [100/1 11]
 [101/1 22]
 
@@ -4284,7 +4284,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42.24), (114e3);
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|?c
+|"c"
 [5944751508129055/140737488355328]
 [114000/1]
 
@@ -4294,7 +4294,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES ('A'), ('B');
 COMMIT;
 SELECT * FROM t ORDER BY 15, c, 16;
-|?c
+|"c"
 [65/1]
 [66/1]
 
@@ -4304,7 +4304,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3")+bigrat("5/7"));
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 [29/21]
 
 -- 405
@@ -4313,7 +4313,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3")-bigrat("5/7"));
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 [-1/21]
 
 -- 406
@@ -4322,7 +4322,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3")*bigrat("5/7"));
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 [10/21]
 
 -- 407
@@ -4347,7 +4347,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT c == d FROM t;
-|b
+|""
 [false]
 
 -- 410
@@ -4356,7 +4356,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("4/6"));
 COMMIT;
 SELECT c == d FROM t;
-|b
+|""
 [true]
 
 -- 411
@@ -4365,7 +4365,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT c != d FROM t;
-|b
+|""
 [true]
 
 -- 412
@@ -4374,7 +4374,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("4/6"));
 COMMIT;
 SELECT c != d FROM t;
-|b
+|""
 [false]
 
 -- 413
@@ -4383,7 +4383,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT c < d FROM t;
-|b
+|""
 [true]
 
 -- 414
@@ -4392,7 +4392,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("4/6"));
 COMMIT;
 SELECT c < d FROM t;
-|b
+|""
 [false]
 
 -- 415
@@ -4401,7 +4401,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT c <= d FROM t;
-|b
+|""
 [true]
 
 -- 416
@@ -4410,7 +4410,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("4/6"));
 COMMIT;
 SELECT c <= d FROM t;
-|b
+|""
 [true]
 
 -- 417
@@ -4419,7 +4419,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT c > d FROM t;
-|b
+|""
 [false]
 
 -- 418
@@ -4428,7 +4428,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("4/6"));
 COMMIT;
 SELECT c > d FROM t;
-|b
+|""
 [false]
 
 -- 419
@@ -4437,7 +4437,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT c >= d FROM t;
-|b
+|""
 [false]
 
 -- 420
@@ -4446,7 +4446,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("4/6"));
 COMMIT;
 SELECT c >= d FROM t;
-|b
+|""
 [true]
 
 -- 421
@@ -4455,7 +4455,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT c / d FROM t;
-|?
+|""
 [14/15]
 
 -- 422
@@ -4480,7 +4480,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT +c, -d FROM t;
-|?, ?
+|"", ""
 [2/3 -5/7]
 
 -- 425
@@ -4489,7 +4489,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT 1+c, d+1, 1.5+c, d+1.5 FROM t;
-|?, ?, ?, ?
+|"", "", "", ""
 [5/3 12/7 13/6 31/14]
 
 -- 426
@@ -4498,7 +4498,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("355/113"));
 COMMIT;
 SELECT float(c) FROM t;
-|g
+|""
 [3.1415929203539825]
 
 -- 427
@@ -4507,7 +4507,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (date(2006, 1, 2, 15, 4, 5, 999999999, "CET"));
 COMMIT;
 SELECT formatTime(timeIn(c, "UTC"), "2006-01-02 15:04:05.999999999 -0700") FROM t;
-|s
+|""
 [2006-01-02 14:04:05.999999999 +0000]
 
 -- 428
@@ -4516,7 +4516,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (duration("1s")), (duration("1m")), (duration("1h"));
 COMMIT;
 SELECT c, string(c) FROM t ORDER BY c;
-|?c, s
+|"c", ""
 [1s 1s]
 [1m0s 1m0s]
 [1h0m0s 1h0m0s]
@@ -4527,7 +4527,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (date(2013, 11, 26, 10, 18, 5, 999999999, "CET"));
 COMMIT;
 SELECT since(c) > duration("24h") FROM t;
-|b
+|""
 [true]
 
 -- 430
@@ -4536,7 +4536,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (date(2013, 11, 26, 10, 32, 5, 999999999, "CET"));
 COMMIT;
 SELECT !(since(c) < duration("24h")) FROM t;
-|b
+|""
 [true]
 
 -- 431
@@ -4550,7 +4550,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a > a, a > b, a > c, b > a, b > b, b > c, c > a, c > b, c > c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [false false false true false false true true false]
 
 -- 432
@@ -4564,7 +4564,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a < a, a < b, a < c, b < a, b < b, b < c, c < a, c < b, c < c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [false true true false false true false false false]
 
 -- 433
@@ -4578,7 +4578,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a <= a, a <= b, a <= c, b <= a, b <= b, b <= c, c <= a, c <= b, c <= c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [true true true false true true false false true]
 
 -- 434
@@ -4592,7 +4592,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a >= a, a >= b, a >= c, b >= a, b >= b, b >= c, c >= a, c >= b, c >= c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [true false false true true false true true true]
 
 -- 435
@@ -4606,7 +4606,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a != a, a != b, a != c, b != a, b != b, b != c, c != a, c != b, c != c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [false true true true false true true true false]
 
 -- 436
@@ -4620,7 +4620,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a == a, a == b, a == c, b == a, b == b, b == c, c == a, c == b, c == c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [true false false false true false false false true]
 
 -- 437
@@ -4634,7 +4634,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT b+c, a+c, a+b, a+b+c FROM t;
-|?, ?, ?, ?
+|"", "", "", ""
 [3m2s 5h0m2s 5h3m0s 5h3m2s]
 
 -- 438
@@ -4648,7 +4648,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT b-c, a-c, a-b, a-b-c FROM t;
-|?, ?, ?, ?
+|"", "", "", ""
 [2m58s 4h59m58s 4h57m0s 4h56m58s]
 
 -- 439
@@ -4662,7 +4662,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a>>1, b>>1, c>>1 FROM t;
-|?, ?, ?
+|"", "", ""
 [2h30m0s 1m30s 1s]
 
 -- 440
@@ -4676,7 +4676,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a<<1, b<<1, c<<1 FROM t;
-|?, ?, ?
+|"", "", ""
 [10h0m0s 6m0s 4s]
 
 -- 441
@@ -4688,7 +4688,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a & 255 FROM t;
-|?
+|""
 [1ns]
 
 -- 442
@@ -4700,7 +4700,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a &or; 256 FROM t;
-|?
+|""
 [257ns]
 
 -- 443
@@ -4712,7 +4712,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a &^ 0xd30 FROM t;
-|?
+|""
 [513ns]
 
 -- 444
@@ -4724,7 +4724,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a % duration("2h"), a % duration("1m") FROM t;
-|?, ?
+|"", ""
 [1h2m1s 1s]
 
 -- 445
@@ -4738,7 +4738,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a/2, b/2, c/2 FROM t;
-|?, ?, ?
+|"", "", ""
 [2h30m0s 1m30s 1s]
 
 -- 446
@@ -4752,7 +4752,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a*2, 2*b, c*2 FROM t;
-|?, ?, ?
+|"", "", ""
 [10h0m0s 6m0s 4s]
 
 -- 447
@@ -4766,7 +4766,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT ^a, ^b, ^c FROM t;
-|?, ?, ?
+|"", "", ""
 [-2ns -4ns -6ns]
 
 -- 448
@@ -4780,7 +4780,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT +a, +b, +c FROM t;
-|?, ?, ?
+|"", "", ""
 [1ns 3ns 5ns]
 
 -- 449
@@ -4794,7 +4794,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT -a, -b, -c FROM t;
-|?, ?, ?
+|"", "", ""
 [-1ns -3ns -5ns]
 
 -- 450
@@ -4808,7 +4808,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a > a, a > b, a > c, b > a, b > b, b > c, c > a, c > b, c > c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [false false false true false false true true false]
 
 -- 451
@@ -4822,7 +4822,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a < a, a < b, a < c, b < a, b < b, b < c, c < a, c < b, c < c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [false true true false false true false false false]
 
 -- 452
@@ -4836,7 +4836,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a <= a, a <= b, a <= c, b <= a, b <= b, b <= c, c <= a, c <= b, c <= c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [true true true false true true false false true]
 
 -- 453
@@ -4850,7 +4850,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a >= a, a >= b, a >= c, b >= a, b >= b, b >= c, c >= a, c >= b, c >= c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [true false false true true false true true true]
 
 -- 454
@@ -4864,7 +4864,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a != a, a != b, a != c, b != a, b != b, b != c, c != a, c != b, c != c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [false true true true false true true true false]
 
 -- 455
@@ -4878,7 +4878,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a == a, a == b, a == c, b == a, b == b, b == c, c == a, c == b, c == c FROM t;
-|b, b, b, b, b, b, b, b, b
+|"", "", "", "", "", "", "", "", ""
 [true false false false true false false false true]
 
 -- 456
@@ -4891,7 +4891,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT formatTime(timeIn(a+b, "UTC"), "2006-01-02 15:04:05.999999999 -0700") FROM t;
-|s
+|""
 [2013-11-27 14:03:03.999999999 +0000]
 
 -- 457
@@ -4904,7 +4904,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT formatTime(timeIn(b+a, "UTC"), "2006-01-02 15:04:05.999999999 -0700") FROM t;
-|s
+|""
 [2013-11-27 14:03:03.999999999 +0000]
 
 -- 458
@@ -4929,7 +4929,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT a-b FROM t;
-|?
+|""
 [1h1m1s]
 
 -- 460
@@ -4942,7 +4942,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT formatTime(timeIn(a-b, "UTC"), "2006-01-02 15:04:05.999999999 -0700") FROM t;
-|s
+|""
 [2013-11-27 07:59:01.999999999 +0000]
 
 -- 461
@@ -4966,7 +4966,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT hours(a), minutes(a), seconds(a), nanoseconds(a) FROM t;
-|g, g, g, l
+|"", "", "", ""
 [3.03375 182.025 10921.5 10921500000000]
 
 -- 463
@@ -4975,7 +4975,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (now()-duration("1s"));
 COMMIT;
 SELECT a < now(), now() > a, a >= now(), now() <= a FROM t;
-|b, b, b, b
+|"", "", "", ""
 [true true false false]
 
 -- 464
@@ -4987,7 +4987,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT formatTime(timeIn(a, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as a FROM t ORDER BY a;
-|sa
+|"a"
 [2013-11-27 00:00:00 +0000]
 [2013-11-27 13:07:00 +0000]
 
@@ -5000,7 +5000,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT hour(timeIn(a, "UTC")) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [0]
 [13]
 
@@ -5013,7 +5013,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT minute(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [0]
 [7]
 
@@ -5026,7 +5026,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT second(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [0]
 [31]
 
@@ -5039,7 +5039,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT nanosecond(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [0]
 [123456789]
 
@@ -5052,7 +5052,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT year(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [2013]
 [2014]
 
@@ -5065,7 +5065,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT day(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [27]
 [28]
 
@@ -5078,7 +5078,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT month(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [11]
 [12]
 
@@ -5091,7 +5091,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT weekday(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [0]
 [3]
 
@@ -5104,7 +5104,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT yearDay(a) AS y FROM t ORDER BY y;
-|ly
+|"y"
 [32]
 [33]
 
@@ -5117,7 +5117,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT timeIn(a, ""), timeIn(a, "UTC") AS y FROM t ORDER BY y;
-|?, ?y
+|"", "y"
 [2013-02-01 13:07:00 +0000 UTC 2013-02-01 13:07:00 +0000 UTC]
 [2014-02-02 00:00:00 +0000 UTC 2014-02-02 00:00:00 +0000 UTC]
 
@@ -5130,7 +5130,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT formatTime(timeIn(a, "UTC"), "Jan 2, 2006 at 3:04pm (UTC)") AS y FROM t ORDER BY y;
-|sy
+|"y"
 [Feb 1, 2013 at 1:07pm (UTC)]
 [Feb 2, 2014 at 12:00am (UTC)]
 
@@ -5158,7 +5158,7 @@ BEGIN TRANSACTION;
 	UPDATE t b = "hello" WHERE a == 1;
 COMMIT;
 SELECT a, b, formatTime(timeIn(t, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as t FROM t;
-|la, sb, st
+|"a", "b", "t"
 [2 b 2014-01-12 17:27:00 +0000]
 [1 hello 2014-01-12 17:26:00 +0000]
 
@@ -5173,7 +5173,7 @@ BEGIN TRANSACTION;
 	WHERE a == 1;
 COMMIT;
 SELECT a, b, formatTime(timeIn(t, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as t FROM t;
-|la, sb, st
+|"a", "b", "t"
 [2 b 2014-01-12 17:27:00 +0000]
 [1 hello 2014-01-12 17:28:00 +0000]
 
@@ -5185,7 +5185,7 @@ BEGIN TRANSACTION;
 	UPDATE t b = "hello" WHERE a == 1;
 COMMIT;
 SELECT * FROM t;
-|la, sb, ?d
+|"a", "b", "d"
 [2 b 2m0s]
 [1 hello 1m0s]
 
@@ -5200,7 +5200,7 @@ BEGIN TRANSACTION;
 	WHERE a == 1;
 COMMIT;
 SELECT * FROM t;
-|la, sb, ?d
+|"a", "b", "d"
 [2 b 2m0s]
 [1 hello 3m0s]
 
@@ -5213,7 +5213,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT * FROM t ORDER BY real(c);
-|dc
+|"c"
 [(3+0i)]
 [(22+1i)]
 
@@ -5259,7 +5259,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT id() as i, contains(s, substr) FROM t ORDER BY i;
-|li, b
+|"i", ""
 [1 true]
 [2 false]
 [3 true]
@@ -5321,7 +5321,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT id() as i, hasPrefix(s, prefix) FROM t ORDER BY i;
-|li, b
+|"i", ""
 [1 true]
 [2 true]
 [3 false]
@@ -5386,7 +5386,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT id() as i, hasSuffix(s, suffix) FROM t ORDER BY i;
-|li, b
+|"i", ""
 [1 true]
 [2 true]
 [3 false]
@@ -5412,7 +5412,7 @@ BEGIN TRANSACTION;
 	DROP TABLE IF EXISTS nonexistent;
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 
 -- 494 // issue #27
 BEGIN TRANSACTION;
@@ -5427,7 +5427,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE IF NOT EXISTS t (s string);
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 
 -- 496 // issue #28
 BEGIN TRANSACTION;
@@ -5436,7 +5436,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string;
 COMMIT;
 SELECT * FROM t;
-|li, ?s
+|"i", "s"
 [42 <nil>]
 
 -- 497
@@ -5451,7 +5451,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(3000);
 COMMIT;
 SELECT * FROM t;
-|li
+|"i"
 [3000]
 [2000]
 [1000]
@@ -5468,7 +5468,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(3000);
 COMMIT;
 SELECT * FROM t;
-|li
+|"i"
 [3000]
 [1000]
 
@@ -5479,7 +5479,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN i;
 COMMIT;
 SELECT * FROM t;
-|ss
+|"s"
 [foo]
 
 -- 500
@@ -5489,7 +5489,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN s;
 COMMIT;
 SELECT * FROM t;
-|li
+|"i"
 [42]
 
 -- 501 // new spec rule: table must have at least 1 column
@@ -5510,7 +5510,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN s;
 ROLLBACK;
 SELECT * FROM t;
-|?c, ?s
+|"c", "s"
 
 -- 503 // fixed bug
 BEGIN TRANSACTION;
@@ -5520,7 +5520,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD b bool;
 ROLLBACK;
 SELECT * FROM t;
-|?c, ?s
+|"c", "s"
 
 -- 504 // fixed bug
 BEGIN TRANSACTION;
@@ -5530,7 +5530,7 @@ BEGIN TRANSACTION;
 	DROP TABLE t;
 ROLLBACK;
 SELECT * FROM t;
-|?c, ?s
+|"c", "s"
 
 -- 505 // fixed bug
 BEGIN TRANSACTION;
@@ -5557,7 +5557,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t (id());
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 
 -- 509
 BEGIN TRANSACTION;
@@ -5565,7 +5565,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX y ON t (c);
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 
 -- 510
 BEGIN TRANSACTION;
@@ -5592,7 +5592,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX y ON t (c);
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 
 -- 513
 BEGIN TRANSACTION;
@@ -5601,7 +5601,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t (id());
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 
 -- 514
 BEGIN TRANSACTION;
@@ -5610,7 +5610,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42);
 COMMIT;
 SELECT * FROM t;
-|lc
+|"c"
 [42]
 
 -- 515
@@ -5620,7 +5620,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t (id());
 COMMIT;
 SELECT * FROM t;
-|lc
+|"c"
 [42]
 
 -- 516
@@ -5634,7 +5634,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(999);
 COMMIT;
 SELECT * FROM t ORDER BY id();
-|lc
+|"c"
 [42]
 [24]
 [1]
@@ -5651,7 +5651,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(999);
 COMMIT;
 SELECT * FROM t ORDER BY c;
-|lc
+|"c"
 [1]
 [24]
 [42]
@@ -5670,7 +5670,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 240;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [42]
 [999]
@@ -5733,7 +5733,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX id ON t (i);
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 
 -- 527
 BEGIN TRANSACTION;
@@ -5755,7 +5755,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(3000);
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1000]
 [3000]
 
@@ -5767,7 +5767,7 @@ BEGIN TRANSACTION;
 	TRUNCATE TABLE t;
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 
 -- 530
 BEGIN TRANSACTION;
@@ -5777,7 +5777,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t;
 COMMIT;
 SELECT * FROM t;
-|?i
+|"i"
 
 -- 531
 BEGIN TRANSACTION;
@@ -5788,7 +5788,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES ("bar");
 COMMIT;
 SELECT * FROM t ORDER BY s;
-|ss
+|"s"
 [bar]
 [foo]
 
@@ -5801,7 +5801,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES ("bar");
 COMMIT;
 SELECT * FROM t ORDER BY s;
-|ss
+|"s"
 [bar]
 [foo]
 
@@ -5815,7 +5815,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES ("bar");
 COMMIT;
 SELECT * FROM t ORDER BY s;
-|ss
+|"s"
 [bar]
 [foo]
 
@@ -5828,7 +5828,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (24);
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [24]
 [42]
 
@@ -5841,7 +5841,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (24);
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [24]
 [42]
 
@@ -5855,7 +5855,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (24);
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [24]
 [42]
 
@@ -5866,7 +5866,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN i;
 COMMIT;
 SELECT * FROM t;
-|ss
+|"s"
 [foo]
 
 -- 538
@@ -5876,7 +5876,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN s;
 COMMIT;
 SELECT * FROM t;
-|li
+|"i"
 [42]
 
 -- 539
@@ -5888,7 +5888,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN i;
 COMMIT;
 SELECT * FROM t;
-|ss
+|"s"
 [foo]
 
 -- 540
@@ -5900,7 +5900,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN s;
 COMMIT;
 SELECT * FROM t;
-|li
+|"i"
 [42]
 
 -- 541
@@ -5916,7 +5916,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (24);
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [24]
 [42]
 
@@ -5933,7 +5933,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES ("bar");
 COMMIT;
 SELECT * FROM t ORDER BY s;
-|ss
+|"s"
 [bar]
 [foo]
 
@@ -5945,7 +5945,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT 10*i FROM t;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [42]
 [420]
 
@@ -5968,7 +5968,7 @@ BEGIN TRANSACTION;
 	DROP INDEX x;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [42]
 [420]
 
@@ -5983,7 +5983,7 @@ BEGIN TRANSACTION;
 	DROP INDEX x;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [42]
 [420]
 
@@ -5994,7 +5994,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string;
 COMMIT;
 SELECT * FROM t;
-|?i, ?s
+|"i", "s"
 
 -- 548
 BEGIN TRANSACTION;
@@ -6003,7 +6003,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|?i, ?s
+|"i", "s"
 
 -- 549
 BEGIN TRANSACTION;
@@ -6014,7 +6014,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string;
 COMMIT;
 SELECT * FROM t ORDER BY s;
-|?i, ?s
+|"i", "s"
 
 -- 550
 BEGIN TRANSACTION;
@@ -6023,7 +6023,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [42]
 
 -- 551
@@ -6034,7 +6034,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (420);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [42]
 [420]
 
@@ -6046,7 +6046,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [42]
 [420]
 
@@ -6059,7 +6059,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [42]
 [100]
 [420]
@@ -6074,7 +6074,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 100;
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [42]
 [420]
 
@@ -6090,7 +6090,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 100;
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [42]
 [420]
 
@@ -6103,7 +6103,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (3);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1]
 [2]
 [3]
@@ -6117,7 +6117,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1]
 [2]
 [3]
@@ -6131,7 +6131,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (3);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1]
 [2]
 [3]
@@ -6145,7 +6145,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1]
 [2]
 [3]
@@ -6159,7 +6159,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (2);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1]
 [2]
 [3]
@@ -6173,7 +6173,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1]
 [2]
 [3]
@@ -6189,7 +6189,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigint(1) << 10);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1024]
 [1267650600228229401496703205375]
 [1267650600228229401496703205376]
@@ -6210,7 +6210,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == (bigint(1) << (256*8));
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1024]
 [1267650600228229401496703205375]
 [1267650600228229401496703205376]
@@ -6231,7 +6231,7 @@ BEGIN TRANSACTION;
 	WHERE i == bigint(1) << 100;
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1024]
 [1267650600228229401496703205375]
 [1267650600228229401496703205377]
@@ -6253,7 +6253,7 @@ BEGIN TRANSACTION;
 	WHERE i == bigint(1) << (256*8);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [42]
 [1024]
 [1267650600228229401496703205375]
@@ -6276,7 +6276,7 @@ BEGIN TRANSACTION;
 	WHERE i == 42;
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [1024]
 [1267650600228229401496703205375]
 [1267650600228229401496703205376]
@@ -6332,7 +6332,7 @@ BEGIN TRANSACTION;
 	DROP INDEX x;
 COMMIT;
 SELECT len(string(b)) AS n FROM t;
-|ln
+|"n"
 [320]
 
 -- 570
@@ -6351,7 +6351,7 @@ BEGIN TRANSACTION;
 	DROP INDEX x;
 COMMIT;
 SELECT len(string(b)) AS n FROM t;
-|ln
+|"n"
 [320]
 
 -- 571
@@ -6361,7 +6361,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string;
 COMMIT;
 SELECT * FROM t;
-|li, ?s
+|"i", "s"
 [42 <nil>]
 
 -- 572
@@ -6373,7 +6373,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string;
 COMMIT;
 SELECT * FROM t;
-|li, ?s
+|"i", "s"
 [42 <nil>]
 
 -- 573
@@ -6389,7 +6389,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42);
 COMMIT;
 SELECT * FROM t AS u;
-|li
+|"i"
 [42]
 
 -- 575
@@ -6414,7 +6414,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42);
 COMMIT;
 SELECT i FROM t AS u;
-|li
+|"i"
 [42]
 
 -- 578
@@ -6428,7 +6428,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(420, true);
 COMMIT;
 SELECT i FROM t WHERE b ORDER BY i;
-|li
+|"i"
 [42]
 [420]
 
@@ -6459,7 +6459,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [<nil>]
 [<nil>]
 [10]
@@ -6490,7 +6490,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE i < 30;
-|li
+|"i"
 [10]
 [20]
 [20]
@@ -6514,7 +6514,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE i < 30;
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -6537,7 +6537,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i <= 30;
-|li
+|"i"
 [10]
 [20]
 [30]
@@ -6563,7 +6563,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i <= 30;
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -6588,7 +6588,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE i == 30;
-|li
+|"i"
 [30]
 [30]
 
@@ -6610,7 +6610,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE i == 30;
-|li
+|"i"
 [30]
 [30]
 
@@ -6631,7 +6631,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i >= 30;
-|li
+|"i"
 [50]
 [40]
 [30]
@@ -6657,7 +6657,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i >= 30;
-|li
+|"i"
 [30]
 [30]
 [40]
@@ -6682,7 +6682,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i > 30;
-|li
+|"i"
 [50]
 [40]
 [40]
@@ -6706,7 +6706,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i > 30;
-|li
+|"i"
 [50]
 [50]
 [40]
@@ -6722,7 +6722,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(420, true);
 COMMIT;
 SELECT i FROM t WHERE !b ORDER BY i;
-|li
+|"i"
 [24]
 [240]
 
@@ -6737,7 +6737,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(420, true);
 COMMIT;
 SELECT i FROM t WHERE !b ORDER BY i;
-|li
+|"i"
 [24]
 [240]
 
@@ -6759,7 +6759,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE i < $1; // 30
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -6783,7 +6783,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i <= $1; // 30
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -6809,7 +6809,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE i == $1; // 30
-|li
+|"i"
 [30]
 [30]
 
@@ -6831,7 +6831,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i >= $1; // 30
-|li
+|"i"
 [30]
 [30]
 [40]
@@ -6857,7 +6857,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i > $1; // 30
-|li
+|"i"
 [50]
 [50]
 [40]
@@ -6881,7 +6881,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE $1 > i; // 30
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -6905,7 +6905,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE $1 >= i; // 30
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -6931,7 +6931,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE $1 == i; // 30
-|li
+|"i"
 [30]
 [30]
 
@@ -6953,7 +6953,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE $1 <= i; // 30
-|li
+|"i"
 [30]
 [30]
 [40]
@@ -6979,7 +6979,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE $1 < i; // 30
-|li
+|"i"
 [50]
 [50]
 [40]
@@ -7003,7 +7003,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE 30 > i;
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -7027,7 +7027,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE 30 >= i;
-|li
+|"i"
 [10]
 [10]
 [20]
@@ -7053,7 +7053,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT i FROM t WHERE 30 == i;
-|li
+|"i"
 [30]
 [30]
 
@@ -7075,7 +7075,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE 30 <= i;
-|li
+|"i"
 [30]
 [30]
 [40]
@@ -7101,7 +7101,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE 30 < i;
-|li
+|"i"
 [50]
 [50]
 [40]
@@ -7119,7 +7119,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i < 30;
-|li
+|"i"
 [20]
 [10]
 
@@ -7136,7 +7136,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM t WHERE i < 30;
-|li
+|"i"
 [10]
 [20]
 
@@ -7258,14 +7258,14 @@ SELECT * FROM t;
 
 -- 624
 SELECT * FROM __Table;
-|?Name, ?Schema
+|"Name", "Schema"
 
 -- 625
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int, s string);
 COMMIT;
 SELECT * FROM __Table ORDER BY Name;
-|sName, sSchema
+|"Name", "Schema"
 [t CREATE TABLE t (i int64, s string);]
 
 -- 626
@@ -7274,20 +7274,20 @@ BEGIN TRANSACTION;
 	CREATE TABLE u (b bool, i bigint, t time, d duration);
 COMMIT;
 SELECT * FROM __Table ORDER BY Name;
-|sName, sSchema
+|"Name", "Schema"
 [t CREATE TABLE t (i int64, s string);]
 [u CREATE TABLE u (b bool, i bigint, t time, d duration);]
 
 -- 627
 SELECT * FROM __Column;
-|?TableName, ?Ordinal, ?Name, ?Type
+|"TableName", "Ordinal", "Name", "Type"
 
 -- 628
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int, s string);
 COMMIT;
 SELECT * FROM __Column ORDER BY TableName, Name;
-|sTableName, lOrdinal, sName, sType
+|"TableName", "Ordinal", "Name", "Type"
 [t 1 i int64]
 [t 2 s string]
 
@@ -7297,7 +7297,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE u (b bool, i bigint, t time, d duration);
 COMMIT;
 SELECT * FROM __Column ORDER BY TableName, Ordinal;
-|sTableName, lOrdinal, sName, sType
+|"TableName", "Ordinal", "Name", "Type"
 [t 1 i int64]
 [t 2 s string]
 [u 1 b bool]
@@ -7307,14 +7307,14 @@ SELECT * FROM __Column ORDER BY TableName, Ordinal;
 
 -- 630
 SELECT * FROM __Index;
-|?TableName, ?ColumnName, ?Name, ?IsUnique
+|"TableName", "ColumnName", "Name", "IsUnique"
 
 -- 631
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int, s string);
 COMMIT;
 SELECT * FROM __Index ORDER BY TableName, Name;
-|?TableName, ?ColumnName, ?Name, ?IsUnique
+|"TableName", "ColumnName", "Name", "IsUnique"
 
 -- 632
 BEGIN TRANSACTION;
@@ -7322,7 +7322,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t (i);
 COMMIT;
 SELECT * FROM __Index WHERE !hasPrefix(TableName, "__") ORDER BY TableName, ColumnName, Name;
-|sTableName, sColumnName, sName, bIsUnique
+|"TableName", "ColumnName", "Name", "IsUnique"
 [t i x false]
 
 -- 633
@@ -7333,7 +7333,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE u (b bool, i bigint, t time, d duration);
 COMMIT;
 SELECT * FROM __Index WHERE !hasPrefix(TableName, "__") ORDER BY TableName, ColumnName, Name;
-|sTableName, sColumnName, sName, bIsUnique
+|"TableName", "ColumnName", "Name", "IsUnique"
 [t i x false]
 [t id() id false]
 
@@ -7347,7 +7347,7 @@ BEGIN TRANSACTION;
 	CREATE UNIQUE INDEX y ON u (i);
 COMMIT;
 SELECT * FROM __Index WHERE !hasPrefix(TableName, "__") ORDER BY TableName, ColumnName, Name;
-|sTableName, sColumnName, sName, bIsUnique
+|"TableName", "ColumnName", "Name", "IsUnique"
 [t i x false]
 [t id() id false]
 [u i y true]
@@ -7366,7 +7366,7 @@ SELECT c.TableName, c.Ordinal, c.Name
 FROM __Table AS t, __Column AS c
 WHERE t.Name == "u" && t.Name == c.TableName
 ORDER BY c.Ordinal;
-|sc.TableName, lc.Ordinal, sc.Name
+|"c.TableName", "c.Ordinal", "c.Name"
 [u 1 b]
 [u 2 i]
 [u 3 t]
@@ -7378,7 +7378,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "test");
 COMMIT;
 SELECT * FROM t WHERE s == "test";
-|li, ss
+|"i", "s"
 [1 test]
 
 -- 637 // https://github.com/cznic/ql/issues/36
@@ -7388,7 +7388,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX idx_s ON t (s);
 COMMIT;
 SELECT * FROM t WHERE s == "test";
-|li, ss
+|"i", "s"
 [1 test]
 
 -- 638 // https://github.com/cznic/ql/issues/37
@@ -7401,7 +7401,7 @@ BEGIN TRANSACTION;
 		time);
 COMMIT;
 SELECT * FROM __Table ORDER BY Name; // Must sort, map range is not deterministic.
-|sName, sSchema
+|"Name", "Schema"
 [artist CREATE TABLE artist (id int64, name string);]
 [data_types CREATE TABLE data_types (id int64, _uint int64, _uint8 int64, _uint16 int64, _uint32 int64, _uint64 int64, _int int64, _int8 int64, _int16 int64, _int32 int64, _int64 int64, _float32 float32, _float64 float64, _bool bool, _string string, _date time, _time time);]
 
@@ -7415,7 +7415,7 @@ BEGIN TRANSACTION;
 		time);
 COMMIT;
 SELECT * FROM __Table WHERE Name == "artist";
-|sName, sSchema
+|"Name", "Schema"
 [artist CREATE TABLE artist (id int64, name string);]
 
 -- 640 // https://github.com/cznic/ql/issues/37
@@ -7428,7 +7428,7 @@ BEGIN TRANSACTION;
 		time);
 COMMIT;
 SELECT * FROM __Column ORDER BY TableName, Ordinal;
-|sTableName, lOrdinal, sName, sType
+|"TableName", "Ordinal", "Name", "Type"
 [artist 1 id int64]
 [artist 2 name string]
 [data_types 1 id int64]
@@ -7459,7 +7459,7 @@ BEGIN TRANSACTION;
 		time);
 COMMIT;
 SELECT * FROM __Column WHERE TableName == "artist" ORDER BY TableName, Ordinal;
-|sTableName, lOrdinal, sName, sType
+|"TableName", "Ordinal", "Name", "Type"
 [artist 1 id int64]
 [artist 2 name string]
 
@@ -7475,7 +7475,7 @@ BEGIN TRANSACTION;
 		(40, 50, 60);
 COMMIT;
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
-|lt.i, lt.j, lt.k, lu.x, lu.y, lu.z
+|"t.i", "t.j", "t.k", "u.x", "u.y", "u.z"
 [4 5 6 40 50 60]
 [4 5 6 10 20 30]
 [1 2 3 40 50 60]
@@ -7494,7 +7494,7 @@ BEGIN TRANSACTION;
 		(40, 50, 60);
 COMMIT;
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
-|lt.i, lt.j, lt.k, lu.x, lu.y, lu.z
+|"t.i", "t.j", "t.k", "u.x", "u.y", "u.z"
 [1 2 3 40 50 60]
 [1 2 3 10 20 30]
 [4 5 6 40 50 60]
@@ -7513,7 +7513,7 @@ BEGIN TRANSACTION;
 		(40, 50, 60);
 COMMIT;
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
-|lt.i, lt.j, lt.k, lu.x, lu.y, lu.z
+|"t.i", "t.j", "t.k", "u.x", "u.y", "u.z"
 [4 5 6 10 20 30]
 [4 5 6 40 50 60]
 [1 2 3 10 20 30]
@@ -7533,7 +7533,7 @@ BEGIN TRANSACTION;
 		(40, 50, 60);
 COMMIT;
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
-|lt.i, lt.j, lt.k, lu.x, lu.y, lu.z
+|"t.i", "t.j", "t.k", "u.x", "u.y", "u.z"
 [1 2 3 10 20 30]
 [1 2 3 40 50 60]
 [4 5 6 10 20 30]
@@ -7544,21 +7544,21 @@ BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 COMMIT;
 SELECT * FROM t OFFSET -1; // no rows -> not evaluated
-|?i
+|"i"
 
 -- 647 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 COMMIT;
 SELECT * FROM t OFFSET 0; // no rows -> not evaluated
-|?i
+|"i"
 
 -- 648 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 COMMIT;
 SELECT * FROM t OFFSET 1; // no rows -> not evaluated
-|?i
+|"i"
 
 -- 649 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7574,7 +7574,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() OFFSET 0;
-|li
+|"i"
 [42]
 [24]
 
@@ -7584,7 +7584,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() OFFSET 1;
-|li
+|"i"
 [24]
 
 -- 652 // https://github.com/cznic/ql/issues/41
@@ -7593,28 +7593,28 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() OFFSET 2;
-|?i
+|"i"
 
 -- 653 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT -1; // no rows -> not evaluated
-|?i
+|"i"
 
 -- 654 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 0; // no rows -> not evaluated
-|?i
+|"i"
 
 -- 655 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 1; // no rows -> not evaluated
-|?i
+|"i"
 
 -- 656 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7630,7 +7630,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 0;
-|?i
+|"i"
 
 -- 658 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7638,7 +7638,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 1;
-|li
+|"i"
 [42]
 
 -- 659 // https://github.com/cznic/ql/issues/41
@@ -7647,7 +7647,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 2;
-|li
+|"i"
 [42]
 [24]
 
@@ -7657,7 +7657,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 3;
-|li
+|"i"
 [42]
 [24]
 
@@ -7667,7 +7667,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 0;
-|?i
+|"i"
 
 -- 662 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7675,7 +7675,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 1;
-|?i
+|"i"
 
 -- 663 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7683,7 +7683,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 2;
-|?i
+|"i"
 
 -- 664 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7691,7 +7691,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 3;
-|?i
+|"i"
 
 -- 665 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7699,7 +7699,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 0;
-|li
+|"i"
 [42]
 
 -- 666 // https://github.com/cznic/ql/issues/41
@@ -7708,7 +7708,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 1;
-|li
+|"i"
 [24]
 
 -- 667 // https://github.com/cznic/ql/issues/41
@@ -7717,7 +7717,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 2;
-|?i
+|"i"
 
 -- 668 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7725,7 +7725,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 3;
-|?i
+|"i"
 
 -- 669 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7733,7 +7733,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 0;
-|li
+|"i"
 [42]
 [24]
 
@@ -7743,7 +7743,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 1;
-|li
+|"i"
 [24]
 
 -- 671 // https://github.com/cznic/ql/issues/41
@@ -7752,7 +7752,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 2;
-|?i
+|"i"
 
 -- 672 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7760,7 +7760,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 3;
-|?i
+|"i"
 
 -- 673 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7768,7 +7768,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 0;
-|li
+|"i"
 [42]
 [24]
 
@@ -7778,7 +7778,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 1;
-|li
+|"i"
 [24]
 
 -- 675 // https://github.com/cznic/ql/issues/41
@@ -7787,7 +7787,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 2;
-|?i
+|"i"
 
 -- 676 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7795,7 +7795,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42), (24);
 COMMIT;
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 3;
-|?i
+|"i"
 
 -- 677 // https://github.com/cznic/ql/issues/41
 BEGIN TRANSACTION;
@@ -7808,7 +7808,7 @@ SELECT * FROM
 	(SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a,
 	(SELECT * FROM u ORDER BY i) AS b,
 ORDER BY a.i, b.i;
-|la.i, lb.i
+|"a.i", "b.i"
 [2 10]
 [2 20]
 [2 30]
@@ -7827,7 +7827,7 @@ SELECT * FROM
 	(SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a,
 	(SELECT * FROM u ORDER BY i OFFSET 1) AS b,
 ORDER BY a.i, b.i;
-|la.i, lb.i
+|"a.i", "b.i"
 [2 20]
 [2 30]
 [3 20]
@@ -7844,7 +7844,7 @@ SELECT * FROM
 	(SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a,
 	(SELECT * FROM u ORDER BY i LIMIT 1) AS b,
 ORDER BY a.i, b.i;
-|la.i, lb.i
+|"a.i", "b.i"
 [2 10]
 [3 10]
 
@@ -7859,7 +7859,7 @@ SELECT * FROM
 	(SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a,
 	(SELECT * FROM u ORDER BY i LIMIT 1 OFFSET 1) AS b,
 ORDER BY a.i, b.i;
-|la.i, lb.i
+|"a.i", "b.i"
 [2 20]
 [3 20]
 
@@ -7875,7 +7875,7 @@ SELECT * FROM
 	(SELECT * FROM u ORDER BY i LIMIT 1 OFFSET 1) AS b,
 ORDER BY a.i, b.i
 LIMIT 1;
-|la.i, lb.i
+|"a.i", "b.i"
 [2 20]
 
 -- 682 // https://github.com/cznic/ql/issues/42
@@ -7902,7 +7902,7 @@ COMMIT;
 
 --' Should print 4.
 SELECT count(1) AS total FROM fibonacci WHERE input >= 5 && input <= 7 OR input == 3;
-|ltotal
+|"total"
 [4]
 
 -- 683 // https://github.com/cznic/ql/issues/42
@@ -7929,7 +7929,7 @@ COMMIT;
 
 --' Should output (6, 8) (5, 5).
 SELECT * FROM fibonacci WHERE input >= 5 && input <= 7 OR input == 3 ORDER BY input DESC LIMIT 2 OFFSET 1;
-|linput, loutput
+|"input", "output"
 [6 8]
 [5 5]
 
@@ -7958,7 +7958,7 @@ BEGIN TRANSACTION;
   DELETE FROM fibonacci WHERE input >= 5 && input <= 7 OR input == 3;
 COMMIT;
 SELECT * FROM fibonacci ORDER BY input;
-|linput, loutput
+|"input", "output"
 [0 0]
 [1 1]
 [2 1]
@@ -7993,7 +7993,7 @@ BEGIN TRANSACTION;
   DELETE FROM fibonacci WHERE input >= 5 && input <= 7 OR input == 3;
 COMMIT;
 SELECT * FROM fibonacci ORDER BY input;
-|linput, loutput
+|"input", "output"
 [0 0]
 [1 1]
 [2 1]
@@ -8027,7 +8027,7 @@ BEGIN TRANSACTION;
 COMMIT;
 --' Try to count the rows we've just deleted, using the very same condition. Result is 1, should be 0.
 SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 OR input == 3;
-|ltotal
+|"total"
 [0]
 
 -- 687 // https://github.com/cznic/ql/issues/42
@@ -8058,7 +8058,7 @@ BEGIN TRANSACTION;
 COMMIT;
 --' Try to count the rows we've just deleted, using the very same condition. Result is 1, should be 0.
 SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 OR input == 3;
-|ltotal
+|"total"
 [0]
 
 -- 688
@@ -8068,7 +8068,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|?i
+|"i"
 
 -- 689
 BEGIN TRANSACTION;
@@ -8077,7 +8077,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [2]
 
 -- 690
@@ -8087,7 +8087,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 
 -- 691
@@ -8097,7 +8097,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [2]
 [3]
 
@@ -8108,7 +8108,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [3]
 
@@ -8119,7 +8119,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 3;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [2]
 
@@ -8130,7 +8130,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [2]
 [3]
 [4]
@@ -8142,7 +8142,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [3]
 [4]
@@ -8154,7 +8154,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 3;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [2]
 [4]
@@ -8166,7 +8166,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 4;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [2]
 [3]
@@ -8179,7 +8179,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [3]
 [4]
 
@@ -8191,7 +8191,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [3]
 [4]
 
@@ -8203,7 +8203,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 3;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [4]
 
@@ -8215,7 +8215,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [4]
 
@@ -8227,7 +8227,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 4;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [2]
 
@@ -8239,7 +8239,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 3;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [2]
 
@@ -8251,7 +8251,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 3;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [2]
 [4]
 
@@ -8263,7 +8263,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [2]
 [4]
 
@@ -8275,7 +8275,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 4;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [2]
 [3]
 
@@ -8287,7 +8287,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 1;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [2]
 [3]
 
@@ -8299,7 +8299,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 4;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [3]
 
@@ -8311,7 +8311,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 2;
 COMMIT;
 SELECT * FROM t ORDER BY i;
-|li
+|"i"
 [1]
 [3]
 
@@ -8326,7 +8326,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "bar"), (2, "foo");
 COMMIT;
 SELECT s FROM t;
-|ss
+|"s"
 [foo]
 [bar]
 
@@ -8337,7 +8337,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "bar"), (2, "foo");
 COMMIT;
 SELECT * FROM x;
-|sx
+|"x"
 [bar]
 [foo]
 
@@ -8358,7 +8358,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "bar"), (2, "foo");
 COMMIT;
 SELECT * FROM x;
-|sx
+|"x"
 [bar]
 [foo]
 
@@ -8370,7 +8370,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "bar"), (2, "foo");
 COMMIT;
 SELECT * FROM x;
-|sx
+|"x"
 [bar]
 [foo]
 
@@ -8382,7 +8382,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "bar"), (2, "foo");
 COMMIT;
 SELECT s FROM t WHERE s != "z";
-|ss
+|"s"
 [foo]
 [bar]
 
@@ -8393,7 +8393,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1, "bar"), (2, "foo");
 COMMIT;
 SELECT s FROM t WHERE s < "z";
-|ss
+|"s"
 [bar]
 [foo]
 
@@ -8405,7 +8405,7 @@ BEGIN TRANSACTION;
 	DROP INDEX x;
 COMMIT;
 SELECT s FROM t WHERE s < "z";
-|ss
+|"s"
 [foo]
 [bar]
 
@@ -8440,7 +8440,7 @@ BEGIN TRANSACTION;
 	DROP INDEX IF EXISTS x;
 COMMIT;
 SELECT s FROM t WHERE s < "z";
-|ss
+|"s"
 [foo]
 [bar]
 
@@ -8453,7 +8453,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT p, string(c) FROM t;
-|sp, s
+|"p", ""
 [empty ]
 
 -- 723
@@ -8468,7 +8468,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE p == "empty";
 COMMIT;
 SELECT p, string(c) FROM t;
-|?p, ?
+|"p", ""
 
 -- 724
 BEGIN TRANSACTION;
@@ -8482,7 +8482,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE p == "empty";
 COMMIT;
 SELECT p, string(c) FROM t;
-|?p, ?
+|"p", ""
 
 -- S 725
 BEGIN TRANSACTION;
@@ -8510,7 +8510,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName;
-|sLastName, lDepartmentID
+|"LastName", "DepartmentID"
 [Heisenberg 1033]
 [Jones 1033]
 [Rafferty 31]
@@ -8534,7 +8534,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE id() IN (SELECT id() FROM t);
 COMMIT;
 SELECT * FROM t;
-|?username, ?departname, ?created, ?detail_id, ?height, ?avatar, ?is_man
+|"username", "departname", "created", "detail_id", "height", "avatar", "is_man"
 
 -- 729 // https://github.com/cznic/ql/issues/49
 BEGIN TRANSACTION;
@@ -8552,7 +8552,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE id() IN (SELECT id() FROM t);
 COMMIT;
 SELECT * FROM t;
-|?username, ?departname, ?created, ?detail_id, ?height, ?avatar, ?is_man
+|"username", "departname", "created", "detail_id", "height", "avatar", "is_man"
 
 -- 730 // https://github.com/cznic/ql/issues/49
 BEGIN TRANSACTION;
@@ -8570,7 +8570,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE id() IN (SELECT id() FROM t);
 COMMIT;
 SELECT * FROM t;
-|?username, ?departname, ?created, ?detail_id, ?height, ?avatar, ?is_man
+|"username", "departname", "created", "detail_id", "height", "avatar", "is_man"
 
 -- 731 // https://github.com/cznic/ql/issues/49
 BEGIN TRANSACTION;
@@ -8588,7 +8588,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE id() IN (SELECT id() FROM t);
 COMMIT;
 SELECT * FROM t;
-|?username, ?departname, ?created, ?detail_id, ?height, ?avatar, ?is_man
+|"username", "departname", "created", "detail_id", "height", "avatar", "is_man"
 
 -- 732 // https://github.com/cznic/ql/issues/49
 BEGIN TRANSACTION;
@@ -8614,7 +8614,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE id() IN (SELECT id() FROM t WHERE username == "xiaolunwen"); //TODO simplify, also everywhere else
 COMMIT;
 SELECT id() IN (SELECT id() FROM t WHERE username == "2xiaolunwen"), username == "2xiaolunwen", len(string(avatar)) == 1<<21 FROM t;
-|b, b, b
+|"", "", ""
 [true true true]
 
 -- 733 // https://github.com/cznic/ql/issues/49
@@ -8641,7 +8641,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE id() IN (SELECT id() FROM t WHERE username == "2xiaolunwen");
 COMMIT;
 SELECT id() IN (SELECT id() FROM t WHERE username == "xiaolunwen"), username == "xiaolunwen", len(string(avatar)) == 1<<20 FROM t;
-|b, b, b
+|"", "", ""
 [true true true]
 
 -- 734 // https://github.com/cznic/ql/issues/51
@@ -8652,7 +8652,7 @@ BEGIN TRANSACTION;
 	INSERT INTO no_id_user (user, remain, total) VALUES ("xlw", 20, 100);
 COMMIT;
 SELECT user, remain, total FROM no_id_user WHERE user == "xlw" LIMIT 1;
-|suser, lremain, ltotal
+|"user", "remain", "total"
 [xlw 20 100]
 
 -- 735
@@ -8661,7 +8661,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1), (2), (3), (4), (5), (6);
 COMMIT;
 SELECT * FROM t WHERE id() < 4; // reverse order -> no index used
-|li
+|"i"
 [3]
 [2]
 [1]
@@ -8673,7 +8673,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1), (2), (3), (4), (5), (6);
 COMMIT;
 SELECT * FROM t WHERE i < 4 ; // ordered -> index is used
-|li
+|"i"
 [1]
 [2]
 [3]
@@ -8685,7 +8685,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1), (2), (3), (4), (5), (6);
 COMMIT;
 SELECT * FROM t WHERE i <= 4; // ordered -> index is used
-|li
+|"i"
 [1]
 [2]
 [3]
@@ -8698,7 +8698,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1), (2), (3), (4), (5), (6);
 COMMIT;
 SELECT * FROM t WHERE i == 4;
-|li
+|"i"
 [4]
 
 -- 739
@@ -8708,7 +8708,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1), (2), (3), (4), (5), (6);
 COMMIT;
 SELECT * FROM t WHERE i >= 4; // ordered -> index is used
-|li
+|"i"
 [4]
 [5]
 [6]
@@ -8720,7 +8720,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1), (2), (3), (4), (5), (6);
 COMMIT;
 SELECT * FROM t WHERE i > 4;
-|li
+|"i"
 [6]
 [5]
 
@@ -8736,7 +8736,7 @@ COMMIT;
 SELECT * FROM
 	(SELECT i FROM t WHERE i < 4) AS t,
 	(SELECT * FROM u WHERE i < 40) AS u; // ordered -> both indices are used
-|lt.i, lu.i
+|"t.i", "u.i"
 [1 10]
 [1 20]
 [1 30]
@@ -8755,7 +8755,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT max(t) as T FROM t;
-|?T
+|"T"
 [<nil>]
 
 -- 743 // https://github.com/cznic/ql/pull/65
@@ -8767,7 +8767,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT max(t) as T FROM t;
-|?T
+|"T"
 [<nil>]
 
 -- 744 // https://github.com/cznic/ql/pull/65
@@ -8779,7 +8779,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT max(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:11 +0000 UTC]
 
 -- 745 // https://github.com/cznic/ql/pull/65
@@ -8791,7 +8791,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT max(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:11 +0000 UTC]
 
 -- 746 // https://github.com/cznic/ql/pull/65
@@ -8803,7 +8803,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT max(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:12 +0000 UTC]
 
 -- 747 // https://github.com/cznic/ql/pull/65
@@ -8815,7 +8815,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT max(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:12 +0000 UTC]
 
 -- 748 // https://github.com/cznic/ql/pull/65
@@ -8826,7 +8826,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT min(t) as T FROM t;
-|?T
+|"T"
 [<nil>]
 
 -- 749 // https://github.com/cznic/ql/pull/65
@@ -8838,7 +8838,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT min(t) as T FROM t;
-|?T
+|"T"
 [<nil>]
 
 -- 750 // https://github.com/cznic/ql/pull/65
@@ -8850,7 +8850,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT min(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:11 +0000 UTC]
 
 -- 751 // https://github.com/cznic/ql/pull/65
@@ -8862,7 +8862,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT min(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:11 +0000 UTC]
 
 -- 752 // https://github.com/cznic/ql/pull/65
@@ -8874,7 +8874,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT min(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:11 +0000 UTC]
 
 -- 753 // https://github.com/cznic/ql/pull/65
@@ -8886,7 +8886,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT min(t) as T FROM t;
-|?T
+|"T"
 [2014-08-08 14:05:11 +0000 UTC]
 
 -- 754 // https://github.com/cznic/ql/issues/68
@@ -8899,7 +8899,7 @@ BEGIN TRANSACTION;
 	UPDATE department SET score=0 WHERE Name=="small";
 COMMIT;
 SELECT * FROM department ORDER BY Name;
-|sName, ?score
+|"Name", "score"
 [large <nil>]
 [medium <nil>]
 [small 0]
@@ -8919,7 +8919,7 @@ SELECT id(), s
 FROM t
 WHERE s LIKE "foo"
 ORDER BY id();
-|l, ss
+|"", "s"
 [1 seafood]
 [2 A fool on the hill]
 [5 foobar]
@@ -8939,7 +8939,7 @@ SELECT id(), s
 FROM t
 WHERE !(s LIKE "foo")
 ORDER BY id();
-|l, ss
+|"", "s"
 [4 barbaz]
 
 -- 757
@@ -8957,7 +8957,7 @@ SELECT id(), s
 FROM t
 WHERE s LIKE "foo" IS NULL
 ORDER BY id();
-|l, ?s
+|"", "s"
 [3 <nil>]
 
 -- 758
@@ -8975,7 +8975,7 @@ SELECT id(), s
 FROM t
 WHERE s LIKE "foo" IS NOT NULL
 ORDER BY id();
-|l, ss
+|"", "s"
 [1 seafood]
 [2 A fool on the hill]
 [4 barbaz]
@@ -8996,7 +8996,7 @@ SELECT id(), s
 FROM t
 WHERE s LIKE "bar"
 ORDER BY id();
-|l, ss
+|"", "s"
 [4 barbaz]
 [5 foobar]
 
@@ -9015,7 +9015,7 @@ SELECT id(), s
 FROM t
 WHERE s LIKE "^bar"
 ORDER BY id();
-|l, ss
+|"", "s"
 [4 barbaz]
 
 -- 761
@@ -9033,7 +9033,7 @@ SELECT id(), s
 FROM t
 WHERE s LIKE "bar$"
 ORDER BY id();
-|l, ss
+|"", "s"
 [5 foobar]
 
 -- 762
@@ -9051,7 +9051,7 @@ SELECT id(), s
 FROM t
 WHERE s LIKE "bar"+"$"
 ORDER BY id();
-|l, ss
+|"", "s"
 [5 foobar]
 
 -- 763
@@ -9069,7 +9069,7 @@ SELECT id(), s
 FROM t
 WHERE s+"qux" LIKE "qux"+"$"
 ORDER BY id();
-|l, ss
+|"", "s"
 [1 seafood]
 [2 A fool on the hill]
 [4 barbaz]
@@ -9090,7 +9090,7 @@ SELECT id(), s
 FROM t
 WHERE s+"quxx" LIKE "qux"+"$"
 ORDER BY id();
-|?, ?s
+|"", "s"
 
 -- 765 // https://github.com/cznic/ql/issues/75
 BEGIN TRANSACTION;
@@ -9106,7 +9106,7 @@ FROM
 	bar
 WHERE bar.fooID == foo.ID
 ORDER BY foo.ID;
-|lfoo.ID, lfoo.i, lbar.fooID, sbar.s
+|"foo.ID", "foo.i", "bar.fooID", "bar.s"
 [1 10 1 ten]
 [2 20 2 twenty]
 
@@ -9122,7 +9122,7 @@ SELECT *
 FROM foo, bar
 WHERE bar.fooID == id(foo)
 ORDER BY id(foo);
-|lfoo.i, lbar.fooID, sbar.s
+|"foo.i", "bar.fooID", "bar.s"
 [10 1 ten]
 [20 2 twenty]
 
@@ -9141,7 +9141,7 @@ COMMIT;
 SELECT *
 FROM t
 WHERE name == "b" AND mail == "bar@example.com";
-|sname, smail
+|"name", "mail"
 [b bar@example.com]
 
 -- 768 // https://github.com/cznic/ql/issues/81
@@ -9159,7 +9159,7 @@ COMMIT;
 SELECT *
 FROM t
 WHERE name == "b" and mail == "bar@example.com";
-|sname, smail
+|"name", "mail"
 [b bar@example.com]
 
 -- 769 // https://github.com/cznic/ql/issues/81
@@ -9178,7 +9178,7 @@ SELECT *
 FROM t
 WHERE name == "b" OR mail == "bar@example.com"
 ORDER BY name;
-|sname, smail
+|"name", "mail"
 [b bar@example.com]
 [e bar@example.com]
 
@@ -9198,7 +9198,7 @@ SELECT *
 FROM t
 WHERE name == "b" or mail == "bar@example.com"
 ORDER BY name;
-|sname, smail
+|"name", "mail"
 [b bar@example.com]
 [e bar@example.com]
 
@@ -9218,7 +9218,7 @@ BEGIN TRANSACTION;
 		SELECT id() FROM tableA WHERE i&1 == 0;
 COMMIT;
 SELECT id(), i FROM tableA WHERE id() IN (SELECT idA FROM tableB) ORDER BY id();
-|l, li
+|"", "i"
 [2 12]
 [4 14]
 [6 16]
@@ -9239,7 +9239,7 @@ BEGIN TRANSACTION;
 		SELECT id() FROM tableA WHERE i&1 == 0;
 COMMIT;
 SELECT id(), i FROM tableA WHERE id() NOT IN (SELECT idA FROM tableB) ORDER BY id();
-|l, li
+|"", "i"
 [1 11]
 [3 13]
 [5 15]
@@ -9261,7 +9261,7 @@ BEGIN TRANSACTION;
 	DELETE FROM tableA WHERE id() IN (SELECT idA FROM tableB);
 COMMIT;
 SELECT id(), i FROM tableA ORDER BY id();
-|l, li
+|"", "i"
 [1 11]
 [3 13]
 [5 15]
@@ -9283,7 +9283,7 @@ BEGIN TRANSACTION;
 	DELETE FROM tableA WHERE id() NOT IN (SELECT idA FROM tableB);
 COMMIT;
 SELECT id(), i FROM tableA ORDER BY id();
-|l, li
+|"", "i"
 [2 12]
 [4 14]
 [6 16]
@@ -9305,7 +9305,7 @@ BEGIN TRANSACTION;
 	DELETE FROM tableA WHERE 2 IN (SELECT idA FROM tableB);
 COMMIT;
 SELECT id(), i FROM tableA ORDER BY id();
-|?, ?i
+|"", "i"
 
 -- 776 // https://github.com/cznic/ql/issues/72, coerce
 BEGIN TRANSACTION;
@@ -9324,7 +9324,7 @@ BEGIN TRANSACTION;
 	DELETE FROM tableA WHERE 2 NOT IN (SELECT idA FROM tableB);
 COMMIT;
 SELECT id(), i FROM tableA ORDER BY id();
-|l, li
+|"", "i"
 [1 11]
 [2 12]
 [3 13]
@@ -9349,7 +9349,7 @@ BEGIN TRANSACTION;
 	DELETE FROM tableA WHERE 3.14 IN (SELECT idA FROM tableB);
 COMMIT;
 SELECT id(), i FROM tableA ORDER BY id();
-|l, li
+|"", "i"
 [1 11]
 [2 12]
 [3 13]
@@ -9374,7 +9374,7 @@ BEGIN TRANSACTION;
 	DELETE FROM tableA WHERE 3.14 NOT IN (SELECT idA FROM tableB);
 COMMIT;
 SELECT id(), i FROM tableA ORDER BY id();
-|?, ?i
+|"", "i"
 
 -- 779 // https://github.com/cznic/ql/issues/72, invalid field type
 BEGIN TRANSACTION;
@@ -9435,7 +9435,7 @@ BEGIN TRANSACTION;
 		SELECT id() FROM tableA WHERE i&1 == 0;
 COMMIT;
 SELECT i FROM tableA WHERE id() IN (SELECT idA from tableB) ORDER BY id();
-|li
+|"i"
 [12]
 [14]
 [16]
@@ -9459,7 +9459,7 @@ BEGIN TRANSACTION;
 	INSERT INTO tableB VALUES(NULL);
 COMMIT;
 SELECT i FROM tableA WHERE id() IN (SELECT idA from tableB) ORDER BY id();
-|?i
+|"i"
 
 -- 783 // https://github.com/cznic/ql/issues/84
 BEGIN TRANSACTION;
@@ -9471,7 +9471,7 @@ INSERT INTO testA (comment) VALUES ("c1");
 UPDATE testA SET data = blob("newVal");
 COMMIT;
 SELECT * FROM testA;
-|scomment, ?data
+|"comment", "data"
 [c1 [110 101 119 86 97 108]]
 
 -- 784 // https://github.com/cznic/ql/issues/84
@@ -9484,7 +9484,7 @@ INSERT INTO testA (comment) VALUES ("c1");
 UPDATE testA SET data = __testBlob(257);
 COMMIT;
 SELECT * FROM testA;
-|scomment, ?data
+|"comment", "data"
 [c1 [209 231 244 253 191 74 169 85 3 88 111 250 130 24 50 218 91 40 161 60 32 53 58 129 75 81 71 109 70 211 146 67 107 65 150 142 179 2 173 53 73 229 68 154 46 108 47 91 179 98 107 202 157 189 137 4 47 39 93 235 58 112 186 143 68 85 217 33 155 218 180 143 27 76 155 226 205 31 187 12 68 33 75 110 208 42 99 61 223 170 228 184 243 241 64 39 174 64 19 129 203 84 254 78 102 59 16 104 151 21 201 4 117 20 99 125 162 19 201 211 171 71 26 173 37 52 16 115 143 113 128 206 85 192 126 252 146 224 184 146 101 35 198 231 35 236 189 114 184 92 58 124 128 162 106 95 241 186 172 196 31 138 44 178 168 127 69 116 225 27 53 171 157 185 48 205 167 150 77 69 129 86 72 117 129 121 62 224 186 31 116 4 196 103 206 63 185 236 75 172 217 51 223 26 195 127 79 72 199 160 103 92 192 202 67 17 99 200 111 174 71 24 64 119 113 178 105 44 12 25 70 6 69 173 90 100 171 122 155 220 185 99 41 101 190 142 44 217 102 93 63 225 218 239 167 40 254]]
 
 -- 785 // https://github.com/cznic/ql/issues/84
@@ -9497,7 +9497,7 @@ INSERT INTO testA (comment) VALUES ("c1"), ("c2");
 UPDATE testA SET data = blob("newVal") WHERE comment == "c1";
 COMMIT;
 SELECT * FROM testA ORDER BY comment;
-|scomment, ?data
+|"comment", "data"
 [c1 [110 101 119 86 97 108]]
 [c2 <nil>]
 
@@ -9511,7 +9511,7 @@ INSERT INTO testA (comment) VALUES ("c1"), ("c2");
 UPDATE testA SET data = blob("newVal") WHERE comment == "c2";
 COMMIT;
 SELECT * FROM testA ORDER BY comment;
-|scomment, ?data
+|"comment", "data"
 [c1 <nil>]
 [c2 [110 101 119 86 97 108]]
 
@@ -9525,7 +9525,7 @@ INSERT INTO testA (comment) VALUES ("c1"), ("c2");
 UPDATE testA SET data = blob("newVal");
 COMMIT;
 SELECT * FROM testA ORDER BY comment;
-|scomment, ?data
+|"comment", "data"
 [c1 [110 101 119 86 97 108]]
 [c2 [110 101 119 86 97 108]]
 
@@ -9539,7 +9539,7 @@ INSERT INTO testA (comment) VALUES ("c1"), ("c2");
 UPDATE testA SET data = __testBlob(257) WHERE comment == "c1";
 COMMIT;
 SELECT * FROM testA ORDER BY comment;
-|scomment, ?data
+|"comment", "data"
 [c1 [209 231 244 253 191 74 169 85 3 88 111 250 130 24 50 218 91 40 161 60 32 53 58 129 75 81 71 109 70 211 146 67 107 65 150 142 179 2 173 53 73 229 68 154 46 108 47 91 179 98 107 202 157 189 137 4 47 39 93 235 58 112 186 143 68 85 217 33 155 218 180 143 27 76 155 226 205 31 187 12 68 33 75 110 208 42 99 61 223 170 228 184 243 241 64 39 174 64 19 129 203 84 254 78 102 59 16 104 151 21 201 4 117 20 99 125 162 19 201 211 171 71 26 173 37 52 16 115 143 113 128 206 85 192 126 252 146 224 184 146 101 35 198 231 35 236 189 114 184 92 58 124 128 162 106 95 241 186 172 196 31 138 44 178 168 127 69 116 225 27 53 171 157 185 48 205 167 150 77 69 129 86 72 117 129 121 62 224 186 31 116 4 196 103 206 63 185 236 75 172 217 51 223 26 195 127 79 72 199 160 103 92 192 202 67 17 99 200 111 174 71 24 64 119 113 178 105 44 12 25 70 6 69 173 90 100 171 122 155 220 185 99 41 101 190 142 44 217 102 93 63 225 218 239 167 40 254]]
 [c2 <nil>]
 
@@ -9553,7 +9553,7 @@ INSERT INTO testA (comment) VALUES ("c1"), ("c2");
 UPDATE testA SET data = __testBlob(257) WHERE comment == "c2";
 COMMIT;
 SELECT * FROM testA ORDER BY comment;
-|scomment, ?data
+|"comment", "data"
 [c1 <nil>]
 [c2 [209 231 244 253 191 74 169 85 3 88 111 250 130 24 50 218 91 40 161 60 32 53 58 129 75 81 71 109 70 211 146 67 107 65 150 142 179 2 173 53 73 229 68 154 46 108 47 91 179 98 107 202 157 189 137 4 47 39 93 235 58 112 186 143 68 85 217 33 155 218 180 143 27 76 155 226 205 31 187 12 68 33 75 110 208 42 99 61 223 170 228 184 243 241 64 39 174 64 19 129 203 84 254 78 102 59 16 104 151 21 201 4 117 20 99 125 162 19 201 211 171 71 26 173 37 52 16 115 143 113 128 206 85 192 126 252 146 224 184 146 101 35 198 231 35 236 189 114 184 92 58 124 128 162 106 95 241 186 172 196 31 138 44 178 168 127 69 116 225 27 53 171 157 185 48 205 167 150 77 69 129 86 72 117 129 121 62 224 186 31 116 4 196 103 206 63 185 236 75 172 217 51 223 26 195 127 79 72 199 160 103 92 192 202 67 17 99 200 111 174 71 24 64 119 113 178 105 44 12 25 70 6 69 173 90 100 171 122 155 220 185 99 41 101 190 142 44 217 102 93 63 225 218 239 167 40 254]]
 
@@ -9567,7 +9567,7 @@ INSERT INTO testA (comment) VALUES ("c1"), ("c2");
 UPDATE testA SET data = __testBlob(257);
 COMMIT;
 SELECT * FROM testA ORDER BY comment;
-|scomment, ?data
+|"comment", "data"
 [c1 [209 231 244 253 191 74 169 85 3 88 111 250 130 24 50 218 91 40 161 60 32 53 58 129 75 81 71 109 70 211 146 67 107 65 150 142 179 2 173 53 73 229 68 154 46 108 47 91 179 98 107 202 157 189 137 4 47 39 93 235 58 112 186 143 68 85 217 33 155 218 180 143 27 76 155 226 205 31 187 12 68 33 75 110 208 42 99 61 223 170 228 184 243 241 64 39 174 64 19 129 203 84 254 78 102 59 16 104 151 21 201 4 117 20 99 125 162 19 201 211 171 71 26 173 37 52 16 115 143 113 128 206 85 192 126 252 146 224 184 146 101 35 198 231 35 236 189 114 184 92 58 124 128 162 106 95 241 186 172 196 31 138 44 178 168 127 69 116 225 27 53 171 157 185 48 205 167 150 77 69 129 86 72 117 129 121 62 224 186 31 116 4 196 103 206 63 185 236 75 172 217 51 223 26 195 127 79 72 199 160 103 92 192 202 67 17 99 200 111 174 71 24 64 119 113 178 105 44 12 25 70 6 69 173 90 100 171 122 155 220 185 99 41 101 190 142 44 217 102 93 63 225 218 239 167 40 254]]
 [c2 [209 231 244 253 191 74 169 85 3 88 111 250 130 24 50 218 91 40 161 60 32 53 58 129 75 81 71 109 70 211 146 67 107 65 150 142 179 2 173 53 73 229 68 154 46 108 47 91 179 98 107 202 157 189 137 4 47 39 93 235 58 112 186 143 68 85 217 33 155 218 180 143 27 76 155 226 205 31 187 12 68 33 75 110 208 42 99 61 223 170 228 184 243 241 64 39 174 64 19 129 203 84 254 78 102 59 16 104 151 21 201 4 117 20 99 125 162 19 201 211 171 71 26 173 37 52 16 115 143 113 128 206 85 192 126 252 146 224 184 146 101 35 198 231 35 236 189 114 184 92 58 124 128 162 106 95 241 186 172 196 31 138 44 178 168 127 69 116 225 27 53 171 157 185 48 205 167 150 77 69 129 86 72 117 129 121 62 224 186 31 116 4 196 103 206 63 185 236 75 172 217 51 223 26 195 127 79 72 199 160 103 92 192 202 67 17 99 200 111 174 71 24 64 119 113 178 105 44 12 25 70 6 69 173 90 100 171 122 155 220 185 99 41 101 190 142 44 217 102 93 63 225 218 239 167 40 254]]
 
@@ -9577,7 +9577,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (43.2);
 COMMIT;
 SELECT formatFloat(c) FROM t;
-|s
+|""
 [43.2]
 
 -- 792
@@ -9586,7 +9586,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (43.2);
 COMMIT;
 SELECT formatFloat(c) FROM t;
-|s
+|""
 [43.2]
 
 -- 793
@@ -9595,7 +9595,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (43.2);
 COMMIT;
 SELECT formatFloat(c, 'b') FROM t;
-|s
+|""
 [6079859496950170p-47]
 
 -- 794
@@ -9604,7 +9604,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (43.2);
 COMMIT;
 SELECT formatFloat(c, 'e', 5) FROM t;
-|s
+|""
 [4.32000e+01]
 
 -- 795
@@ -9613,7 +9613,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (43.2);
 COMMIT;
 SELECT formatFloat(c, 'b', 7, 32) FROM t;
-|s
+|""
 [11324621p-18]
 
 -- 796
@@ -9622,7 +9622,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-42);
 COMMIT;
 SELECT formatInt(c) FROM t;
-|s
+|""
 [-42]
 
 -- 797
@@ -9631,7 +9631,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-42);
 COMMIT;
 SELECT formatInt(c) FROM t;
-|s
+|""
 [-42]
 
 -- 798
@@ -9640,7 +9640,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [-26]
 
 -- 799
@@ -9649,7 +9649,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT formatInt(c) FROM t;
-|s
+|""
 [42]
 
 -- 800
@@ -9658,7 +9658,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT formatInt(c) FROM t;
-|s
+|""
 [42]
 
 -- 801
@@ -9667,7 +9667,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [26]
 
 -- 802
@@ -9676,7 +9676,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [-26]
 
 -- 803
@@ -9685,7 +9685,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [26]
 
 -- 804
@@ -9694,7 +9694,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [-26]
 
 -- 805
@@ -9703,7 +9703,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [26]
 
 -- 806
@@ -9712,7 +9712,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [-26]
 
 -- 807
@@ -9721,7 +9721,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (42);
 COMMIT;
 SELECT formatInt(c, 18) FROM t;
-|s
+|""
 [26]
 
 -- 808
@@ -9731,7 +9731,7 @@ BEGIN TRANSACTION;
         ALTER TABLE t ADD b blob;
 COMMIT;
 SELECT * FROM t;
-|li, ?b
+|"i", "b"
 [42 <nil>]
 
 -- 809
@@ -9742,7 +9742,7 @@ BEGIN TRANSACTION;
         UPDATE t b = blob("a");
 COMMIT;
 SELECT * FROM t;
-|li, ?b
+|"i", "b"
 [42 [97]]
 
 -- 810 // https://github.com/cznic/ql/issues/85
@@ -9781,7 +9781,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t (i int DEFAULT 42);
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i false  42]
 
 -- 816 // https://github.com/cznic/ql/issues/85
@@ -9789,7 +9789,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t (i int NOT NULL);
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i true  ]
 
 -- 817 // https://github.com/cznic/ql/issues/85
@@ -9797,7 +9797,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t (i int NOT NULL DEFAULT 43);
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i true  43]
 
 -- 818 // https://github.com/cznic/ql/issues/85
@@ -9805,7 +9805,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t (i int i > 44);
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i false i>44 ]
 
 -- 819 // https://github.com/cznic/ql/issues/85
@@ -9813,7 +9813,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t (i int i > 45 DEFAULT 46);
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i false i>45 46]
 
 -- 820 // https://github.com/cznic/ql/issues/85
@@ -9840,7 +9840,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string DEFAULT "foo";
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t s false  "foo"]
 
 -- 823 // https://github.com/cznic/ql/issues/85
@@ -9851,7 +9851,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string DEFAULT "foo";
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t s false  "foo"]
 
 -- 824 // https://github.com/cznic/ql/issues/85
@@ -9860,7 +9860,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string NOT NULL;
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t s true  ]
 
 -- 825 // https://github.com/cznic/ql/issues/85
@@ -9871,7 +9871,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t ADD s string NOT NULL;
 COMMIT;
 SELECT * FROM __Column2;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t s true  ]
 
 -- 826 // https://github.com/cznic/ql/issues/85
@@ -9920,7 +9920,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t (i int DEFAULT 42, s string DEFAULT 43);
 COMMIT;
 SELECT * FROM __Column2 ORDER BY Name;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i false  42]
 [t s false  43]
 
@@ -9930,7 +9930,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN s;
 COMMIT;
 SELECT * FROM __Column2 ORDER BY Name;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i false  42]
 
 -- 832 // https://github.com/cznic/ql/issues/85
@@ -9941,7 +9941,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN s;
 COMMIT;
 SELECT * FROM __Column2 ORDER BY Name;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i false  42]
 
 -- 833 // https://github.com/cznic/ql/issues/85
@@ -9950,7 +9950,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN i;
 COMMIT;
 SELECT * FROM __Column2 ORDER BY Name;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t s false  43]
 
 -- 834 // https://github.com/cznic/ql/issues/85
@@ -9961,7 +9961,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN i;
 COMMIT;
 SELECT * FROM __Column2 ORDER BY Name;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t s false  43]
 
 -- 835 // https://github.com/cznic/ql/issues/85
@@ -9970,7 +9970,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42);
 COMMIT;
 SELECT * FROM __Column2 ORDER BY Name;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t i true  ]
 
 -- 836 // https://github.com/cznic/ql/issues/85
@@ -9979,7 +9979,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL, NULL, NULL);
 COMMIT;
 SELECT * FROM t;
-|?a, ?b, ?c
+|"a", "b", "c"
 [<nil> <nil> <nil>]
 
 -- 837 // https://github.com/cznic/ql/issues/85
@@ -9988,7 +9988,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL, 42, NULL);
 COMMIT;
 SELECT * FROM t;
-|?a, lb, ?c
+|"a", "b", "c"
 [<nil> 42 <nil>]
 
 -- 838 // https://github.com/cznic/ql/issues/85
@@ -10005,7 +10005,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL, NULL, NULL);
 COMMIT;
 SELECT * FROM t;
-|?a, lb, ?c
+|"a", "b", "c"
 [<nil> 42 <nil>]
 
 -- 840 // https://github.com/cznic/ql/issues/85
@@ -10030,7 +10030,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL, 43, NULL);
 COMMIT;
 SELECT * FROM t;
-|?a, lb, ?c
+|"a", "b", "c"
 [<nil> 43 <nil>]
 
 -- 843 // https://github.com/cznic/ql/issues/85
@@ -10047,7 +10047,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL, NULL, NULL);
 COMMIT;
 SELECT * FROM t;
-|?a, lb, ?c
+|"a", "b", "c"
 [<nil> 43 <nil>]
 
 -- 845 // https://github.com/cznic/ql/issues/85
@@ -10064,7 +10064,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL, 43, NULL);
 COMMIT;
 SELECT * FROM t;
-|?a, lb, ?c
+|"a", "b", "c"
 [<nil> 43 <nil>]
 
 -- 847 // https://github.com/cznic/ql/issues/85
@@ -10073,7 +10073,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(1, 2, 3);
 COMMIT;
 SELECT * FROM t;
-|la, lb, lc
+|"a", "b", "c"
 [1 2 3]
 
 -- 848 // https://github.com/cznic/ql/issues/85
@@ -10098,7 +10098,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(1, NULL, 3);
 COMMIT;
 SELECT * FROM t;
-|la, lb, lc
+|"a", "b", "c"
 [1 2 3]
 
 -- 851 // https://github.com/cznic/ql/issues/85
@@ -10137,7 +10137,7 @@ BEGIN TRANSACTION;
 	INSERT INTO department VALUES ("HQ");
 COMMIT;
 SELECT * FROM department;
-|sDepartmentName
+|"DepartmentName"
 [HQ]
 
 -- 855 // https://github.com/cznic/ql/issues/85
@@ -10149,7 +10149,7 @@ BEGIN TRANSACTION;
 	INSERT INTO department VALUES (NULL);
 COMMIT;
 SELECT * FROM department;
-|sDepartmentName
+|"DepartmentName"
 [HQ]
 
 -- 856 // https://github.com/cznic/ql/issues/85
@@ -10172,7 +10172,7 @@ BEGIN TRANSACTION;
 	INSERT INTO department VALUES ("R/D");
 COMMIT;
 SELECT * FROM department;
-|sDepartmentName
+|"DepartmentName"
 [R/D]
 
 -- 858 // https://github.com/cznic/ql/issues/85
@@ -10183,7 +10183,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT TimeStamp IS NOT NULL FROM t;
-|b
+|""
 [true]
 
 -- 859 // https://github.com/cznic/ql/issues/85
@@ -10214,7 +10214,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(now()-duration("1s"));
 COMMIT;
 SELECT TimeStamp IS NOT NULL FROM t;
-|b
+|""
 [true]
 
 -- 862 // https://github.com/cznic/ql/issues/85
@@ -10225,7 +10225,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(now());
 COMMIT;
 SELECT TimeStamp IS NOT NULL FROM t;
-|b
+|""
 [true]
 
 -- 863 // https://github.com/cznic/ql/issues/85
@@ -10246,7 +10246,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES("123: foo");
 COMMIT;
 SELECT Event FROM t;
-|sEvent
+|"Event"
 [123: foo]
 
 -- 865 // https://github.com/cznic/ql/issues/85
@@ -10257,7 +10257,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t(b) SELECT * FROM s;
 COMMIT;
 SELECT b FROM t ORDER BY b DESC;
-|lb
+|"b"
 [4]
 [3]
 [2]
@@ -10272,7 +10272,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t(b) SELECT * FROM s WHERE i IS NOT NULL;
 COMMIT;
 SELECT b FROM t ORDER BY b DESC;
-|lb
+|"b"
 [4]
 [3]
 [2]
@@ -10295,7 +10295,7 @@ BEGIN TRANSACTION;
 	UPDATE t b = NULL WHERE b == 20;
 COMMIT;
 SELECT b FROM t ORDER BY b DESC;
-|lb
+|"b"
 [30]
 [10]
 [<nil>]
@@ -10316,7 +10316,7 @@ BEGIN TRANSACTION;
 	UPDATE t b = NULL WHERE b == 20;
 COMMIT;
 SELECT b FROM t ORDER BY b DESC;
-|lb
+|"b"
 [42]
 [30]
 [10]
@@ -10327,7 +10327,7 @@ FROM employee
 LEFT OUTER JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY employee.LastName;
-|semployee.LastName, lemployee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
 [Rafferty 31 31 Sales]
@@ -10341,7 +10341,7 @@ FROM employee
 LEFT JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY employee.LastName;
-|semployee.LastName, lemployee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
 [Rafferty 31 31 Sales]
@@ -10355,7 +10355,7 @@ FROM employee
 RIGHT OUTER JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY employee.LastName;
-|?employee.LastName, ?employee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [<nil> <nil> 35 Marketing]
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
@@ -10369,7 +10369,7 @@ FROM employee
 RIGHT JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY employee.LastName;
-|?employee.LastName, ?employee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [<nil> <nil> 35 Marketing]
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
@@ -10399,7 +10399,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t1 VALUES (1);
 COMMIT;
 SELECT * FROM t1 LEFT JOIN t2 ON t1.s1 == t2.s1;
-|lt1.s1, ?t2.s1
+|"t1.s1", "t2.s1"
 [1 <nil>]
 [1 <nil>]
 
@@ -10412,7 +10412,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM a LEFT JOIN b ON a.i == b.i
 ORDER BY a.s, a.i, b.s, b.i;
-|la.i, sa.s, ?b.i, ?b.s
+|"a.i", "a.s", "b.i", "b.s"
 [1 a <nil> <nil>]
 [3 a 3 b]
 [<nil> an1 <nil> <nil>]
@@ -10427,7 +10427,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM a RIGHT JOIN b ON a.i == b.i
 ORDER BY a.s, a.i, b.s, b.i;
-|?a.i, ?a.s, lb.i, sb.s
+|"a.i", "a.s", "b.i", "b.s"
 [<nil> <nil> 2 b]
 [<nil> <nil> <nil> bn1]
 [<nil> <nil> <nil> bn2]
@@ -10442,7 +10442,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM b LEFT JOIN a ON a.i == b.i
 ORDER BY a.s, a.i, b.s, b.i;
-|lb.i, sb.s, ?a.i, ?a.s
+|"b.i", "b.s", "a.i", "a.s"
 [2 b <nil> <nil>]
 [<nil> bn1 <nil> <nil>]
 [<nil> bn2 <nil> <nil>]
@@ -10457,7 +10457,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM b RIGHT JOIN a ON a.i == b.i
 ORDER BY a.s, a.i, b.s, b.i;
-|?b.i, ?b.s, la.i, sa.s
+|"b.i", "b.s", "a.i", "a.s"
 [<nil> <nil> 1 a]
 [3 b 3 a]
 [<nil> <nil> <nil> an1]
@@ -10472,7 +10472,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM a FULL JOIN b ON a.i == b.i
 ORDER BY a.s, a.i, b.s, b.i;
-|?a.i, ?a.s, lb.i, sb.s
+|"a.i", "a.s", "b.i", "b.s"
 [<nil> <nil> 2 b]
 [1 a <nil> <nil>]
 [3 a 3 b]
@@ -10486,7 +10486,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM a FULL OUTER JOIN b ON a.i == b.i
 ORDER BY a.s, a.i, b.s, b.i;
-|?a.i, ?a.s, lb.i, sb.s
+|"a.i", "a.s", "b.i", "b.s"
 [<nil> <nil> 2 b]
 [1 a <nil> <nil>]
 [3 a 3 b]
@@ -10497,7 +10497,7 @@ FROM employee
 FULL JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY employee.LastName;
-|?employee.LastName, ?employee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [<nil> <nil> 35 Marketing]
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
@@ -10512,7 +10512,7 @@ FROM employee
 FULL OUTER JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY employee.LastName;
-|?employee.LastName, ?employee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [<nil> <nil> 35 Marketing]
 [Heisenberg 33 33 Engineering]
 [Jones 33 33 Engineering]
@@ -10531,7 +10531,7 @@ FROM t, employee
 LEFT JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY t.s, employee.LastName;
-|st.s, semployee.LastName, lemployee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"t.s", "employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [A Heisenberg 33 33 Engineering]
 [A Jones 33 33 Engineering]
 [A Rafferty 31 31 Sales]
@@ -10555,7 +10555,7 @@ FROM t, employee
 RIGHT JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY t.s, employee.LastName;
-|st.s, ?employee.LastName, ?employee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"t.s", "employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [A <nil> <nil> 35 Marketing]
 [A Heisenberg 33 33 Engineering]
 [A Jones 33 33 Engineering]
@@ -10579,7 +10579,7 @@ FROM t, employee
 FULL JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY t.s, employee.LastName;
-|?t.s, ?employee.LastName, ?employee.DepartmentID, ldepartment.DepartmentID, sdepartment.DepartmentName
+|"t.s", "employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
 [<nil> <nil> <nil> 35 Marketing]
 [A Heisenberg 33 33 Engineering]
 [A Jones 33 33 Engineering]
@@ -10604,7 +10604,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t6 (a int, b int DEFAULT (a+c)/2, c int);
 COMMIT;
 SELECT * FROM __Table WHERE !hasPrefix(Name, "__") ORDER BY Name;
-|sName, sSchema
+|"Name", "Schema"
 [t1 CREATE TABLE t1 (a int64, b int64, c int64);]
 [t2 CREATE TABLE t2 (a int64, b int64 NOT NULL, c int64);]
 [t3 CREATE TABLE t3 (a int64, b int64 a<b&&b<c, c int64);]
@@ -10622,7 +10622,7 @@ BEGIN TRANSACTION;
 	CREATE TABLE t6 (a int, b int DEFAULT (a+c)/2, c int);
 COMMIT;
 SELECT * FROM __Column2 ORDER BY TableName, Name;
-|sTableName, sName, bNotNull, sConstraintExpr, sDefaultExpr
+|"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t2 b true  ]
 [t3 b false a<b&&b<c ]
 [t4 b false a<b&&b<c (a+c)/2]
@@ -10646,7 +10646,7 @@ LEFT JOIN __Column2
 ON __Column.TableName == __Column2.TableName && __Column.Name == __Column2.Name
 WHERE !hasPrefix(__Column.TableName, "__") 
 ORDER BY __Column.TableName, __Column.Ordinal;
-|s__Column.TableName, l__Column.Ordinal, s__Column.Name, s__Column.Type, ?__Column2.NotNull, ?__Column2.ConstraintExpr, ?__Column2.DefaultExpr
+|"__Column.TableName", "__Column.Ordinal", "__Column.Name", "__Column.Type", "__Column2.NotNull", "__Column2.ConstraintExpr", "__Column2.DefaultExpr"
 [t1 1 a int64 <nil> <nil> <nil>]
 [t1 2 b int64 <nil> <nil> <nil>]
 [t1 3 c int64 <nil> <nil> <nil>]
@@ -10736,7 +10736,7 @@ COMMIT;
 SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: memory DB
 FROM __Index2
 WHERE !hasPrefix(TableName, "__");
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 
 -- 903
@@ -10751,7 +10751,7 @@ WHERE Index2_ID IN (
 	FROM __Index2 
 	WHERE IndexName == "x"
 );
-|sExpr
+|"Expr"
 [i]
 
 -- 904
@@ -10762,7 +10762,7 @@ COMMIT;
 SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: memory DB
 FROM __Index2
 WHERE !hasPrefix(TableName, "__");
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 
 -- 905
@@ -10777,7 +10777,7 @@ WHERE Index2_ID IN (
 	FROM __Index2 
 	WHERE IndexName == "x"
 );
-|sExpr
+|"Expr"
 [id()]
 
 -- 906
@@ -10790,7 +10790,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x true true true]
 [t y false true true]
 
@@ -10808,7 +10808,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 [id()]
 
@@ -10823,7 +10823,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t y false true true]
 
 -- 909
@@ -10837,7 +10837,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 
 -- 910
@@ -10852,7 +10852,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|?TableName, ?IndexName, ?IsUnique, ?IsSimple, ?
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 
 -- 911
 BEGIN TRANSACTION;
@@ -10869,7 +10869,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [id()]
 
 -- 912
@@ -10887,7 +10887,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 
 -- 913
@@ -10906,7 +10906,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|?Expr
+|"Expr"
 
 -- 914
 BEGIN TRANSACTION;
@@ -10919,7 +10919,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 [u y false true true]
 
@@ -10935,7 +10935,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [u y false true true]
 
 -- 916
@@ -10950,7 +10950,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 
 -- 917
@@ -10966,7 +10966,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|?TableName, ?IndexName, ?IsUnique, ?IsSimple, ?
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 
 -- 918
 BEGIN TRANSACTION;
@@ -10981,7 +10981,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|?TableName, ?IndexName, ?IsUnique, ?IsSimple, ?
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 
 -- 919
 BEGIN TRANSACTION;
@@ -10998,7 +10998,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 [j]
 
@@ -11018,7 +11018,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [j]
 
 -- 921
@@ -11037,7 +11037,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 
 -- 922
@@ -11057,7 +11057,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|?Expr
+|"Expr"
 
 -- 923
 BEGIN TRANSACTION;
@@ -11076,7 +11076,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|?Expr
+|"Expr"
 
 -- 924
 BEGIN TRANSACTION;
@@ -11089,7 +11089,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 [u y false true true]
 
@@ -11105,7 +11105,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [u y false true true]
 
 -- 926
@@ -11120,7 +11120,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 [u y false true true]
 
@@ -11136,7 +11136,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 
 -- 928
@@ -11151,7 +11151,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false true true]
 [u y false true true]
 
@@ -11168,7 +11168,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|?TableName, ?IndexName, ?IsUnique, ?IsSimple, ?
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 
 -- 930
 BEGIN TRANSACTION;
@@ -11183,7 +11183,7 @@ SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: m
 FROM __Index2
 WHERE !hasPrefix(TableName, "__")
 ORDER BY IndexName;
-|?TableName, ?IndexName, ?IsUnique, ?IsSimple, ?
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 
 -- 931
 BEGIN TRANSACTION;
@@ -11200,7 +11200,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 [j]
 
@@ -11220,7 +11220,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [j]
 
 -- 933
@@ -11239,7 +11239,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 [j]
 
@@ -11259,7 +11259,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 
 -- 935
@@ -11278,7 +11278,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [i]
 [j]
 
@@ -11299,7 +11299,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|?Expr
+|"Expr"
 
 -- 937
 BEGIN TRANSACTION;
@@ -11318,7 +11318,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x" OR IndexName == "y"
 )
 ORDER BY Expr;
-|?Expr
+|"Expr"
 
 -- 938
 BEGIN TRANSACTION;
@@ -11328,7 +11328,7 @@ COMMIT;
 SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 OR Root == -1 // -1: mem DB
 FROM __Index2
 WHERE TableName == "t";
-|sTableName, sIndexName, bIsUnique, bIsSimple, b
+|"TableName", "IndexName", "IsUnique", "IsSimple", ""
 [t x false false true]
 
 -- 939
@@ -11343,7 +11343,7 @@ WHERE Index2_ID IN (
 	WHERE IndexName == "x"
 )
 ORDER BY Expr;
-|sExpr
+|"Expr"
 [a+c]
 [c-b]
 
@@ -11354,7 +11354,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t(a + c, c - b);
 COMMIT;
 SELECT * FROM t;
-|la, lb, lc
+|"a", "b", "c"
 [1 2 3]
 
 -- 941
@@ -11364,7 +11364,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t(a + c, c - b);
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [4 1]
 
 -- 942
@@ -11374,7 +11374,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(1, 2, 3);
 COMMIT;
 SELECT * FROM t;
-|la, lb, lc
+|"a", "b", "c"
 [1 2 3]
 
 -- 943
@@ -11384,7 +11384,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(1, 2, 3);
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [4 1]
 
 -- 944
@@ -11448,7 +11448,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN b;
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 
 -- 951
 BEGIN TRANSACTION;
@@ -11467,7 +11467,7 @@ BEGIN TRANSACTION;
 	ALTER TABLE t DROP COLUMN b;
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [1 3]
 
 -- 953
@@ -11481,7 +11481,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(5, 15, "foo");
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [1 3]
 [5 15]
 [10 30]
@@ -11493,7 +11493,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (100, 200, 300), (1, 2, 3), (10, 20, 30);
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [2 3]
 [20 30]
 [200 300]
@@ -11506,7 +11506,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (NULL, 200, 300), (1, NULL, 3), (10, NULL, 30), (NULL, NULL, NULL);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [<nil>]
 [<nil>]
 [<nil>]
@@ -11525,7 +11525,7 @@ BEGIN TRANSACTION;
 		(NULL, NULL, NULL);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [<nil> <nil>]
 [<nil> 3]
 [<nil> 30]
@@ -11544,7 +11544,7 @@ BEGIN TRANSACTION;
 		(NULL, NULL, NULL), (NULL, NULL, NULL);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [<nil> <nil>]
 [<nil> <nil>]
 [<nil> 3]
@@ -11576,7 +11576,7 @@ BEGIN TRANSACTION;
 		(NULL, NULL, NULL), (NULL, NULL, NULL);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [<nil> <nil>]
 [<nil> <nil>]
 [<nil> 3]
@@ -11611,7 +11611,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t (id()+1);
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 
 -- 964
 BEGIN TRANSACTION;
@@ -11620,7 +11620,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX y ON t (id()+1);
 COMMIT;
 SELECT * FROM t;
-|?c
+|"c"
 
 -- 965
 BEGIN TRANSACTION;
@@ -11638,7 +11638,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(42);
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [43]
 
 -- 967
@@ -11654,7 +11654,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 240;
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [1001]
 [1042]
 [1999]
@@ -11672,7 +11672,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE i == 240;
 COMMIT;
 SELECT * FROM y;
-|ly
+|"y"
 [2001]
 [2042]
 [2999]
@@ -11698,7 +11698,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(3000);
 COMMIT;
 SELECT * FROM x;
-|lx
+|"x"
 [1001]
 [3001]
 
@@ -11710,7 +11710,7 @@ BEGIN TRANSACTION;
 	TRUNCATE TABLE t;
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 
 -- 972
 BEGIN TRANSACTION;
@@ -11720,7 +11720,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t;
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 
 -- 973
 BEGIN TRANSACTION;
@@ -11751,7 +11751,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(NULL);
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 [<nil>]
 [<nil>]
 [11]
@@ -11771,7 +11771,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t (blob(string(i)));
 COMMIT;
 SELECT * FROM x;
-|?x
+|"x"
 
 -- 976
 BEGIN TRANSACTION;
