@@ -47,7 +47,7 @@ var (
 	_ rset = (*offsetRset)(nil)
 	_ rset = (*orderByRset)(nil)
 	_ rset = (*outerJoinRset)(nil)
-	//TODO- _ rset = (*selectRset)(nil)
+	_ rset = (*selectRset)(nil)
 	_ rset = (*selectStmt)(nil)
 	_ rset = (*tableRset)(nil)
 	_ rset = (*whereRset)(nil)
@@ -337,7 +337,7 @@ func (r *groupByRset2) do(ctx *execCtx, f func(id interface{}, data []interface{
 		return
 	}
 
-	for i, v := range r.src.fieldNames() {
+	for i, v := range r.src.fieldNames()[:len(cols)] {
 		cols[i].name = v
 		cols[i].index = i
 	}
@@ -1339,10 +1339,21 @@ type limitRset struct {
 
 func (r *limitRset) plan(ctx *execCtx) (rset2, error) { panic("TODO") }
 
-//TODO- type selectRset struct {
-//TODO- 	flds []*fld
-//TODO- 	src  rset2
-//TODO- }
+type selectRset struct {
+	flds []*fld
+	src  rset2
+}
+
+func (r *selectRset) plan(ctx *execCtx) (rset2, error) {
+	rs2 := &selectRset2{flds: append([]*fld(nil), r.flds...), src: r.src}
+	for _, v := range r.flds {
+		rs2.fields = append(rs2.fields, v.name)
+	}
+	if len(r.flds) == 0 {
+		rs2.fields = r.src.fieldNames()
+	}
+	return rs2, nil
+}
 
 //TODO- func (r *selectRset) doGroup(grp *groupByRset, ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
 //TODO- 	if onlyNames {
@@ -1480,22 +1491,14 @@ type selectRset2 struct {
 	fields []string
 }
 
-func (r *selectRset2) plan(ctx *execCtx) (rset2, error) {
-	if len(r.flds) == 0 {
-		return r.src, nil
-	}
-
-	r.fields = make([]string, len(r.flds))
-	for i, v := range r.flds {
-		r.fields[i] = v.name
-	}
-	return r, nil
-}
-
 func (r *selectRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
 	if _, ok := r.src.(*groupByRset2); ok { //TODO different plan, also possible conflict with optimizer
 		return r.doGroup(ctx, f)
 	}
+
+ 	if len(r.flds) == 0 {
+ 		return r.src.do(ctx, f)
+ 	}
 
 	fields := r.src.fieldNames()
 	m := map[interface{}]interface{}{}
