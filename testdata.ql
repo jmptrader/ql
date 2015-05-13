@@ -2221,7 +2221,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM department
 ORDER BY DepartmentID;
-|lDepartmentID, sDepartmentName
+|DepartmentID, DepartmentName
 [31 Sales]
 [33 Engineering]
 
@@ -2229,7 +2229,7 @@ ORDER BY DepartmentID;
 SELECT id(), LastName
 FROM employee
 ORDER BY id();
-|l, sLastName
+|, LastName
 [5 Rafferty]
 [6 Jones]
 [7 Heisenberg]
@@ -2245,7 +2245,7 @@ COMMIT;
 SELECT id(), LastName
 FROM employee
 ORDER BY id();
-|l, sLastName
+|, LastName
 [5 Rafferty]
 [7 Heisenberg]
 [8 Robinson]
@@ -2261,7 +2261,7 @@ COMMIT;
 SELECT id(), LastName
 FROM employee
 ORDER BY id();
-|l, sLastName
+|, LastName
 [5 Rafferty]
 [7 Heisenberg]
 [8 Robinson]
@@ -2276,7 +2276,7 @@ FROM
 	department AS d,
 WHERE e.DepartmentID == d.DepartmentID
 ORDER BY e.LastName;
-|?, se.LastName, le.DepartmentID, ld.DepartmentID
+|, e.LastName, e.DepartmentID, d.DepartmentID
 [<nil> Heisenberg 33 33]
 [<nil> Jones 33 33]
 [<nil> Rafferty 31 31]
@@ -2290,7 +2290,7 @@ FROM
 	department AS d,
 WHERE e.DepartmentID == d.DepartmentID
 ORDER BY e.ID;
-|le.ID, se.LastName, le.DepartmentID, ld.DepartmentID
+|e.ID, e.LastName, e.DepartmentID, d.DepartmentID
 [5 Rafferty 31 31]
 [6 Jones 33 33]
 [7 Heisenberg 33 33]
@@ -2323,7 +2323,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName;
-|sLastName, lDepartmentID
+|LastName, DepartmentID
 [Heisenberg 1033]
 [Jones 1033]
 [Rafferty 31]
@@ -2340,7 +2340,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName DESC;
-|sLastName, ?DepartmentID
+|LastName, DepartmentID
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2357,7 +2357,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName DESC;
-|sLastName, ?DepartmentID
+|LastName, DepartmentID
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2372,7 +2372,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM employee
 ORDER BY LastName;
-|sLastName, lDepartmentID
+|LastName, DepartmentID
 [Heisenberg 1033]
 [Jones 1033]
 [Rafferty 1031]
@@ -2427,7 +2427,7 @@ SELECT LastName[len("baz")-4] FROM employee;
 -- S 223
 SELECT LastName[:len(LastName)-3] AS y FROM employee
 ORDER BY y;
-|sy
+|y
 [Heisenb]
 [Jo]
 [Raffe]
@@ -2439,7 +2439,7 @@ ORDER BY y;
 SELECT complex(float32(DepartmentID+int(id())), 0) AS x, complex(DepartmentID+int(id()), 0)
 FROM employee
 ORDER by real(x) DESC;
-|cx, d
+|x, 
 [(43+0i) (43+0i)]
 [(42+0i) (42+0i)]
 [(40+0i) (40+0i)]
@@ -2451,7 +2451,7 @@ ORDER by real(x) DESC;
 SELECT real(complex(float32(DepartmentID+int(id())), 0)) AS x, real(complex(DepartmentID+int(id()), 0))
 FROM employee
 ORDER BY x DESC;
-|fx, g
+|x, 
 [43 43]
 [42 42]
 [40 40]
@@ -2463,7 +2463,7 @@ ORDER BY x DESC;
 SELECT imag(complex(0, float32(DepartmentID+int(id())))) AS x, imag(complex(0, DepartmentID+int(id())))
 FROM employee
 ORDER BY x DESC;
-|fx, g
+|x, 
 [43 43]
 [42 42]
 [40 40]
@@ -2478,7 +2478,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE c == "foo";
 COMMIT;
 SELECT 100*id(), c FROM t;
-|l, sc
+|, c
 [200 bar]
 
 -- 228
@@ -2499,7 +2499,7 @@ BEGIN TRANSACTION;
 	DROP TABLE a;
 COMMIT;
 SELECT * FROM b;
-|?b
+|b
 
 -- 230
 BEGIN TRANSACTION;
@@ -2509,7 +2509,7 @@ BEGIN TRANSACTION;
 	DROP TABLE a;
 COMMIT;
 SELECT * FROM c;
-|?c
+|c
 
 -- 231
 BEGIN TRANSACTION;
@@ -2519,7 +2519,7 @@ BEGIN TRANSACTION;
 	DROP TABLE b;
 COMMIT;
 SELECT * FROM a;
-|?a
+|a
 
 -- 232
 BEGIN TRANSACTION;
@@ -2539,7 +2539,7 @@ BEGIN TRANSACTION;
 	DROP TABLE b;
 COMMIT;
 SELECT * FROM c;
-|?c
+|c
 
 -- 234
 BEGIN TRANSACTION;
@@ -2549,7 +2549,7 @@ BEGIN TRANSACTION;
 	DROP TABLE c;
 COMMIT;
 SELECT * FROM a;
-|?a
+|a
 
 -- 235
 BEGIN TRANSACTION;
@@ -2559,7 +2559,7 @@ BEGIN TRANSACTION;
 	DROP TABLE c;
 COMMIT;
 SELECT * FROM b;
-|?b
+|b
 
 -- 236
 BEGIN TRANSACTION;
@@ -2579,7 +2579,7 @@ BEGIN TRANSACTION;
 	INSERT INTO b VALUES (20), (21), (22), (23);
 COMMIT;
 SELECT * FROM a, b;
-|la.c, lb.d
+|a.c, lb.d
 [12 23]
 [12 22]
 [12 21]
@@ -2608,7 +2608,7 @@ FROM
 	a AS x1,
 	a AS x0,
 ORDER BY y;
-|lx2, lx1, lx0, ly
+|x2, x1, x0, y
 [0 0 0 0]
 [0 0 1 1]
 [0 0 2 2]
@@ -2644,7 +2644,7 @@ BEGIN TRANSACTION;
 	DELETE FROM t WHERE c != 0;
 COMMIT;
 SELECT * FROM t
-|?c
+|c
 
 -- 240
 BEGIN TRANSACTION;
@@ -2685,7 +2685,7 @@ BEGIN TRANSACTION;
 	DROP TABLE t;
 ROLLBACK;
 SELECT * from t;
-|?i
+|i
 
 -- 245
 BEGIN TRANSACTION;
@@ -2709,7 +2709,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (string(65));
 COMMIT;
 SELECT * FROM t;
-|ss
+|s
 [A]
 
 -- 248
@@ -2718,7 +2718,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (uint32(int8(uint16(0x10F0))));
 COMMIT;
 SELECT i == 0xFFFFFFF0 FROM t;
-|b
+|
 [true]
 
 -- 249
@@ -2737,7 +2737,7 @@ SELECT
 	id() == 3 && s == "\u00f8" && s == "ø" && s == "\xc3\xb8" OR 
 	id() == 4 && s == "\u65e5" && s == "日" && s == "\xe6\x97\xa5"
 FROM t;
-|b
+|
 [true]
 [true]
 [true]
@@ -2749,7 +2749,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0);
 COMMIT;
 SELECT 2.3+1, 1+2.3 FROM t;
-|f, f
+|, 
 [3.3 3.3]
 
 -- 251
@@ -2766,7 +2766,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (1+byte(2));
 COMMIT;
 SELECT * FROM t;
-|ui
+|i
 [3]
 
 -- 253
@@ -2775,7 +2775,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (255+byte(2));
 COMMIT;
 SELECT * FROM t;
-|ui
+|i
 [1]
 
 -- 254
@@ -2792,7 +2792,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (127+int8(2));
 COMMIT;
 SELECT * FROM t;
-|ii
+|i
 [-127]
 
 -- 256
@@ -2809,7 +2809,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (-128+int8(2));
 COMMIT;
 SELECT * FROM t;
-|ii
+|i
 [-126]
 
 -- 258
@@ -2826,42 +2826,42 @@ SELECT count(none) FROM employee;
 
 -- S 260
 SELECT count() FROM employee;
-|l
+|
 [6]
 
 -- S 261
 SELECT count() AS y FROM employee;
-|ly
+|y
 [6]
 
 -- S 262
 SELECT 3*count() AS y FROM employee;
-|ly
+|y
 [18]
 
 -- S 263
 SELECT count(LastName) FROM employee;
-|l
+|
 [6]
 
 -- S 264
 SELECT count(DepartmentID) FROM employee;
-|l
+|
 [5]
 
 -- S 265
 SELECT count() - count(DepartmentID) FROM employee;
-|l
+|
 [1]
 
 -- S 266
 SELECT min(LastName), min(DepartmentID) FROM employee;
-|s, l
+|, 
 [Heisenberg 31]
 
 -- S 267
 SELECT max(LastName), max(DepartmentID) FROM employee;
-|s, l
+|, 
 [Williams 34]
 
 -- S 268
@@ -2870,12 +2870,12 @@ SELECT sum(LastName), sum(DepartmentID) FROM employee;
 
 -- S 269
 SELECT sum(DepartmentID) FROM employee;
-|l
+|
 [165]
 
 -- S 270
 SELECT avg(DepartmentID) FROM employee;
-|l
+|
 [33]
 
 -- S 271
@@ -2884,7 +2884,7 @@ SELECT DepartmentID FROM employee GROUP BY none;
 
 -- S 272
 SELECT DepartmentID, sum(DepartmentID) AS s FROM employee GROUP BY DepartmentID ORDER BY s DESC;
-|lDepartmentID, ls
+|DepartmentID, s
 [34 68]
 [33 66]
 [31 31]
@@ -2892,7 +2892,7 @@ SELECT DepartmentID, sum(DepartmentID) AS s FROM employee GROUP BY DepartmentID 
 
 -- S 273
 SELECT DepartmentID, count(LastName+string(DepartmentID)) AS y FROM employee GROUP BY DepartmentID ORDER BY y DESC ;
-|lDepartmentID, ly
+|DepartmentID, y
 [34 2]
 [33 2]
 [31 1]
@@ -2900,7 +2900,7 @@ SELECT DepartmentID, count(LastName+string(DepartmentID)) AS y FROM employee GRO
 
 -- S 274
 SELECT DepartmentID, sum(2*DepartmentID) AS s FROM employee GROUP BY DepartmentID ORDER BY s DESC;
-|lDepartmentID, ls
+|DepartmentID, s
 [34 136]
 [33 132]
 [31 62]
@@ -2908,22 +2908,22 @@ SELECT DepartmentID, sum(2*DepartmentID) AS s FROM employee GROUP BY DepartmentI
 
 -- S 275
 SELECT min(2*DepartmentID) FROM employee;
-|l
+|
 [62]
 
 -- S 276
 SELECT max(2*DepartmentID) FROM employee;
-|l
+|
 [68]
 
 -- S 277
 SELECT avg(2*DepartmentID) FROM employee;
-|l
+|
 [66]
 
 -- S 278
 SELECT * FROM employee GROUP BY DepartmentID;
-|sLastName, ?DepartmentID
+|LastName, DepartmentID
 [Williams <nil>]
 [Rafferty 31]
 [Heisenberg 33]
@@ -2931,7 +2931,7 @@ SELECT * FROM employee GROUP BY DepartmentID;
 
 -- S 279
 SELECT * FROM employee GROUP BY DepartmentID ORDER BY LastName DESC;
-|sLastName, ?DepartmentID
+|LastName, DepartmentID
 [Williams <nil>]
 [Smith 34]
 [Rafferty 31]
@@ -2939,7 +2939,7 @@ SELECT * FROM employee GROUP BY DepartmentID ORDER BY LastName DESC;
 
 -- S 280
 SELECT * FROM employee GROUP BY DepartmentID, LastName ORDER BY LastName DESC;
-|sLastName, ?DepartmentID
+|LastName, DepartmentID
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2949,7 +2949,7 @@ SELECT * FROM employee GROUP BY DepartmentID, LastName ORDER BY LastName DESC;
 
 -- S 281
 SELECT * FROM employee GROUP BY LastName, DepartmentID  ORDER BY LastName DESC;
-|sLastName, ?DepartmentID
+|LastName, DepartmentID
 [Williams <nil>]
 [Smith 34]
 [Robinson 34]
@@ -2966,14 +2966,14 @@ BEGIN TRANSACTION;
 	DROP TABLE s;
 COMMIT;
 SELECT * FROM t;
-|?i
+|i
 
 -- 283
 BEGIN TRANSACTION;
 	CREATE TABLE t (n int);
 COMMIT;
 SELECT count() FROM t;
-|l
+|
 [0]
 
 -- 284
@@ -2982,7 +2982,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t;
-|l
+|
 [2]
 
 -- 285
@@ -2991,7 +2991,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t WHERE n < 2;
-|l
+|
 [2]
 
 -- 286
@@ -3000,7 +3000,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t WHERE n < 1;
-|l
+|
 [1]
 
 -- 287
@@ -3009,7 +3009,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT count() FROM t WHERE n < 0;
-|l
+|
 [0]
 
 -- 288
@@ -3018,7 +3018,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT s+10 FROM (SELECT sum(n) AS s FROM t WHERE n < 2);
-|l
+|
 [11]
 
 -- 289
@@ -3027,7 +3027,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT s+10 FROM (SELECT sum(n) AS s FROM t WHERE n < 1);
-|l
+|
 [10]
 
 -- 290
@@ -3036,7 +3036,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT s+10 FROM (SELECT sum(n) AS s FROM t WHERE n < 0);
-|?
+|
 [<nil>]
 
 -- 291
@@ -3045,7 +3045,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT sum(n) AS s FROM t WHERE n < 2;
-|ls
+|s
 [1]
 
 -- 292
@@ -3054,7 +3054,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT sum(n) AS s FROM t WHERE n < 1;
-|ls
+|s
 [0]
 
 -- 293
@@ -3063,7 +3063,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (0), (1);
 COMMIT;
 SELECT sum(n) AS s FROM t WHERE n < 0;
-|?s
+|s
 [<nil>]
 
 -- 294
@@ -3074,7 +3074,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT count() FROM t;
 COMMIT;
 SELECT count() FROM t;
-|l
+|
 [3]
 
 -- 295
@@ -3086,7 +3086,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT * FROM t;
 COMMIT;
 SELECT count() FROM t;
-|l
+|
 [6]
 
 -- 296
@@ -3096,7 +3096,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT * FROM t;
 COMMIT;
 SELECT count() FROM t;
-|l
+|
 [6]
 
 -- 297
@@ -3105,7 +3105,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT "perfect!" FROM (SELECT count() AS cnt FROM t WHERE S == "perfect!") WHERE cnt == 0;
 COMMIT;
 SELECT count() FROM t;
-|l
+|
 [1]
 
 -- 298
@@ -3115,7 +3115,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t SELECT "perfect!" FROM (SELECT count() AS cnt FROM t WHERE S == "perfect!") WHERE cnt == 0;
 COMMIT;
 SELECT count() FROM t;
-|l
+|
 [1]
 
 -- 299
@@ -3124,7 +3124,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (blob("a"));
 COMMIT;
 SELECT * FROM t;
-|?c
+|c
 [[97]]
 
 -- 300
@@ -3135,7 +3135,7 @@ BEGIN TRANSACTION;
 `));
 COMMIT;
 SELECT * FROM t;
-|?c
+|c
 [[10 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 10]]
 
 -- 301
@@ -3148,7 +3148,7 @@ BEGIN TRANSACTION;
 "0123456789abcdef0123456789abcdef0123456789abcdef0123456789ABCDEF"));
 COMMIT;
 SELECT * FROM t;
-|?c
+|c
 [[48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 97 98 99 100 101 102 48 49 50 51 52 53 54 55 56 57 65 66 67 68 69 70]]
 
 -- 302
