@@ -262,9 +262,9 @@ func (r *orderByRset) String() string {
 }
 
 func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
-	r2 := &orderByDefaultPlan{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}
+	p := &orderByDefaultPlan{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
-	return r2, nil
+	return p, nil
 }
 
 type whereRset struct {
@@ -273,9 +273,9 @@ type whereRset struct {
 }
 
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
-	r2 := &whereDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
+	p := &whereDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
-	return r2, nil
+	return p, nil
 }
 
 type offsetRset struct {
@@ -284,9 +284,9 @@ type offsetRset struct {
 }
 
 func (r *offsetRset) plan(ctx *execCtx) (plan, error) {
-	rs2 := &offsetDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
+	p := &offsetDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
-	return rs2, nil
+	return p, nil
 }
 
 type limitRset struct {
@@ -295,9 +295,9 @@ type limitRset struct {
 }
 
 func (r *limitRset) plan(ctx *execCtx) (plan, error) {
-	rs2 := &limitDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
+	p := &limitDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
-	return rs2, nil
+	return p, nil
 }
 
 type selectRset struct {
@@ -306,14 +306,14 @@ type selectRset struct {
 }
 
 func (r *selectRset) plan(ctx *execCtx) (plan, error) {
-	rs2 := &selectFieldsDefaultPlan{flds: append([]*fld(nil), r.flds...), src: r.src}
+	p := &selectFieldsDefaultPlan{flds: append([]*fld(nil), r.flds...), src: r.src}
 	for _, v := range r.flds {
-		rs2.fields = append(rs2.fields, v.name)
+		p.fields = append(p.fields, v.name)
 	}
 	if len(r.flds) == 0 {
-		rs2.fields = r.src.fieldNames()
+		p.fields = r.src.fieldNames()
 	}
-	return rs2, nil
+	return p, nil
 }
 
 type tableRset string
@@ -378,9 +378,9 @@ func (r *crossJoinRset) String() string {
 }
 
 func (r *crossJoinRset) plan(ctx *execCtx) (plan, error) {
-	r2 := crossJoinDefaultPlan{}
-	r2.rsets = make([]plan, len(r.sources))
-	r2.names = make([]string, len(r.sources))
+	p := crossJoinDefaultPlan{}
+	p.rsets = make([]plan, len(r.sources))
+	p.names = make([]string, len(r.sources))
 	var err error
 	m := map[string]bool{}
 	for i, v := range r.sources {
@@ -400,24 +400,24 @@ func (r *crossJoinRset) plan(ctx *execCtx) (plan, error) {
 		if nm != "" {
 			m[nm] = true
 		}
-		r2.names[i] = nm
-		var rs2 plan
+		p.names[i] = nm
+		var q plan
 		switch x := src.(type) {
 		case rset:
-			if rs2, err = x.plan(ctx); err != nil {
+			if q, err = x.plan(ctx); err != nil {
 				return nil, err
 			}
 		case plan:
-			rs2 = x
+			q = x
 		default:
 			panic("internal error 008")
 		}
 
 		switch {
 		case len(r.sources) == 1:
-			r2.fields = rs2.fieldNames()
+			p.fields = q.fieldNames()
 		default:
-			for _, f := range rs2.fieldNames() {
+			for _, f := range q.fieldNames() {
 				if strings.Contains(f, ".") {
 					return nil, fmt.Errorf("cannot join on recordset with already qualified field names (use the AS clause): %s", f)
 				}
@@ -428,12 +428,12 @@ func (r *crossJoinRset) plan(ctx *execCtx) (plan, error) {
 				if nm == "" {
 					f = ""
 				}
-				r2.fields = append(r2.fields, f)
+				p.fields = append(p.fields, f)
 			}
 		}
-		r2.rsets[i] = rs2
+		p.rsets[i] = q
 	}
-	return &r2, nil
+	return &p, nil
 }
 
 type fld struct {
@@ -1340,12 +1340,12 @@ func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 		c.sources = append(c.sources, []interface{}{v, r.src.names[i]})
 	}
 	c.sources = append(c.sources, r.source)
-	rs2, err := c.plan(ctx)
+	p, err := c.plan(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	c2 := rs2.(*crossJoinDefaultPlan)
+	c2 := p.(*crossJoinDefaultPlan)
 	switch r.typ {
 	case 0:
 		return &leftJoinDefaultPlan{
@@ -1353,7 +1353,7 @@ func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 			rsets:  c2.rsets,
 			names:  c2.names,
 			right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
-			fields: rs2.fieldNames(),
+			fields: p.fieldNames(),
 		}, nil
 	case 1:
 		return &rightJoinDefaultPlan{
@@ -1362,7 +1362,7 @@ func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 				rsets:  c2.rsets,
 				names:  c2.names,
 				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
-				fields: rs2.fieldNames(),
+				fields: p.fieldNames(),
 			},
 		}, nil
 	case 2:
@@ -1372,7 +1372,7 @@ func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 				rsets:  c2.rsets,
 				names:  c2.names,
 				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
-				fields: rs2.fieldNames(),
+				fields: p.fieldNames(),
 			},
 		}, nil
 	default:
