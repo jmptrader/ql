@@ -14,15 +14,15 @@ import (
 var (
 	_ plan = (*crossJoinDefaultPlan)(nil)
 	_ plan = (*distinctDefaultPlan)(nil)
-	_ plan = (*groupByDefaultPlan)(nil)
-	_ plan = (*indexDefaultPlan)(nil)
-	_ plan = (*leftJoinDefaultPlan)(nil)
-	_ plan = (*rightJoinDefaultPlan)(nil)
 	_ plan = (*fullJoinDefaultPlan)(nil)
+	_ plan = (*groupByDefaultPlan)(nil)
+	_ plan = (*leftJoinDefaultPlan)(nil)
 	_ plan = (*limitDefaultPlan)(nil)
 	_ plan = (*offsetDefaultPlan)(nil)
 	_ plan = (*orderByDefaultPlan)(nil)
+	_ plan = (*rightJoinDefaultPlan)(nil)
 	_ plan = (*selectFieldsDefaultPlan)(nil)
+	_ plan = (*selectIndexDefaultPlan)(nil)
 	_ plan = (*sysColumnDefaultPlan)(nil)
 	_ plan = (*sysIndexDefaultPlan)(nil)
 	_ plan = (*sysTableDefaultPlan)(nil)
@@ -43,7 +43,17 @@ type crossJoinDefaultPlan struct {
 	fields []string
 }
 
-func (r *crossJoinDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *crossJoinDefaultPlan) optimize() (plan, error) {
+	for i, v := range r.rsets {
+		v, err := v.optimize()
+		if err != nil {
+			return nil, err
+		}
+
+		r.rsets[i] = v
+	}
+	return r, nil
+}
 
 func (r *crossJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -74,7 +84,14 @@ type distinctDefaultPlan struct {
 	fields []string
 }
 
-func (r *distinctDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *distinctDefaultPlan) optimize() (plan, error) {
+	var err error
+	if r.src, err = r.src.optimize(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
 
 func (r *distinctDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -122,7 +139,14 @@ type groupByDefaultPlan struct {
 	fields   []string
 }
 
-func (r *groupByDefaultPlan) optimize() (plan, error) { return r, nil}
+func (r *groupByDefaultPlan) optimize() (plan, error) {
+	var err error
+	if r.src, err = r.src.optimize(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
 
 func (r *groupByDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -208,16 +232,16 @@ func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 
 func (r *groupByDefaultPlan) fieldNames() []string { return r.fields }
 
-type indexDefaultPlan struct {
+type selectIndexDefaultPlan struct {
 	nm string
 	x  interface{}
 }
 
-func (r *indexDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *selectIndexDefaultPlan) optimize() (plan, error) { return r, nil }
 
-func (r *indexDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
+func (r *selectIndexDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
-func (r *indexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+func (r *selectIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
 	var x btreeIndex
 	switch ix := r.x.(type) {
 	case *indexedCol:
@@ -247,7 +271,7 @@ func (r *indexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 	}
 }
 
-func (r *indexDefaultPlan) fieldNames() []string {
+func (r *selectIndexDefaultPlan) fieldNames() []string {
 	return []string{r.nm}
 }
 
@@ -257,7 +281,14 @@ type limitDefaultPlan struct {
 	fields []string
 }
 
-func (r *limitDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *limitDefaultPlan) optimize() (plan, error) {
+	var err error
+	if r.src, err = r.src.optimize(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
 
 func (r *limitDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -306,7 +337,14 @@ type offsetDefaultPlan struct {
 	fields []string
 }
 
-func (r *offsetDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *offsetDefaultPlan) optimize() (plan, error) {
+	var err error
+	if r.src, err = r.src.optimize(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
 
 func (r *offsetDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -355,7 +393,14 @@ type orderByDefaultPlan struct {
 	fields []string
 }
 
-func (r *orderByDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *orderByDefaultPlan) optimize() (plan, error) {
+	var err error
+	if r.src, err = r.src.optimize(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
 
 func (r *orderByDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -438,7 +483,14 @@ type selectFieldsDefaultPlan struct {
 	fields []string
 }
 
-func (r *selectFieldsDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *selectFieldsDefaultPlan) optimize() (plan, error) {
+	var err error
+	if r.src, err = r.src.optimize(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
 
 func (r *selectFieldsDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -698,7 +750,14 @@ type whereDefaultPlan struct {
 	fields []string
 }
 
-func (r *whereDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *whereDefaultPlan) optimize() (plan, error) {
+	var err error
+	if r.src, err = r.src.optimize(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
 
 func (r *whereDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -743,7 +802,17 @@ type leftJoinDefaultPlan struct {
 	fields []string
 }
 
-func (r *leftJoinDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *leftJoinDefaultPlan) optimize() (plan, error) {
+	for i, v := range r.rsets {
+		v, err := v.optimize()
+		if err != nil {
+			return nil, err
+		}
+
+		r.rsets[i] = v
+	}
+	return r, nil
+}
 
 func (r *leftJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -751,7 +820,15 @@ type rightJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
 
-func (r *rightJoinDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *rightJoinDefaultPlan) optimize() (plan, error) {
+	p, err := r.leftJoinDefaultPlan.optimize()
+	if err != nil {
+		return nil, err
+	}
+
+	r.leftJoinDefaultPlan = *p.(*leftJoinDefaultPlan)
+	return r, nil
+}
 
 func (r *rightJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -759,7 +836,15 @@ type fullJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
 
-func (r *fullJoinDefaultPlan) optimize() (plan, error) { return r, nil }
+func (r *fullJoinDefaultPlan) optimize() (plan, error) {
+	p, err := r.leftJoinDefaultPlan.optimize()
+	if err != nil {
+		return nil, err
+	}
+
+	r.leftJoinDefaultPlan = *p.(*leftJoinDefaultPlan)
+	return r, nil
+}
 
 func (r *fullJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 

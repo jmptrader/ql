@@ -332,7 +332,7 @@ func (r tableRset) plan(ctx *execCtx) (plan, error) {
 	t, ok := ctx.db.root.tables[string(r)]
 	if !ok && isTesting {
 		if _, x0 := ctx.db.root.findIndexByName(string(r)); x0 != nil {
-			return &indexDefaultPlan{nm: string(r), x: x0}, nil
+			return &selectIndexDefaultPlan{nm: string(r), x: x0}, nil
 		}
 	}
 
