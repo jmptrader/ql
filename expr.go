@@ -334,59 +334,6 @@ func (b *binaryOperation) clone(unqualify ...string) expression {
 	return &binaryOperation{op: b.op, l: b.l.clone(unqualify...), r: b.r.clone(unqualify...)}
 }
 
-//TODO- func (o *binaryOperation) isRelOp() bool {
-//TODO- 	op := o.op
-//TODO- 	return op == '<' || op == le || op == eq || op == neq || op == ge || op == '>'
-//TODO- }
-//TODO-
-//TODO- // [!]qident relOp fixedValue or vice versa
-//TODO- func (o *binaryOperation) isQIdentRelOpFixedValue() ( /* ok */ bool /* tableName */, string, expression) {
-//TODO- 	if !o.isRelOp() {
-//TODO- 		return false, "", nil
-//TODO- 	}
-//TODO-
-//TODO- 	switch lhs := o.l.(type) {
-//TODO- 	case *unaryOperation:
-//TODO- 		ok, tab, nx := lhs.isNotQIdent()
-//TODO- 		if !ok {
-//TODO- 			return false, "", nil
-//TODO- 		}
-//TODO-
-//TODO- 		switch rhs := o.r.(type) {
-//TODO- 		case *parameter, value:
-//TODO- 			return true, tab, &binaryOperation{o.op, nx, rhs}
-//TODO- 		}
-//TODO- 	case *ident:
-//TODO- 		if !lhs.isQualified() {
-//TODO- 			return false, "", nil
-//TODO- 		}
-//TODO-
-//TODO- 		switch rhs := o.r.(type) {
-//TODO- 		case *parameter, value:
-//TODO- 			return true, mustQualifier(lhs.s), &binaryOperation{o.op, &ident{mustSelector(lhs.s)}, rhs}
-//TODO- 		}
-//TODO- 	case *parameter, value:
-//TODO- 		switch rhs := o.r.(type) {
-//TODO- 		case *ident:
-//TODO- 			if !rhs.isQualified() {
-//TODO- 				return false, "", nil
-//TODO- 			}
-//TODO-
-//TODO- 			return true, mustQualifier(rhs.s), &binaryOperation{o.op, lhs, &ident{mustSelector(rhs.s)}}
-//TODO- 		case *unaryOperation:
-//TODO- 			ok, tab, nx := rhs.isNotQIdent()
-//TODO- 			if !ok {
-//TODO- 				return false, "", nil
-//TODO- 			}
-//TODO-
-//TODO- 			return true, tab, &binaryOperation{o.op, lhs, nx}
-//TODO- 		}
-//TODO- 	}
-//TODO- 	return false, "", nil
-//TODO- }
-//TODO-
-//TODO- func (o *binaryOperation) isBoolAnd() bool { return o.op == andand }
-
 func (o *binaryOperation) isStatic() bool { return o.l.isStatic() && o.r.isStatic() }
 
 func (o *binaryOperation) String() string {
