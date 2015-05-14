@@ -8392,7 +8392,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX IF NOT EXISTS x ON t (s);
 	INSERT INTO t VALUES (1, "bar"), (2, "foo");
 COMMIT;
-SELECT s FROM t WHERE s < "z";
+SELECT s FROM t WHERE s < "z"; // ordered -> index is used
 |"s"
 [bar]
 [foo]
@@ -10556,13 +10556,12 @@ RIGHT JOIN department
 ON employee.DepartmentID == department.DepartmentID
 ORDER BY t.s, employee.LastName;
 |"t.s", "employee.LastName", "employee.DepartmentID", "department.DepartmentID", "department.DepartmentName"
-[A <nil> <nil> 35 Marketing]
+[<nil> <nil> <nil> 35 Marketing]
 [A Heisenberg 33 33 Engineering]
 [A Jones 33 33 Engineering]
 [A Rafferty 31 31 Sales]
 [A Robinson 34 34 Clerical]
 [A Smith 34 34 Clerical]
-[B <nil> <nil> 35 Marketing]
 [B Heisenberg 33 33 Engineering]
 [B Jones 33 33 Engineering]
 [B Rafferty 31 31 Sales]
