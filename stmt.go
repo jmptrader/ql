@@ -32,6 +32,76 @@ var (
 	_ stmt = rollbackStmt{}
 )
 
+var (
+	createColumn2 = mustCompile(`
+		create table if not exists __Column2 (
+			TableName string,
+			Name string,
+			NotNull bool,
+			ConstraintExpr string,
+			DefaultExpr string,
+		);
+		create index if not exists __Column2TableName on __Column2(TableName);
+	`)
+
+	insertColumn2 = mustCompile(`insert into __Column2 values($1, $2, $3, $4, $5)`)
+
+	selectColumn2 = MustCompile(`
+		select Name, NotNull, ConstraintExpr, DefaultExpr
+		from __Column2
+		where TableName == $1
+	`)
+
+	deleteColumn2 = mustCompile(`
+		delete from __Column2
+		where TableName == $1 && Name == $2
+	`)
+
+	createIndex2 = mustCompile(`
+		// Index register 2.
+		create table if not exists __Index2(
+			TableName string,
+			IndexName string,
+			IsUnique  bool,
+			IsSimple  bool,   // Just a column name or id().
+			Root      int64,  // BTree handle
+		);
+
+		// Expressions for given index. Compared in order of id(__Index2_Expr).
+		create table if not exists __Index2_Expr(
+			Index2_ID int,
+			Expr      string,
+		);
+
+		create index if not exists __xIndex2_TableName on __Index2(TableName);
+		create unique index if not exists __xIndex2_IndexName on __Index2(IndexName);
+		create index if not exists __xIndex2_ID on __Index2(id());
+		create index if not exists __xIndex2_Expr_Index2_ID on __Index2_Expr(Index2_ID);
+`)
+
+	insertIndex2     = mustCompile("insert into __Index2 values($1, $2, $3, $4, $5)")
+	insertIndex2Expr = mustCompile("insert into __Index2_Expr values($1, $2)")
+
+	deleteIndex2ByIndexName = mustCompile(`
+		delete from __Index2_Expr
+		where Index2_ID in (
+			select id() from __Index2 where IndexName == $1;
+		);	
+
+		delete from __Index2
+		where IndexName == $1;
+`)
+	deleteIndex2ByTableName = mustCompile(`
+		delete from __Index2_Expr
+		where Index2_ID in (
+			select id() from __Index2 where TableName == $1;
+		);	
+
+		delete from __Index2
+		where TableName == $1;
+`)
+)
+
 type stmt interface {
 	// never invoked for
 	// - beginTransactionStmt
@@ -441,13 +511,6 @@ func (s *alterTableDropColumnStmt) String() string {
 	return fmt.Sprintf("ALTER TABLE %s DROP COLUMN %s;", s.tableName, s.colName)
 }
 
-var (
-	deleteColumn2 = mustCompile(`
-		delete from __Column2
-		where TableName == $1 && Name == $2
-	`)
-)
-
 func (s *alterTableDropColumnStmt) exec(ctx *execCtx) (Recordset, error) {
 	t, ok := ctx.db.root.tables[s.tableName]
 	if !ok {
@@ -839,14 +902,6 @@ func (s *insertIntoStmt) execSelect(t *table, cols []*col, ctx *execCtx, constra
 	t.head = h
 	return nil, t.store.Update(t.hhead, h)
 }
-
-var (
-	selectColumn2 = MustCompile(`
-		select Name, NotNull, ConstraintExpr, DefaultExpr
-		from __Column2
-		where TableName == $1
-	`)
-)
 
 func constraintsAndDefaults(ctx *execCtx, table string) (constraints []*constraint, defaults []expression, _ error) {
 	if isSystemName[table] {
@@ -1244,20 +1299,6 @@ func (s *createTableStmt) String() string {
 	}
 	return fmt.Sprintf("CREATE TABLE %s%s (%s);", e, s.tableName, strings.Join(a, ", "))
 }
-
-var (
-	createColumn2 = mustCompile(`
-		create table if not exists __Column2 (
-			TableName string,
-			Name string,
-			NotNull bool,
-			ConstraintExpr string,
-			DefaultExpr string,
-		);
-		create index if not exists __Column2TableName on __Column2(TableName);
-	`)
-	insertColumn2 = mustCompile(`insert into __Column2 values($1, $2, $3, $4, $5)`)
-)
 
 func (s *createTableStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 	root := ctx.db.root
