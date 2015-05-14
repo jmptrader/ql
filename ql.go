@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cznic/b"
 	"github.com/cznic/strutil"
 )
 
@@ -85,6 +86,7 @@ type recordset struct {
 
 // Do implements Recordset.
 func (r recordset) Do(names bool, f func(data []interface{}) (more bool, err error)) (err error) {
+	panic("TODO")
 	nm := noNames
 	if names {
 		nm = returnNames
@@ -94,6 +96,7 @@ func (r recordset) Do(names bool, f func(data []interface{}) (more bool, err err
 
 // Fields implements Recordset.
 func (r recordset) Fields() (names []string, err error) {
+	panic("TODO")
 	err = r.ctx.db.do(
 		r,
 		onlyNames,
@@ -113,6 +116,7 @@ func (r recordset) Fields() (names []string, err error) {
 
 // FirstRow implements Recordset.
 func (r recordset) FirstRow() (row []interface{}, err error) {
+	panic("TODO")
 	rows, err := r.Rows(1, 0)
 	if err != nil {
 		return nil, err
@@ -127,6 +131,7 @@ func (r recordset) FirstRow() (row []interface{}, err error) {
 
 // Rows implements Recordset.
 func (r recordset) Rows(limit, offset int) (rows [][]interface{}, err error) {
+	panic("TODO")
 	if err := r.Do(false, func(row []interface{}) (bool, error) {
 		if offset > 0 {
 			offset--
@@ -3299,6 +3304,16 @@ func (r *outerJoinRset) plan(ctx *execCtx) (rset2, error) {
 				fields: rs2.fieldNames(),
 			},
 		}, nil
+	case 2:
+		return &fullJoinRset2{
+			leftJoinRset2{
+				on:     r.on,
+				rsets:  c2.rsets,
+				names:  c2.names,
+				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
+				fields: rs2.fieldNames(),
+			},
+		}, nil
 	default:
 		panic("internal error 009")
 	}
@@ -3313,6 +3328,10 @@ type leftJoinRset2 struct {
 }
 
 type rightJoinRset2 struct {
+	leftJoinRset2
+}
+
+type fullJoinRset2 struct {
 	leftJoinRset2
 }
 
@@ -3605,7 +3624,8 @@ func (r *rightJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interfac
 	ids := map[string]interface{}{}
 	var g func([]interface{}, []rset2, int) error
 	var match bool
-	fields := append(append([]string(nil), r.fields[right:]...), r.fields[:right]...)
+	nf := len(r.fields)
+	fields := append(append([]string(nil), r.fields[nf-right:]...), r.fields[:nf-right]...)
 	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
 		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
 			ids[r.names[x]] = id
@@ -3660,4 +3680,104 @@ func (r *rightJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interfac
 		})
 	}
 	return g(nil, append([]rset2{r.rsets[n-1]}, r.rsets[:n-1]...), 0)
+}
+
+func (r *fullJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
+	b3 := b.TreeNew(func(a, b interface{}) int {
+		x := a.(int64)
+		y := b.(int64)
+		if x < y {
+			return -1
+		}
+
+		if x == y {
+			return 0
+		}
+
+		return 1
+	})
+	m := map[interface{}]interface{}{}
+	ids := map[string]interface{}{}
+	var g func([]interface{}, []rset2, int) error
+	var match bool
+	var rid int64
+	firstR := true
+	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
+			ids[r.names[x]] = id
+			row := append(prefix, in...)
+			if len(rsets) > 1 {
+				if len(rsets) == 2 {
+					match = false
+					rid = 0
+				}
+				if err = g(row, rsets[1:], x+1); err != nil {
+					return false, err
+				}
+
+				if len(rsets) == 2 {
+					firstR = false
+				}
+				if len(rsets) != 2 || match {
+					return true, nil
+				}
+
+				ids[r.names[x+1]] = nil
+				return f(ids, append(row, make([]interface{}, r.right)...))
+			}
+
+			rid++
+			if firstR {
+				b3.Set(rid, in)
+			}
+			for i, fld := range r.fields {
+				if fld != "" {
+					m[fld] = row[i]
+				}
+			}
+
+			val, err := r.on.eval(ctx, m, ctx.arg)
+			if err != nil {
+				return false, err
+			}
+
+			if val == nil {
+				return true, nil
+			}
+
+			x, ok := val.(bool)
+			if !ok {
+				return false, fmt.Errorf("invalid ON expression %s (value of type %T)", val, val)
+			}
+
+			if !x {
+				return true, nil
+			}
+
+			match = true
+			b3.Delete(rid)
+			return f(ids, row)
+		})
+	}
+	if err := g(nil, r.rsets, 0); err != nil {
+		return err
+	}
+
+	it, err := b3.SeekFirst()
+	if err != nil {
+		return noEOF(err)
+	}
+
+	pref := make([]interface{}, len(r.fields)-r.right)
+	for {
+		_, v, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		more, err := f(nil, append(pref, v.([]interface{})...))
+		if err != nil || !more {
+			return err
+		}
+	}
 }
