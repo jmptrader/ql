@@ -30,9 +30,18 @@ var (
 )
 
 type expression interface {
+	clone() expression
 	eval(execCtx *execCtx, ctx map[interface{}]interface{}, arg []interface{}) (v interface{}, err error)
 	isStatic() bool
 	String() string
+}
+
+func cloneExpressionList(list []expression) []expression {
+	r := make([]expression, len(list))
+	for i, v := range list {
+		r[i] = v.clone()
+	}
+	return r
 }
 
 func mentionedColumns0(e expression, m map[string]struct{}) {
@@ -123,6 +132,8 @@ type pexpr struct {
 	expr expression
 }
 
+func (p *pexpr) clone() expression { return &pexpr{expr: p.expr.clone()} }
+
 func (p *pexpr) isStatic() bool { return p.expr.isStatic() }
 
 func (p *pexpr) String() string {
@@ -195,6 +206,15 @@ type pLike struct {
 	pattern expression
 	re      *regexp.Regexp
 	sexpr   *string
+}
+
+func (p *pLike) clone() expression {
+	return &pLike{
+		expr:    p.expr.clone(),
+		pattern: p.pattern.clone(),
+		re:      p.re,
+		sexpr:   p.sexpr,
+	}
 }
 
 func (p *pLike) isStatic() bool { return p.expr.isStatic() && p.pattern.isStatic() }
@@ -310,58 +330,62 @@ func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
 	return value{val}, err
 }
 
-func (o *binaryOperation) isRelOp() bool {
-	op := o.op
-	return op == '<' || op == le || op == eq || op == neq || op == ge || op == '>'
+func (b *binaryOperation) clone() expression {
+	return &binaryOperation{op: b.op, l: b.l.clone(), r: b.r.clone()}
 }
 
-// [!]qident relOp fixedValue or vice versa
-func (o *binaryOperation) isQIdentRelOpFixedValue() ( /* ok */ bool /* tableName */, string, expression) {
-	if !o.isRelOp() {
-		return false, "", nil
-	}
-
-	switch lhs := o.l.(type) {
-	case *unaryOperation:
-		ok, tab, nx := lhs.isNotQIdent()
-		if !ok {
-			return false, "", nil
-		}
-
-		switch rhs := o.r.(type) {
-		case *parameter, value:
-			return true, tab, &binaryOperation{o.op, nx, rhs}
-		}
-	case *ident:
-		if !lhs.isQualified() {
-			return false, "", nil
-		}
-
-		switch rhs := o.r.(type) {
-		case *parameter, value:
-			return true, mustQualifier(lhs.s), &binaryOperation{o.op, &ident{mustSelector(lhs.s)}, rhs}
-		}
-	case *parameter, value:
-		switch rhs := o.r.(type) {
-		case *ident:
-			if !rhs.isQualified() {
-				return false, "", nil
-			}
-
-			return true, mustQualifier(rhs.s), &binaryOperation{o.op, lhs, &ident{mustSelector(rhs.s)}}
-		case *unaryOperation:
-			ok, tab, nx := rhs.isNotQIdent()
-			if !ok {
-				return false, "", nil
-			}
-
-			return true, tab, &binaryOperation{o.op, lhs, nx}
-		}
-	}
-	return false, "", nil
-}
-
-func (o *binaryOperation) isBoolAnd() bool { return o.op == andand }
+//TODO- func (o *binaryOperation) isRelOp() bool {
+//TODO- 	op := o.op
+//TODO- 	return op == '<' || op == le || op == eq || op == neq || op == ge || op == '>'
+//TODO- }
+//TODO-
+//TODO- // [!]qident relOp fixedValue or vice versa
+//TODO- func (o *binaryOperation) isQIdentRelOpFixedValue() ( /* ok */ bool /* tableName */, string, expression) {
+//TODO- 	if !o.isRelOp() {
+//TODO- 		return false, "", nil
+//TODO- 	}
+//TODO-
+//TODO- 	switch lhs := o.l.(type) {
+//TODO- 	case *unaryOperation:
+//TODO- 		ok, tab, nx := lhs.isNotQIdent()
+//TODO- 		if !ok {
+//TODO- 			return false, "", nil
+//TODO- 		}
+//TODO-
+//TODO- 		switch rhs := o.r.(type) {
+//TODO- 		case *parameter, value:
+//TODO- 			return true, tab, &binaryOperation{o.op, nx, rhs}
+//TODO- 		}
+//TODO- 	case *ident:
+//TODO- 		if !lhs.isQualified() {
+//TODO- 			return false, "", nil
+//TODO- 		}
+//TODO-
+//TODO- 		switch rhs := o.r.(type) {
+//TODO- 		case *parameter, value:
+//TODO- 			return true, mustQualifier(lhs.s), &binaryOperation{o.op, &ident{mustSelector(lhs.s)}, rhs}
+//TODO- 		}
+//TODO- 	case *parameter, value:
+//TODO- 		switch rhs := o.r.(type) {
+//TODO- 		case *ident:
+//TODO- 			if !rhs.isQualified() {
+//TODO- 				return false, "", nil
+//TODO- 			}
+//TODO-
+//TODO- 			return true, mustQualifier(rhs.s), &binaryOperation{o.op, lhs, &ident{mustSelector(rhs.s)}}
+//TODO- 		case *unaryOperation:
+//TODO- 			ok, tab, nx := rhs.isNotQIdent()
+//TODO- 			if !ok {
+//TODO- 				return false, "", nil
+//TODO- 			}
+//TODO-
+//TODO- 			return true, tab, &binaryOperation{o.op, lhs, nx}
+//TODO- 		}
+//TODO- 	}
+//TODO- 	return false, "", nil
+//TODO- }
+//TODO-
+//TODO- func (o *binaryOperation) isBoolAnd() bool { return o.op == andand }
 
 func (o *binaryOperation) isStatic() bool { return o.l.isStatic() && o.r.isStatic() }
 
@@ -2884,6 +2908,8 @@ type ident struct {
 	s string
 }
 
+func (i *ident) clone() expression { return &ident{s: i.s} }
+
 func (i *ident) isQualified() bool { return strings.Contains(i.s, ".") }
 
 func (i *ident) isStatic() bool { return false }
@@ -2913,6 +2939,15 @@ type pIn struct {
 	list []expression
 	not  bool
 	sel  *selectStmt
+}
+
+func (p *pIn) clone() expression {
+	return &pIn{
+		expr: p.expr.clone(),
+		list: cloneExpressionList(p.list),
+		not:  p.not,
+		sel:  p.sel,
+	}
 }
 
 func (n *pIn) isStatic() bool {
@@ -3039,6 +3074,8 @@ type value struct {
 	val interface{}
 }
 
+func (l value) clone() expression { return value{val: l.val} }
+
 func (l value) isStatic() bool { return true }
 
 func (l value) String() string {
@@ -3077,6 +3114,8 @@ type conversion struct {
 	typ int
 	val expression
 }
+
+func (c *conversion) clone() expression { return &conversion{typ: c.typ, val: c.val.clone()} }
 
 func (c *conversion) isStatic() bool {
 	return c.val.isStatic()
@@ -3120,6 +3159,8 @@ func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 
 	return value{val}, err
 }
+
+func (u *unaryOperation) clone() expression { return &unaryOperation{op: u.op, v: u.v.clone()} }
 
 func (u *unaryOperation) isStatic() bool { return u.v.isStatic() }
 
@@ -3376,6 +3417,8 @@ func newCall(f string, arg []expression) (v expression, isAgg bool, err error) {
 	return &c, isAgg, nil
 }
 
+func (c *call) clone() expression { return &call{f: c.f, arg: cloneExpressionList(c.arg)} }
+
 func (c *call) isStatic() bool {
 	v := builtin[c.f]
 	if v.f == nil || !v.isStatic {
@@ -3433,6 +3476,8 @@ type parameter struct {
 	n int
 }
 
+func (p parameter) clone() expression { return parameter{n: p.n} }
+
 func (parameter) isStatic() bool { return false }
 
 func (p parameter) String() string { return fmt.Sprintf("$%d", p.n) }
@@ -3453,6 +3498,8 @@ type isNull struct {
 }
 
 //LATER newIsNull
+
+func (i *isNull) clone() expression { return &isNull{expr: i.expr.clone(), not: i.not} }
 
 func (is *isNull) isStatic() bool { return is.expr.isStatic() }
 
@@ -3520,6 +3567,8 @@ func newIndex(sv, xv expression) (v expression, err error) {
 
 	return &x, nil
 }
+
+func (i *indexOp) clone() expression { return &indexOp{expr: i.expr.clone(), x: i.x.clone()} }
 
 func (x *indexOp) isStatic() bool {
 	return x.expr.isStatic() && x.x.isStatic()
@@ -3605,6 +3654,19 @@ func newSlice(expr expression, lo, hi *expression) (v expression, err error) {
 		}
 	}
 	return &y, nil
+}
+
+func (s *slice) clone() expression {
+	r := &slice{expr: s.expr.clone(), lo: s.lo, hi: s.hi}
+	if s.lo != nil {
+		e := (*s.lo).clone()
+		r.lo = &e
+	}
+	if s.hi != nil {
+		e := (*s.hi).clone()
+		r.hi = &e
+	}
+	return r
 }
 
 func (s *slice) eval(execCtx *execCtx, ctx map[interface{}]interface{}, arg []interface{}) (v interface{}, err error) {
