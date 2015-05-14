@@ -25,11 +25,11 @@ import (
 	"github.com/cznic/strutil"
 )
 
-const (
-	noNames = iota
-	returnNames
-	onlyNames
-)
+//TODO- const (
+//TODO- 	noNames = iota
+//TODO- 	returnNames
+//TODO- 	onlyNames
+//TODO- )
 
 const (
 	leftJoin = iota
@@ -84,39 +84,47 @@ type recordset struct {
 	tx *TCtx
 }
 
-// Do implements Recordset.
-func (r recordset) Do(names bool, f func(data []interface{}) (more bool, err error)) (err error) {
-	panic("TODO")
-	nm := noNames
-	if names {
-		nm = returnNames
+func (r recordset) fieldNames() []interface{} {
+	f := r.rset2.fieldNames()
+	a := make([]interface{}, len(f))
+	for i, v := range f {
+		a[i] = v
 	}
-	return r.ctx.db.do(r, nm, f)
+	return a
+}
+
+// Do implements Recordset.
+func (r recordset) Do(names bool, f func(data []interface{}) (bool, error)) error {
+	if names {
+		if more, err := f(r.fieldNames()); err != nil || !more {
+			return err
+		}
+	}
+	return r.ctx.db.do(r, f)
 }
 
 // Fields implements Recordset.
 func (r recordset) Fields() (names []string, err error) {
-	panic("TODO")
-	err = r.ctx.db.do(
-		r,
-		onlyNames,
-		func(data []interface{}) (bool, error) {
-			for _, v := range data {
-				s, ok := v.(string)
-				if !ok {
-					return false, fmt.Errorf("got %T(%v), expected string (RecordSet.Fields)", v, v)
-				}
-				names = append(names, s)
-			}
-			return false, nil
-		},
-	)
-	return
+	return r.rset2.fieldNames(), nil
+	//TODO- err = r.ctx.db.do(
+	//TODO- 	r,
+	//TODO- 	onlyNames,
+	//TODO- 	func(data []interface{}) (bool, error) {
+	//TODO- 		for _, v := range data {
+	//TODO- 			s, ok := v.(string)
+	//TODO- 			if !ok {
+	//TODO- 				return false, fmt.Errorf("got %T(%v), expected string (RecordSet.Fields)", v, v)
+	//TODO- 			}
+	//TODO- 			names = append(names, s)
+	//TODO- 		}
+	//TODO- 		return false, nil
+	//TODO- 	},
+	//TODO- )
+	//TODO- return
 }
 
 // FirstRow implements Recordset.
 func (r recordset) FirstRow() (row []interface{}, err error) {
-	panic("TODO")
 	rows, err := r.Rows(1, 0)
 	if err != nil {
 		return nil, err
@@ -130,8 +138,8 @@ func (r recordset) FirstRow() (row []interface{}, err error) {
 }
 
 // Rows implements Recordset.
-func (r recordset) Rows(limit, offset int) (rows [][]interface{}, err error) {
-	panic("TODO")
+func (r recordset) Rows(limit, offset int) ([][]interface{}, error) {
+	var rows [][]interface{}
 	if err := r.Do(false, func(row []interface{}) (bool, error) {
 		if offset > 0 {
 			offset--
@@ -413,24 +421,8 @@ func NewRWCtx() *TCtx { return &TCtx{} }
 //
 // Fields
 //
-// The only reliable way, in the general case, how to get field names of a
-// recordset is to execute the Do method with the names parameter set to true.
-// Any SELECT can return different fields on different runs, provided the
-// columns of some of the underlying tables involved were altered in between
-// and the query sports the SELECT * form.  Then the fields are not really
-// known until the first query result row materializes.  The problem is that
-// some queries can be costly even before that first row is computed.  If only
-// the field names is what is required in some situation then executing such
-// costly query could be prohibitively expensive.
-//
-// The Fields method provides an alternative. It computes the recordset fields
-// while ignoring table data, WHERE clauses, predicates and without evaluating
-// any expressions nor any functions.
-//
-// The result of Fields can be obviously imprecise if tables are altered before
-// running Do later. In exchange, calling Fields is cheap - compared to
-// actually computing a first row of a query having, say cross joins on n
-// relations (1^n is always 1, n ∈ N).
+// Fields return a slice of field names of the recordset. The result is computed
+// without actually computing the recordset rows.
 //
 // FirstRow
 //
@@ -3041,7 +3033,7 @@ func (db *DB) Close() error {
 	return err
 }
 
-func (db *DB) do(r recordset, names int, f func(data []interface{}) (bool, error)) (err error) {
+func (db *DB) do(r recordset, f func(data []interface{}) (bool, error)) (err error) {
 	db.mu.Lock()
 	switch db.rw {
 	case false:
@@ -3062,36 +3054,42 @@ func (db *DB) do(r recordset, names int, f func(data []interface{}) (bool, error
 		}
 	}
 
-	panic("TODO")
-	//ok := false
-	//return r.do(r.ctx, names == onlyNames, func(id interface{}, data []interface{}) (more bool, err error) {
-	//	if ok {
-	//		if err = expand(data); err != nil {
-	//			return
-	//		}
+	//TODO- ok := false
+	//TODO- return r.do(r.ctx, names == onlyNames, func(id interface{}, data []interface{}) (more bool, err error) {
+	//TODO- 	if ok {
+	//TODO- 		if err = expand(data); err != nil {
+	//TODO- 			return
+	//TODO- 		}
 
-	//		return f(data)
-	//	}
+	//TODO- 		return f(data)
+	//TODO- 	}
 
-	//	ok = true
-	//	done := false
-	//	switch names {
-	//	case noNames:
-	//		return true, nil
-	//	case onlyNames:
-	//		done = true
-	//		fallthrough
-	//	default: // returnNames
-	//		flds := data[0].([]*fld)
-	//		a := make([]interface{}, len(flds))
-	//		for i, v := range flds {
-	//			a[i] = v.name
-	//		}
-	//		more, err := f(a)
-	//		return more && !done, err
+	//TODO- 	ok = true
+	//TODO- 	done := false
+	//TODO- 	switch names {
+	//TODO- 	case noNames:
+	//TODO- 		return true, nil
+	//TODO- 	case onlyNames:
+	//TODO- 		done = true
+	//TODO- 		fallthrough
+	//TODO- 	default: // returnNames
+	//TODO- 		flds := data[0].([]*fld)
+	//TODO- 		a := make([]interface{}, len(flds))
+	//TODO- 		for i, v := range flds {
+	//TODO- 			a[i] = v.name
+	//TODO- 		}
+	//TODO- 		more, err := f(a)
+	//TODO- 		return more && !done, err
 
-	//	}
-	//})
+	//TODO- 	}
+	//TODO- })
+	return r.do(r.ctx, func(id interface{}, data []interface{}) (bool, error) {
+		if err = expand(data); err != nil {
+			return false, err
+		}
+
+		return f(data)
+	})
 }
 
 func (db *DB) beginTransaction() { //TODO Rewrite, must use much smaller undo info!
