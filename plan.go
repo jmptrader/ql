@@ -43,7 +43,17 @@ type crossJoinDefaultPlan struct {
 	fields []string
 }
 
-func (r *crossJoinDefaultPlan) optimize() (plan, error) { panic("TODO") }
+func (r *crossJoinDefaultPlan) optimize() (plan, error) {
+	var err error
+	for i, v := range r.rsets {
+		if v, err = v.optimize(); err != nil {
+			return nil, err
+		}
+
+		r.rsets[i] = v
+	}
+	return r, nil
+}
 
 func (r *crossJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -656,7 +666,7 @@ type tableDefaultPlan struct {
 	fields []string
 }
 
-func (r *tableDefaultPlan) optimize() (plan, error) { panic("TODO") }
+func (r *tableDefaultPlan) optimize() (plan, error) { return r, nil }
 
 func (r *tableDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
