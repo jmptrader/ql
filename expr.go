@@ -2982,55 +2982,6 @@ func (n *pIn) eval(execCtx *execCtx, ctx map[interface{}]interface{}, arg []inte
 	var ev *pInEval
 	ev0 := ctx[n]
 	if ev0 == nil { // SELECT not yet evaluated.
-		//TODO- r, err := n.sel.plan(execCtx)
-		//TODO- if err != nil {
-		//TODO- 	return nil, err
-		//TODO- }
-
-		//TODO- ev = &pInEval{m: map[interface{}]struct{}{}}
-		//TODO- ctx[n] = ev
-		//TODO- m := ev.m
-		//TODO- ok := false
-		//TODO- typechecked := false
-		//TODO- if err := r.do(execCtx, false, func(id interface{}, data []interface{}) (more bool, err error) {
-		//TODO- 	if typechecked {
-		//TODO- 		if data[0] == nil {
-		//TODO- 			return true, nil
-		//TODO- 		}
-
-		//TODO- 		m[data[0]] = struct{}{}
-		//TODO- 	}
-
-		//TODO- 	if ok {
-		//TODO- 		if data[0] == nil {
-		//TODO- 			return true, nil
-		//TODO- 		}
-
-		//TODO- 		ev.sample = data[0]
-		//TODO- 		switch ev.sample.(type) {
-		//TODO- 		case bool, byte, complex128, complex64, float32,
-		//TODO- 			float64, int16, int32, int64, int8,
-		//TODO- 			string, uint16, uint32, uint64:
-		//TODO- 			typechecked = true
-		//TODO- 			m[ev.sample] = struct{}{}
-		//TODO- 			return true, nil
-		//TODO- 		default:
-		//TODO- 			return false, fmt.Errorf("IN (%s): invalid field type: %T", n.sel, data[0])
-		//TODO- 		}
-
-		//TODO- 	}
-
-		//TODO- 	flds := data[0].([]*fld)
-		//TODO- 	if g, e := len(flds), 1; g != e {
-		//TODO- 		return false, fmt.Errorf("IN (%s): mismatched field count, have %d, need %d", n.sel, g, e)
-		//TODO- 	}
-
-		//TODO- 	ok = true
-		//TODO- 	return true, nil
-		//TODO- }); err != nil {
-		//TODO- 	return nil, err
-		//TODO- }
-
 		r, err := n.sel.plan(execCtx)
 		if err != nil {
 			return nil, err

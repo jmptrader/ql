@@ -674,96 +674,6 @@ func (s *selectStmt) String() string {
 	return b.String()
 }
 
-//func (s *selectStmt) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) (err error) {
-//	return s.exec0().do(ctx, onlyNames, f)
-//}
-//
-//func (s *selectStmt) exec0() (r rset) { //LATER overlapping goroutines/pipelines
-//	s.mu.Lock() //TODO- when new planner is ready
-//	defer s.mu.Unlock()
-//	r = rset(s.from)
-//	if o := s.outer; o != nil {
-//		o.crossJoin = r.(*crossJoinRset)
-//		r = o
-//	}
-//	if w := s.where; w != nil {
-//		switch ok, list := isPossiblyRewriteableCrossJoinWhereExpression(w.expr); ok && len(s.from.sources) > 1 {
-//		case true:
-//			//dbg("====(in, %d)\n%s\n----", len(list), s)
-//			tables := s.from.tables()
-//			if len(list) != len(tables) {
-//				r = &whereRset{expr: w.expr, src: r}
-//				break
-//			}
-//
-//			m := map[string]int{}
-//			for i, v := range tables {
-//				m[v.name] = i
-//			}
-//			list2 := make([]int, len(list))
-//			for i, v := range list {
-//				itab, ok := m[v.table]
-//				if !ok {
-//					break
-//				}
-//
-//				delete(m, v.table)
-//				list2[i] = itab
-//				if i == len(list)-1 { // last cycle
-//					if len(m) != 0 { // all tabs "consumed" exactly once
-//						break
-//					}
-//
-//					// Can rewrite
-//					crs := s.from
-//					for i, v := range list {
-//						sel := &selectStmt{
-//							flds:  []*fld{}, // SELECT *
-//							from:  &crossJoinRset{sources: []interface{}{[]interface{}{v.table, ""}}},
-//							where: &whereRset{expr: v.expr},
-//						}
-//						info := tables[list2[i]]
-//						crs.sources[info.i] = []interface{}{sel, info.rename}
-//					}
-//					r = rset(crs)
-//					s.where = nil
-//					//dbg("====(out)\n%s\n----", s)
-//				}
-//			}
-//			if s.where == nil {
-//				break
-//			}
-//
-//			fallthrough
-//		default:
-//			r = &whereRset{expr: w.expr, src: r}
-//		}
-//	}
-//	switch {
-//	case !s.hasAggregates && s.group == nil: // nop
-//	case !s.hasAggregates && s.group != nil:
-//		r = &groupByRset{colNames: s.group.colNames, src: r}
-//	case s.hasAggregates && s.group == nil:
-//		r = &groupByRset{src: r}
-//	case s.hasAggregates && s.group != nil:
-//		r = &groupByRset{colNames: s.group.colNames, src: r}
-//	}
-//	r = &selectRset{flds: s.flds, src: r}
-//	if s.distinct {
-//		r = &distinctRset{src: r}
-//	}
-//	if s := s.order; s != nil {
-//		r = &orderByRset{asc: s.asc, by: s.by, src: r}
-//	}
-//	if s := s.offset; s != nil {
-//		r = &offsetRset{s.expr, r}
-//	}
-//	if s := s.limit; s != nil {
-//		r = &limitRset{s.expr, r}
-//	}
-//	return
-//}
-
 func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping goroutines/pipelines
 	r, err := s.from.plan(ctx)
 	if err != nil {
@@ -777,70 +687,10 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 		}
 	}
 	if w := s.where; w != nil {
-		//switch ok, list := isPossiblyRewriteableCrossJoinWhereExpression(w.expr); ok && len(s.from.sources) > 1 {
-		//case true:
-		//	//dbg("====(in, %d)\n%s\n----", len(list), s)
-		//	tables := s.from.tables()
-		//	if len(list) != len(tables) {
-		//		r = &whereRset{expr: w.expr, src: r}
-		//		break
-		//	}
-
-		//	m := map[string]int{}
-		//	for i, v := range tables {
-		//		m[v.name] = i
-		//	}
-		//	list2 := make([]int, len(list))
-		//	for i, v := range list {
-		//		itab, ok := m[v.table]
-		//		if !ok {
-		//			break
-		//		}
-
-		//		delete(m, v.table)
-		//		list2[i] = itab
-		//		if i == len(list)-1 { // last cycle
-		//			if len(m) != 0 { // all tabs "consumed" exactly once
-		//				break
-		//			}
-
-		//			// Can rewrite
-		//			crs := s.from
-		//			for i, v := range list {
-		//				sel := &selectStmt{
-		//					flds:  []*fld{}, // SELECT *
-		//					from:  &crossJoinRset{sources: []interface{}{[]interface{}{v.table, ""}}},
-		//					where: &whereRset{expr: v.expr},
-		//				}
-		//				info := tables[list2[i]]
-		//				crs.sources[info.i] = []interface{}{sel, info.rename}
-		//			}
-		//			r = rset(crs)
-		//			s.where = nil
-		//			//dbg("====(out)\n%s\n----", s)
-		//		}
-		//	}
-		//	if s.where == nil {
-		//		break
-		//	}
-
-		//	fallthrough
-		//default:
-		//	r = &whereRset{expr: w.expr, src: r}
-		//}
 		if r, err = (&whereRset{expr: w.expr, src: r}).plan(ctx); err != nil {
 			return nil, err
 		}
 	}
-	//	switch {
-	//	case !s.hasAggregates && s.group == nil: // nop
-	//	case !s.hasAggregates && s.group != nil:
-	//		r = &groupByRset{colNames: s.group.colNames, src: r}
-	//	case s.hasAggregates && s.group == nil:
-	//		r = &groupByRset{src: r}
-	//	case s.hasAggregates && s.group != nil:
-	//		r = &groupByRset{colNames: s.group.colNames, src: r}
-	//	}
 	switch {
 	case !s.hasAggregates && s.group == nil: // nop
 	case !s.hasAggregates && s.group != nil:
