@@ -119,13 +119,13 @@ func dumpFlds(flds []*fld) string {
 
 func recSetDump(rs Recordset) (s string, err error) {
 	recset := rs.(recordset)
-	rs2 := recset.plan
-	a0 := append([]string(nil), rs2.fieldNames()...)
+	p := recset.plan
+	a0 := append([]string(nil), p.fieldNames()...)
 	for i, v := range a0 {
 		a0[i] = fmt.Sprintf("%q", v)
 	}
 	a := []string{strings.Join(a0, ", ")}
-	if err := rs2.do(recset.ctx, func(id interface{}, data []interface{}) (bool, error) {
+	if err := p.do(recset.ctx, func(id interface{}, data []interface{}) (bool, error) {
 		if err = expand(data); err != nil {
 			return false, err
 		}
