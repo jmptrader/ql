@@ -30,16 +30,16 @@ var (
 )
 
 type expression interface {
-	clone() expression
+	clone(unqualify ...string) expression
 	eval(execCtx *execCtx, ctx map[interface{}]interface{}, arg []interface{}) (v interface{}, err error)
 	isStatic() bool
 	String() string
 }
 
-func cloneExpressionList(list []expression) []expression {
+func cloneExpressionList(list []expression, unqualify ...string) []expression {
 	r := make([]expression, len(list))
 	for i, v := range list {
-		r[i] = v.clone()
+		r[i] = v.clone(unqualify...)
 	}
 	return r
 }
@@ -132,7 +132,7 @@ type pexpr struct {
 	expr expression
 }
 
-func (p *pexpr) clone() expression { return &pexpr{expr: p.expr.clone()} }
+func (p *pexpr) clone(unqualify ...string) expression { return &pexpr{expr: p.expr.clone(unqualify...)} }
 
 func (p *pexpr) isStatic() bool { return p.expr.isStatic() }
 
@@ -208,10 +208,10 @@ type pLike struct {
 	sexpr   *string
 }
 
-func (p *pLike) clone() expression {
+func (p *pLike) clone(unqualify ...string) expression {
 	return &pLike{
-		expr:    p.expr.clone(),
-		pattern: p.pattern.clone(),
+		expr:    p.expr.clone(unqualify...),
+		pattern: p.pattern.clone(unqualify...),
 		re:      p.re,
 		sexpr:   p.sexpr,
 	}
@@ -330,8 +330,8 @@ func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
 	return value{val}, err
 }
 
-func (b *binaryOperation) clone() expression {
-	return &binaryOperation{op: b.op, l: b.l.clone(), r: b.r.clone()}
+func (b *binaryOperation) clone(unqualify ...string) expression {
+	return &binaryOperation{op: b.op, l: b.l.clone(unqualify...), r: b.r.clone(unqualify...)}
 }
 
 //TODO- func (o *binaryOperation) isRelOp() bool {
@@ -2908,7 +2908,19 @@ type ident struct {
 	s string
 }
 
-func (i *ident) clone() expression { return &ident{s: i.s} }
+func (i *ident) clone(unqualify ...string) expression {
+	x := strings.IndexByte(i.s, '.')
+	if x < 0 {
+		return &ident{s: i.s}
+	}
+	q := i.s[:x]
+	for _, v := range unqualify {
+		if q == v {
+			return &ident{i.s[x+1:]}
+		}
+	}
+	return &ident{s: i.s}
+}
 
 func (i *ident) isQualified() bool { return strings.Contains(i.s, ".") }
 
@@ -2941,9 +2953,9 @@ type pIn struct {
 	sel  *selectStmt
 }
 
-func (p *pIn) clone() expression {
+func (p *pIn) clone(unqualify ...string) expression {
 	return &pIn{
-		expr: p.expr.clone(),
+		expr: p.expr.clone(unqualify...),
 		list: cloneExpressionList(p.list),
 		not:  p.not,
 		sel:  p.sel,
@@ -3074,7 +3086,7 @@ type value struct {
 	val interface{}
 }
 
-func (l value) clone() expression { return value{val: l.val} }
+func (l value) clone(unqualify ...string) expression { return value{val: l.val} }
 
 func (l value) isStatic() bool { return true }
 
@@ -3115,7 +3127,9 @@ type conversion struct {
 	val expression
 }
 
-func (c *conversion) clone() expression { return &conversion{typ: c.typ, val: c.val.clone()} }
+func (c *conversion) clone(unqualify ...string) expression {
+	return &conversion{typ: c.typ, val: c.val.clone(unqualify...)}
+}
 
 func (c *conversion) isStatic() bool {
 	return c.val.isStatic()
@@ -3160,7 +3174,9 @@ func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 	return value{val}, err
 }
 
-func (u *unaryOperation) clone() expression { return &unaryOperation{op: u.op, v: u.v.clone()} }
+func (u *unaryOperation) clone(unqualify ...string) expression {
+	return &unaryOperation{op: u.op, v: u.v.clone(unqualify...)}
+}
 
 func (u *unaryOperation) isStatic() bool { return u.v.isStatic() }
 
@@ -3417,7 +3433,9 @@ func newCall(f string, arg []expression) (v expression, isAgg bool, err error) {
 	return &c, isAgg, nil
 }
 
-func (c *call) clone() expression { return &call{f: c.f, arg: cloneExpressionList(c.arg)} }
+func (c *call) clone(unqualify ...string) expression {
+	return &call{f: c.f, arg: cloneExpressionList(c.arg)}
+}
 
 func (c *call) isStatic() bool {
 	v := builtin[c.f]
@@ -3476,7 +3494,7 @@ type parameter struct {
 	n int
 }
 
-func (p parameter) clone() expression { return parameter{n: p.n} }
+func (p parameter) clone(unqualify ...string) expression { return parameter{n: p.n} }
 
 func (parameter) isStatic() bool { return false }
 
@@ -3499,7 +3517,9 @@ type isNull struct {
 
 //LATER newIsNull
 
-func (i *isNull) clone() expression { return &isNull{expr: i.expr.clone(), not: i.not} }
+func (i *isNull) clone(unqualify ...string) expression {
+	return &isNull{expr: i.expr.clone(unqualify...), not: i.not}
+}
 
 func (is *isNull) isStatic() bool { return is.expr.isStatic() }
 
@@ -3568,7 +3588,9 @@ func newIndex(sv, xv expression) (v expression, err error) {
 	return &x, nil
 }
 
-func (i *indexOp) clone() expression { return &indexOp{expr: i.expr.clone(), x: i.x.clone()} }
+func (i *indexOp) clone(unqualify ...string) expression {
+	return &indexOp{expr: i.expr.clone(unqualify...), x: i.x.clone(unqualify...)}
+}
 
 func (x *indexOp) isStatic() bool {
 	return x.expr.isStatic() && x.x.isStatic()
@@ -3656,14 +3678,14 @@ func newSlice(expr expression, lo, hi *expression) (v expression, err error) {
 	return &y, nil
 }
 
-func (s *slice) clone() expression {
-	r := &slice{expr: s.expr.clone(), lo: s.lo, hi: s.hi}
+func (s *slice) clone(unqualify ...string) expression {
+	r := &slice{expr: s.expr.clone(unqualify...), lo: s.lo, hi: s.hi}
 	if s.lo != nil {
-		e := (*s.lo).clone()
+		e := (*s.lo).clone(unqualify...)
 		r.lo = &e
 	}
 	if s.hi != nil {
-		e := (*s.hi).clone()
+		e := (*s.hi).clone(unqualify...)
 		r.hi = &e
 	}
 	return r
