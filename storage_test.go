@@ -119,7 +119,7 @@ func dumpFlds(flds []*fld) string {
 
 func recSetDump(rs Recordset) (s string, err error) {
 	recset := rs.(recordset)
-	rs2 := recset.rset2
+	rs2 := recset.plan
 	a0 := append([]string(nil), rs2.fieldNames()...)
 	for i, v := range a0 {
 		a0[i] = fmt.Sprintf("%q", v)
