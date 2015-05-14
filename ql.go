@@ -52,15 +52,15 @@ var (
 	_ rset = (*tableRset)(nil)
 	_ rset = (*whereRset)(nil)
 
+	//_ rset2 = (*selectStmt2)(nil) // There's no selectStmt2.
 	_ rset2 = (*crossJoinRset2)(nil)
 	_ rset2 = (*distinctRset2)(nil)
 	_ rset2 = (*groupByRset2)(nil)
+	_ rset2 = (*leftJoinRset2)(nil)
 	_ rset2 = (*limitRset2)(nil)
 	_ rset2 = (*offsetRset2)(nil)
 	_ rset2 = (*orderByRset2)(nil)
-	//_ rset2 = (*outerJoinRset2)(nil)
 	_ rset2 = (*selectRset2)(nil)
-	//_ rset2 = (*selectStmt2)(nil) // There's no selectStmt2.
 	_ rset2 = (*tableRset2)(nil)
 	_ rset2 = (*whereRset2)(nil)
 
@@ -3280,24 +3280,43 @@ func (r *outerJoinRset) plan(ctx *execCtx) (rset2, error) {
 	}
 
 	c2 := rs2.(*crossJoinRset2)
-	return &outerJoinRset2{
-		typ:    r.typ,
-		on:     r.on,
-		rsets:  c2.rsets,
-		names:  c2.names,
-		fields: rs2.fieldNames(),
-	}, nil
+	switch r.typ {
+	case 0:
+		return &leftJoinRset2{
+			on:     r.on,
+			rsets:  c2.rsets,
+			names:  c2.names,
+			right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
+			fields: rs2.fieldNames(),
+		}, nil
+	case 1:
+		return &rightJoinRset2{
+			leftJoinRset2{
+				on:     r.on,
+				rsets:  c2.rsets,
+				names:  c2.names,
+				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
+				fields: rs2.fieldNames(),
+			},
+		}, nil
+	default:
+		panic("internal error 009")
+	}
 }
 
-type outerJoinRset2 struct {
-	typ    int // leftJoin, rightJoin, fullJoin
+type leftJoinRset2 struct {
 	on     expression
 	rsets  []rset2
 	names  []string
+	right  int
 	fields []string
 }
 
-func (r *outerJoinRset2) fieldNames() []string { return r.fields }
+type rightJoinRset2 struct {
+	leftJoinRset2
+}
+
+func (r *leftJoinRset2) fieldNames() []string { return r.fields }
 
 //TODO- func (o *outerJoinRset) do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error {
 //TODO- 	sources := append(o.crossJoin.sources, o.source)
@@ -3522,39 +3541,29 @@ func (r *outerJoinRset2) fieldNames() []string { return r.fields }
 //TODO- 	}
 //TODO- }
 
-func (r *outerJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
-	//var b3 *b.Tree
-	switch r.typ {
-	case rightJoin: // switch last two sources
-		panic("TODO")
-		//n := len(sources)
-		//sources[n-2], sources[n-1] = sources[n-1], sources[n-2]
-	case fullJoin:
-		panic("TODO")
-		//b3 = b.TreeNew(func(a, b interface{}) int {
-		//	x := a.(int64)
-		//	y := b.(int64)
-		//	if x < y {
-		//		return -1
-		//	}
-
-		//	if x == y {
-		//		return 0
-		//	}
-
-		//	return 1
-		//})
-	}
-
+func (r *leftJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
 	m := map[interface{}]interface{}{}
 	ids := map[string]interface{}{}
 	var g func([]interface{}, []rset2, int) error
+	var match bool
 	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
 		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
 			ids[r.names[x]] = id
 			row := append(prefix, in...)
 			if len(rsets) > 1 {
-				return true, g(append(prefix, in...), rsets[1:], x+1)
+				if len(rsets) == 2 {
+					match = false
+				}
+				if err = g(row, rsets[1:], x+1); err != nil {
+					return false, err
+				}
+
+				if len(rsets) != 2 || match {
+					return true, nil
+				}
+
+				ids[r.names[x+1]] = nil
+				return f(ids, append(row, make([]interface{}, r.right)...))
 			}
 
 			for i, fld := range r.fields {
@@ -3581,8 +3590,74 @@ func (r *outerJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interfac
 				return true, nil
 			}
 
+			match = true
 			return f(ids, row)
 		})
 	}
 	return g(nil, r.rsets, 0)
+}
+
+func (r *rightJoinRset2) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
+	right := r.right
+	left := len(r.fields) - right
+	n := len(r.rsets)
+	m := map[interface{}]interface{}{}
+	ids := map[string]interface{}{}
+	var g func([]interface{}, []rset2, int) error
+	var match bool
+	fields := append(append([]string(nil), r.fields[right:]...), r.fields[:right]...)
+	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
+			ids[r.names[x]] = id
+			row := append(prefix, in...)
+			if len(rsets) > 1 {
+				if len(rsets) == n {
+					match = false
+				}
+				if err = g(row, rsets[1:], x+1); err != nil {
+					return false, err
+				}
+
+				if len(rsets) != n || match {
+					return true, nil
+				}
+
+				for i := 0; i < n-1; i++ {
+					ids[r.names[i]] = nil
+				}
+
+				// rigth, left -> left, right
+				return f(ids, append(make([]interface{}, left), row[:right]...))
+			}
+
+			for i, fld := range fields {
+				if fld != "" {
+					m[fld] = row[i]
+				}
+			}
+
+			val, err := r.on.eval(ctx, m, ctx.arg)
+			if err != nil {
+				return false, err
+			}
+
+			if val == nil {
+				return true, nil
+			}
+
+			x, ok := val.(bool)
+			if !ok {
+				return false, fmt.Errorf("invalid ON expression %s (value of type %T)", val, val)
+			}
+
+			if !x {
+				return true, nil
+			}
+
+			match = true
+			// rigth, left -> left, right
+			return f(ids, append(append([]interface{}(nil), row[right:]...), row[:right]...))
+		})
+	}
+	return g(nil, append([]rset2{r.rsets[n-1]}, r.rsets[:n-1]...), 0)
 }
