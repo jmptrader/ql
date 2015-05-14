@@ -12,23 +12,22 @@ import (
 )
 
 var (
-	//_ rset2 = (*selectStmt2)(nil) //TODO There's no selectStmt2.
-	_ rset2 = (*crossJoinDefaultPlan)(nil)
-	_ rset2 = (*distinctDefaultPlan)(nil)
-	_ rset2 = (*groupByDefaultPlan)(nil)
-	_ rset2 = (*indexDefaultPlan)(nil)
-	_ rset2 = (*leftJoinDefaultPlan)(nil)
-	_ rset2 = (*rightJoinDefaultPlan)(nil)
-	_ rset2 = (*fullJoinDefaultPlan)(nil)
-	_ rset2 = (*limitDefaultPlan)(nil)
-	_ rset2 = (*offsetDefaultPlan)(nil)
-	_ rset2 = (*orderByDefaultPlan)(nil)
-	_ rset2 = (*selectFieldsDefaultPlan)(nil)
-	_ rset2 = (*sysColumnDefaultPlan)(nil)
-	_ rset2 = (*sysIndexDefaultPlan)(nil)
-	_ rset2 = (*sysTableDefaultPlan)(nil)
-	_ rset2 = (*tableDefaultPlan)(nil)
-	_ rset2 = (*whereDefaultPlan)(nil)
+	_ plan = (*crossJoinDefaultPlan)(nil)
+	_ plan = (*distinctDefaultPlan)(nil)
+	_ plan = (*groupByDefaultPlan)(nil)
+	_ plan = (*indexDefaultPlan)(nil)
+	_ plan = (*leftJoinDefaultPlan)(nil)
+	_ plan = (*rightJoinDefaultPlan)(nil)
+	_ plan = (*fullJoinDefaultPlan)(nil)
+	_ plan = (*limitDefaultPlan)(nil)
+	_ plan = (*offsetDefaultPlan)(nil)
+	_ plan = (*orderByDefaultPlan)(nil)
+	_ plan = (*selectFieldsDefaultPlan)(nil)
+	_ plan = (*sysColumnDefaultPlan)(nil)
+	_ plan = (*sysIndexDefaultPlan)(nil)
+	_ plan = (*sysTableDefaultPlan)(nil)
+	_ plan = (*tableDefaultPlan)(nil)
+	_ plan = (*whereDefaultPlan)(nil)
 
 	createIndex2 = mustCompile(`
 		// Index register 2.
@@ -75,13 +74,13 @@ var (
 `)
 )
 
-type rset2 interface {
+type plan interface {
 	do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error
 	fieldNames() []string
 }
 
 type crossJoinDefaultPlan struct {
-	rsets  []rset2
+	rsets  []plan
 	names  []string
 	fields []string
 }
@@ -92,8 +91,8 @@ func (r *crossJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []in
 	}
 
 	ids := map[string]interface{}{}
-	var g func([]interface{}, []rset2, int) error
-	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+	var g func([]interface{}, []plan, int) error
+	g = func(prefix []interface{}, rsets []plan, x int) (err error) {
 		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
 			ids[r.names[x]] = id
 			if len(rsets) > 1 {
@@ -109,7 +108,7 @@ func (r *crossJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []in
 func (r *crossJoinDefaultPlan) fieldNames() []string { return r.fields }
 
 type distinctDefaultPlan struct {
-	src    rset2
+	src    plan
 	fields []string
 }
 
@@ -153,7 +152,7 @@ func (r *distinctDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 
 type groupByDefaultPlan struct {
 	colNames []string
-	src      rset2
+	src      plan
 	fields   []string
 }
 
@@ -280,7 +279,7 @@ func (r *indexDefaultPlan) fieldNames() []string {
 
 type limitDefaultPlan struct {
 	expr   expression
-	src    rset2
+	src    plan
 	fields []string
 }
 
@@ -325,7 +324,7 @@ func (r *limitDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 
 type offsetDefaultPlan struct {
 	expr   expression
-	src    rset2
+	src    plan
 	fields []string
 }
 
@@ -370,7 +369,7 @@ func (r *offsetDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inter
 type orderByDefaultPlan struct {
 	asc    bool
 	by     []expression
-	src    rset2
+	src    plan
 	fields []string
 }
 
@@ -449,7 +448,7 @@ func (r *orderByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 
 type selectFieldsDefaultPlan struct {
 	flds   []*fld
-	src    rset2
+	src    plan
 	fields []string
 }
 
@@ -689,7 +688,7 @@ func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
 
 type whereDefaultPlan struct {
 	expr   expression
-	src    rset2
+	src    plan
 	fields []string
 }
 
@@ -728,7 +727,7 @@ func (r *whereDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 
 type leftJoinDefaultPlan struct {
 	on     expression
-	rsets  []rset2
+	rsets  []plan
 	names  []string
 	right  int
 	fields []string
@@ -747,9 +746,9 @@ func (r *leftJoinDefaultPlan) fieldNames() []string { return r.fields }
 func (r *leftJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
 	m := map[interface{}]interface{}{}
 	ids := map[string]interface{}{}
-	var g func([]interface{}, []rset2, int) error
+	var g func([]interface{}, []plan, int) error
 	var match bool
-	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+	g = func(prefix []interface{}, rsets []plan, x int) (err error) {
 		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
 			ids[r.names[x]] = id
 			row := append(prefix, in...)
@@ -806,11 +805,11 @@ func (r *rightJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []in
 	n := len(r.rsets)
 	m := map[interface{}]interface{}{}
 	ids := map[string]interface{}{}
-	var g func([]interface{}, []rset2, int) error
+	var g func([]interface{}, []plan, int) error
 	var match bool
 	nf := len(r.fields)
 	fields := append(append([]string(nil), r.fields[nf-right:]...), r.fields[:nf-right]...)
-	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+	g = func(prefix []interface{}, rsets []plan, x int) (err error) {
 		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
 			ids[r.names[x]] = id
 			row := append(prefix, in...)
@@ -863,7 +862,7 @@ func (r *rightJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []in
 			return f(ids, append(append([]interface{}(nil), row[right:]...), row[:right]...))
 		})
 	}
-	return g(nil, append([]rset2{r.rsets[n-1]}, r.rsets[:n-1]...), 0)
+	return g(nil, append([]plan{r.rsets[n-1]}, r.rsets[:n-1]...), 0)
 }
 
 func (r *fullJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
@@ -882,11 +881,11 @@ func (r *fullJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 	})
 	m := map[interface{}]interface{}{}
 	ids := map[string]interface{}{}
-	var g func([]interface{}, []rset2, int) error
+	var g func([]interface{}, []plan, int) error
 	var match bool
 	var rid int64
 	firstR := true
-	g = func(prefix []interface{}, rsets []rset2, x int) (err error) {
+	g = func(prefix []interface{}, rsets []plan, x int) (err error) {
 		return rsets[0].do(ctx, func(id interface{}, in []interface{}) (bool, error) {
 			ids[r.names[x]] = id
 			row := append(prefix, in...)

@@ -673,7 +673,7 @@ func (s *selectStmt) String() string {
 	return b.String()
 }
 
-func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping goroutines/pipelines
+func (s *selectStmt) plan(ctx *execCtx) (plan, error) { //LATER overlapping goroutines/pipelines
 	r, err := s.from.plan(ctx)
 	if err != nil {
 		return nil, err

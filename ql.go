@@ -51,17 +51,17 @@ var (
 
 type rset interface {
 	//do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error
-	plan(ctx *execCtx) (rset2, error)
+	plan(ctx *execCtx) (plan, error)
 }
 
 type recordset struct {
 	ctx *execCtx
-	rset2
+	plan
 	tx *TCtx
 }
 
 func (r recordset) fieldNames() []interface{} {
-	f := r.rset2.fieldNames()
+	f := r.plan.fieldNames()
 	a := make([]interface{}, len(f))
 	for i, v := range f {
 		a[i] = v
@@ -81,7 +81,7 @@ func (r recordset) Do(names bool, f func(data []interface{}) (bool, error)) erro
 
 // Fields implements Recordset.
 func (r recordset) Fields() (names []string, err error) {
-	return r.rset2.fieldNames(), nil
+	return r.plan.fieldNames(), nil
 }
 
 // FirstRow implements Recordset.
@@ -150,10 +150,10 @@ func (l List) String() string {
 
 type groupByRset struct {
 	colNames []string
-	src      rset2
+	src      plan
 }
 
-func (r *groupByRset) plan(ctx *execCtx) (rset2, error) {
+func (r *groupByRset) plan(ctx *execCtx) (plan, error) {
 	return &groupByDefaultPlan{colNames: r.colNames, src: r.src, fields: r.src.fieldNames()}, nil
 }
 
@@ -236,17 +236,17 @@ func (a *assignment) String() string {
 }
 
 type distinctRset struct {
-	src rset2
+	src plan
 }
 
-func (r *distinctRset) plan(ctx *execCtx) (rset2, error) {
+func (r *distinctRset) plan(ctx *execCtx) (plan, error) {
 	return &distinctDefaultPlan{src: r.src, fields: r.src.fieldNames()}, nil
 }
 
 type orderByRset struct {
 	asc bool
 	by  []expression
-	src rset2
+	src plan
 }
 
 func (r *orderByRset) String() string {
@@ -261,7 +261,7 @@ func (r *orderByRset) String() string {
 	return s
 }
 
-func (r *orderByRset) plan(ctx *execCtx) (rset2, error) {
+func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
 	r2 := &orderByDefaultPlan{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
 	return r2, nil
@@ -269,10 +269,10 @@ func (r *orderByRset) plan(ctx *execCtx) (rset2, error) {
 
 type whereRset struct {
 	expr expression
-	src  rset2
+	src  plan
 }
 
-func (r *whereRset) plan(ctx *execCtx) (rset2, error) {
+func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	r2 := &whereDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
 	return r2, nil
@@ -280,10 +280,10 @@ func (r *whereRset) plan(ctx *execCtx) (rset2, error) {
 
 type offsetRset struct {
 	expr expression
-	src  rset2
+	src  plan
 }
 
-func (r *offsetRset) plan(ctx *execCtx) (rset2, error) {
+func (r *offsetRset) plan(ctx *execCtx) (plan, error) {
 	rs2 := &offsetDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
 	return rs2, nil
@@ -291,10 +291,10 @@ func (r *offsetRset) plan(ctx *execCtx) (rset2, error) {
 
 type limitRset struct {
 	expr expression
-	src  rset2
+	src  plan
 }
 
-func (r *limitRset) plan(ctx *execCtx) (rset2, error) {
+func (r *limitRset) plan(ctx *execCtx) (plan, error) {
 	rs2 := &limitDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
 	//TODO optimize here
 	return rs2, nil
@@ -302,10 +302,10 @@ func (r *limitRset) plan(ctx *execCtx) (rset2, error) {
 
 type selectRset struct {
 	flds []*fld
-	src  rset2
+	src  plan
 }
 
-func (r *selectRset) plan(ctx *execCtx) (rset2, error) {
+func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 	rs2 := &selectFieldsDefaultPlan{flds: append([]*fld(nil), r.flds...), src: r.src}
 	for _, v := range r.flds {
 		rs2.fields = append(rs2.fields, v.name)
@@ -318,7 +318,7 @@ func (r *selectRset) plan(ctx *execCtx) (rset2, error) {
 
 type tableRset string
 
-func (r tableRset) plan(ctx *execCtx) (rset2, error) {
+func (r tableRset) plan(ctx *execCtx) (plan, error) {
 	switch r {
 	case "__Table":
 		return sysTableDefaultPlan{}, nil
@@ -377,9 +377,9 @@ func (r *crossJoinRset) String() string {
 	return strings.Join(a, ", ")
 }
 
-func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) {
+func (r *crossJoinRset) plan(ctx *execCtx) (plan, error) {
 	r2 := crossJoinDefaultPlan{}
-	r2.rsets = make([]rset2, len(r.sources))
+	r2.rsets = make([]plan, len(r.sources))
 	r2.names = make([]string, len(r.sources))
 	var err error
 	m := map[string]bool{}
@@ -401,13 +401,13 @@ func (r *crossJoinRset) plan(ctx *execCtx) (rset2, error) {
 			m[nm] = true
 		}
 		r2.names[i] = nm
-		var rs2 rset2
+		var rs2 plan
 		switch x := src.(type) {
 		case rset:
 			if rs2, err = x.plan(ctx); err != nil {
 				return nil, err
 			}
-		case rset2:
+		case plan:
 			rs2 = x
 		default:
 			panic("internal error 008")
@@ -1334,7 +1334,7 @@ type outerJoinRset struct {
 	on     expression
 }
 
-func (r *outerJoinRset) plan(ctx *execCtx) (rset2, error) {
+func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 	c := &crossJoinRset{}
 	for i, v := range r.src.rsets {
 		c.sources = append(c.sources, []interface{}{v, r.src.names[i]})
