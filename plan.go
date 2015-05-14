@@ -34,7 +34,7 @@ type plan interface {
 	do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error
 	fieldNames() []string
 	filter(expr expression) (plan, error)
-	optimize() error
+	optimize() (plan, error)
 }
 
 type crossJoinDefaultPlan struct {
@@ -43,7 +43,7 @@ type crossJoinDefaultPlan struct {
 	fields []string
 }
 
-func (r *crossJoinDefaultPlan) optimize() error { panic("TODO") }
+func (r *crossJoinDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *crossJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -74,7 +74,7 @@ type distinctDefaultPlan struct {
 	fields []string
 }
 
-func (r *distinctDefaultPlan) optimize() error { panic("TODO") }
+func (r *distinctDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *distinctDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -122,7 +122,7 @@ type groupByDefaultPlan struct {
 	fields   []string
 }
 
-func (r *groupByDefaultPlan) optimize() error { panic("TODO") }
+func (r *groupByDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *groupByDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -213,7 +213,7 @@ type indexDefaultPlan struct {
 	x  interface{}
 }
 
-func (r *indexDefaultPlan) optimize() error { panic("TODO") }
+func (r *indexDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *indexDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -257,7 +257,7 @@ type limitDefaultPlan struct {
 	fields []string
 }
 
-func (r *limitDefaultPlan) optimize() error { panic("TODO") }
+func (r *limitDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *limitDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -306,7 +306,7 @@ type offsetDefaultPlan struct {
 	fields []string
 }
 
-func (r *offsetDefaultPlan) optimize() error { panic("TODO") }
+func (r *offsetDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *offsetDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -355,7 +355,7 @@ type orderByDefaultPlan struct {
 	fields []string
 }
 
-func (r *orderByDefaultPlan) optimize() error { panic("TODO") }
+func (r *orderByDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *orderByDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -438,7 +438,7 @@ type selectFieldsDefaultPlan struct {
 	fields []string
 }
 
-func (r *selectFieldsDefaultPlan) optimize() error { panic("TODO") }
+func (r *selectFieldsDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *selectFieldsDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -552,7 +552,7 @@ func (r sysColumnDefaultPlan) fieldNames() []string {
 	return []string{"TableName", "Ordinal", "Name", "Type"}
 }
 
-func (r sysColumnDefaultPlan) optimize() error { panic("TODO") }
+func (r sysColumnDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r sysColumnDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	rec := make([]interface{}, 4)
@@ -587,7 +587,7 @@ func (r sysIndexDefaultPlan) fieldNames() []string {
 	return []string{"TableName", "ColumnName", "Name", "IsUnique"}
 }
 
-func (r sysIndexDefaultPlan) optimize() error { panic("TODO") }
+func (r sysIndexDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r sysIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	rec := make([]interface{}, 4)
@@ -649,14 +649,14 @@ func (r sysTableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 	return nil
 }
 
-func (r sysTableDefaultPlan) optimize() error { panic("TODO") }
+func (r sysTableDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 type tableDefaultPlan struct {
 	t      *table
 	fields []string
 }
 
-func (r *tableDefaultPlan) optimize() error { panic("TODO") }
+func (r *tableDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *tableDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -698,7 +698,7 @@ type whereDefaultPlan struct {
 	fields []string
 }
 
-func (r *whereDefaultPlan) optimize() error { panic("TODO") }
+func (r *whereDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *whereDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -743,7 +743,7 @@ type leftJoinDefaultPlan struct {
 	fields []string
 }
 
-func (r *leftJoinDefaultPlan) optimize() error { panic("TODO") }
+func (r *leftJoinDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *leftJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -751,7 +751,7 @@ type rightJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
 
-func (r *rightJoinDefaultPlan) optimize() error { panic("TODO") }
+func (r *rightJoinDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *rightJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
@@ -759,7 +759,7 @@ type fullJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
 
-func (r *fullJoinDefaultPlan) optimize() error { panic("TODO") }
+func (r *fullJoinDefaultPlan) optimize() (plan, error) { panic("TODO") }
 
 func (r *fullJoinDefaultPlan) filter(expr expression) (plan, error) { panic("TODO") }
 
