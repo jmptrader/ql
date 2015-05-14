@@ -680,7 +680,7 @@ func (s *selectStmt) plan(ctx *execCtx) (rset2, error) { //LATER overlapping gor
 	}
 
 	if o := s.outer; o != nil {
-		o.src = r.(*crossJoinRset2)
+		o.src = r.(*crossJoinDefaultPlan)
 		if r, err = o.plan(ctx); err != nil {
 			return nil, err
 		}
