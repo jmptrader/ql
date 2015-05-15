@@ -154,8 +154,7 @@ type groupByRset struct {
 }
 
 func (r *groupByRset) plan(ctx *execCtx) (plan, error) {
-	p := &groupByDefaultPlan{colNames: r.colNames, src: r.src, fields: r.src.fieldNames()}
-	return p.optimize()
+	return &groupByDefaultPlan{colNames: r.colNames, src: r.src, fields: r.src.fieldNames()}, nil
 }
 
 // TCtx represents transaction context. It enables to execute multiple
@@ -241,8 +240,7 @@ type distinctRset struct {
 }
 
 func (r *distinctRset) plan(ctx *execCtx) (plan, error) {
-	p := &distinctDefaultPlan{src: r.src, fields: r.src.fieldNames()}
-	return p.optimize()
+	return &distinctDefaultPlan{src: r.src, fields: r.src.fieldNames()}, nil
 }
 
 type orderByRset struct {
@@ -264,8 +262,7 @@ func (r *orderByRset) String() string {
 }
 
 func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
-	p := &orderByDefaultPlan{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}
-	return p.optimize()
+	return &orderByDefaultPlan{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}, nil
 }
 
 type whereRset struct {
@@ -274,8 +271,7 @@ type whereRset struct {
 }
 
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
-	p := &whereDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
-	return p.optimize()
+	return &whereDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}, nil
 }
 
 type offsetRset struct {
@@ -284,8 +280,7 @@ type offsetRset struct {
 }
 
 func (r *offsetRset) plan(ctx *execCtx) (plan, error) {
-	p := &offsetDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
-	return p.optimize()
+	return &offsetDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}, nil
 }
 
 type limitRset struct {
@@ -294,8 +289,7 @@ type limitRset struct {
 }
 
 func (r *limitRset) plan(ctx *execCtx) (plan, error) {
-	p := &limitDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}
-	return p.optimize()
+	return &limitDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}, nil
 }
 
 type selectRset struct {
@@ -311,7 +305,7 @@ func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 	if len(r.flds) == 0 {
 		p.fields = r.src.fieldNames()
 	}
-	return p.optimize()
+	return p, nil
 }
 
 type tableRset string
@@ -319,14 +313,11 @@ type tableRset string
 func (r tableRset) plan(ctx *execCtx) (plan, error) {
 	switch r {
 	case "__Table":
-		p := sysTableDefaultPlan{}
-		return p.optimize()
+		return sysTableDefaultPlan{}, nil
 	case "__Column":
-		p := sysColumnDefaultPlan{}
-		return p.optimize()
+		return sysColumnDefaultPlan{}, nil
 	case "__Index":
-		p := sysIndexDefaultPlan{}
-		return p.optimize()
+		return sysIndexDefaultPlan{}, nil
 	}
 
 	t, ok := ctx.db.root.tables[string(r)]
@@ -344,7 +335,7 @@ func (r tableRset) plan(ctx *execCtx) (plan, error) {
 	for _, col := range t.cols {
 		rs.fields = append(rs.fields, col.name)
 	}
-	return rs.optimize()
+	return rs, nil
 }
 
 type crossJoinRset struct {
@@ -434,7 +425,7 @@ func (r *crossJoinRset) plan(ctx *execCtx) (plan, error) {
 		}
 		p.rsets[i] = q
 	}
-	return p.optimize()
+	return &p, nil
 }
 
 type fld struct {
@@ -1348,17 +1339,16 @@ func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 
 	c2 := p.(*crossJoinDefaultPlan)
 	switch r.typ {
-	case 0:
-		p := &leftJoinDefaultPlan{
+	case leftJoin:
+		return &leftJoinDefaultPlan{
 			on:     r.on,
 			rsets:  c2.rsets,
 			names:  c2.names,
 			right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
 			fields: p.fieldNames(),
-		}
-		return p.optimize()
-	case 1:
-		p := &rightJoinDefaultPlan{
+		}, nil
+	case rightJoin:
+		return &rightJoinDefaultPlan{
 			leftJoinDefaultPlan{
 				on:     r.on,
 				rsets:  c2.rsets,
@@ -1366,10 +1356,9 @@ func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
 				fields: p.fieldNames(),
 			},
-		}
-		return p.optimize()
-	case 2:
-		p := &fullJoinDefaultPlan{
+		}, nil
+	case fullJoin:
+		return &fullJoinDefaultPlan{
 			leftJoinDefaultPlan{
 				on:     r.on,
 				rsets:  c2.rsets,
@@ -1377,8 +1366,7 @@ func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
 				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
 				fields: p.fieldNames(),
 			},
-		}
-		return p.optimize()
+		}, nil
 	default:
 		panic("internal error 009")
 	}
