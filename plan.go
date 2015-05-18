@@ -28,7 +28,6 @@ var (
 	_ plan = (*sysIndexDefaultPlan)(nil)
 	_ plan = (*sysTableDefaultPlan)(nil)
 	_ plan = (*tableDefaultPlan)(nil)
-	//TODO- _ plan = (*whereDefaultPlan)(nil)
 )
 
 type plan interface {
@@ -85,7 +84,19 @@ func (r *crossJoinDefaultPlan) filter(expr expression) (plan, error) {
 
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	dbg("", expr)
-	panic("TODO")
+	for i, v := range r.names {
+		e2 := expr.clone(v)
+		dbg("", i, e2)
+		p2, err := r.rsets[i].filterUsingIndex(e2)
+		if err != nil {
+			return nil, err
+		}
+
+		if p2 != nil {
+			panic("TODO")
+		}
+	}
+	return nil, nil
 }
 
 func (r *crossJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
@@ -172,7 +183,16 @@ func (r *groupByDefaultPlan) filter(expr expression) (plan, error) {
 }
 
 func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	panic("TODO")
+	p2, err := r.src.filterUsingIndex(expr)
+	if err != nil {
+		return nil, err
+	}
+
+	if p2 != nil {
+		panic("TODO")
+	}
+
+	return nil, nil
 }
 
 func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
@@ -508,7 +528,16 @@ func (r *selectFieldsDefaultPlan) filter(expr expression) (plan, error) {
 }
 
 func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	panic("TODO")
+	//TODO (297) p2, err := r.src.filterUsingIndex(expr)
+	//TODO (297) if err != nil {
+	//TODO (297) 	return nil, err
+	//TODO (297) }
+
+	//TODO (297) if p2 != nil {
+	//TODO (297) 	panic("TODO")
+	//TODO (297) }
+
+	return nil, nil
 }
 
 func (r *selectFieldsDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
@@ -757,6 +786,12 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 
 	s := expr.String()
 	dbg("", s)
+	for i, v := range r.t.indices {
+		dbg("", i, v.name)
+	}
+	for k, v := range r.t.indices2 {
+		dbg("", k, v.sources)
+	}
 	panic("TODO")
 }
 
@@ -791,53 +826,6 @@ func (r *tableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 }
 
 func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
-
-//TODO- type whereDefaultPlan struct {
-//TODO- 	expr   expression
-//TODO- 	src    plan
-//TODO- 	fields []string
-//TODO- }
-//TODO- 
-//TODO- func (r *whereDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-//TODO- 
-//TODO- func (r *whereDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-//TODO- 
-//TODO- func (r *whereDefaultPlan) fieldNames() []string { return r.fields }
-//TODO- 
-//TODO- func (r *whereDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-//TODO- 	m := map[interface{}]interface{}{}
-//TODO- 	return r.src.do(ctx, func(rid interface{}, in []interface{}) (bool, error) {
-//TODO- 		for i, fld := range r.fields {
-//TODO- 			if fld != "" {
-//TODO- 				m[fld] = in[i]
-//TODO- 			}
-//TODO- 		}
-//TODO- 		m["$id"] = rid
-//TODO- 		val, err := r.expr.eval(ctx, m, ctx.arg)
-//TODO- 		if err != nil {
-//TODO- 			return false, err
-//TODO- 		}
-//TODO- 
-//TODO- 		if val == nil { //TODO bug if expr is 'IS NULL' ?
-//TODO- 			return true, nil
-//TODO- 		}
-//TODO- 
-//TODO- 		x, ok := val.(bool)
-//TODO- 		if !ok {
-//TODO- 			return false, fmt.Errorf("invalid WHERE expression %s (value of type %T)", val, val)
-//TODO- 		}
-//TODO- 
-//TODO- 		if !x {
-//TODO- 			return true, nil
-//TODO- 		}
-//TODO- 
-//TODO- 		return f(rid, in)
-//TODO- 	})
-//TODO- }
 
 type leftJoinDefaultPlan struct {
 	on     expression

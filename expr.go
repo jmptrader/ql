@@ -281,6 +281,28 @@ type binaryOperation struct {
 }
 
 func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
+	if l, ok := x.(value); ok {
+		if b, ok := l.val.(bool); ok {
+			if b { // true == y: y
+				return y.(expression), nil
+			}
+
+			// false == y: !y
+			return newUnaryOperation('!', y)
+		}
+	}
+
+	if r, ok := y.(value); ok {
+		if b, ok := r.val.(bool); ok {
+			if b { // x == true: x
+				return x.(expression), nil
+			}
+
+			// x == false: !x
+			return newUnaryOperation('!', x)
+		}
+	}
+
 	b := binaryOperation{op, x.(expression), y.(expression)}
 	//dbg("newBinaryOperation %s", &b)
 	//defer func() { dbg("newBinaryOperation -> %v, %v", v, err) }()
@@ -3108,6 +3130,42 @@ func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 		log.Panic("internal error 038")
 	}
 
+	pe, ok := l.(*pexpr)
+	if ok {
+		l = pe.expr
+	}
+
+	if op == '!' {
+		b, ok := l.(*binaryOperation)
+		if ok {
+			switch b.op {
+			case eq:
+				b.op = neq
+				return b, nil
+			case neq:
+				b.op = eq
+				return b, nil
+			case '>':
+				b.op = le
+				return b, nil
+			case ge:
+				b.op = '<'
+				return b, nil
+			case '<':
+				b.op = ge
+				return b, nil
+			case le:
+				b.op = '>'
+				return b, nil
+			}
+		}
+
+		u, ok := l.(*unaryOperation)
+		if ok && u.op == '!' { // !!x: x
+			return u.v, nil
+		}
+	}
+
 	u := unaryOperation{op, l}
 	if !l.isStatic() {
 		return &u, nil
@@ -3127,7 +3185,14 @@ func (u *unaryOperation) clone(unqualify ...string) expression {
 
 func (u *unaryOperation) isStatic() bool { return u.v.isStatic() }
 
-func (u *unaryOperation) String() string { return fmt.Sprintf("%s%s", iop(u.op), u.v) }
+func (u *unaryOperation) String() string {
+	switch u.v.(type) {
+	case *binaryOperation:
+		return fmt.Sprintf("%s(%s)", iop(u.op), u.v)
+	default:
+		return fmt.Sprintf("%s%s", iop(u.op), u.v)
+	}
+}
 
 // !ident
 func (u *unaryOperation) isNotQIdent() (bool, string, expression) {

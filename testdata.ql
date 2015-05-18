@@ -1992,7 +1992,7 @@ SELECT "foo"[3] FROM foo;
 
 -- 184
 SELECT "foo"["bar">true] FROM foo;
-||mismatched type
+||non-integer
 
 -- S 185
 SELECT DepartmentID[0] FROM employee;
