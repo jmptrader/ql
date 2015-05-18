@@ -72,7 +72,7 @@ import (
 	full		"FULL"
 	ge		">="
 	group		"GROUP"
-	ifKwd		"if"
+	ifKwd		"IF"
 	in		"IN"
 	index		"INDEX"
 	insert		"INSERT"
@@ -216,11 +216,11 @@ Start:
 	}
 
 AlterTableStmt:
-	alter tableKwd TableName add ColumnDef
+	"ALTER" "TABLE" TableName "ADD" ColumnDef
 	{
 		$$ = &alterTableAddStmt{tableName: $3.(string), c: $5.(*col)}
 	}
-|	alter tableKwd TableName drop column ColumnName
+|	"ALTER" "TABLE" TableName "DROP" "COLUMN" ColumnName
 	{
 		$$ = &alterTableDropColumnStmt{tableName: $3.(string), colName: $6.(string)}
 	}
@@ -248,7 +248,7 @@ AssignmentList1:
 	}
 
 BeginTransactionStmt:
-	begin transaction
+	"BEGIN" "TRANSACTION"
 	{
 		$$ = beginTransactionStmt{}
 	}
@@ -296,13 +296,13 @@ ColumnNameList1:
 	}
 
 CommitStmt:
-	commit
+	"COMMIT"
 	{
 		$$ = commitStmt{}
 	}
 
 Constraint:
-	not null
+	"NOT" "NULL"
 	{
 		$$ = &constraint{}
 	}
@@ -324,7 +324,7 @@ Conversion:
 	}
 
 CreateIndexStmt:
-	create CreateIndexStmtUnique index CreateIndexIfNotExists identifier on identifier '(' ExpressionList ')'
+	"CREATE" CreateIndexStmtUnique "INDEX" CreateIndexIfNotExists identifier "ON" identifier '(' ExpressionList ')'
 	{
 		indexName, tableName, exprList := $5.(string), $7.(string), $9.([]expression)
 		simpleIndex := len(exprList) == 1
@@ -370,7 +370,7 @@ CreateIndexIfNotExists:
 	{
 		$$ = false
 	}
-|	ifKwd not exists
+|	"IF" "NOT" "EXISTS"
 	{
 		$$ = true
 	}
@@ -379,13 +379,13 @@ CreateIndexStmtUnique:
 	{
 		$$ = false
 	}
-|	unique
+|	"UNIQUE"
 	{
 		$$ = true
 	}
 
 CreateTableStmt:
-	create tableKwd TableName '(' ColumnDef CreateTableStmt1 CommaOpt ')'
+	"CREATE" "TABLE" TableName '(' ColumnDef CreateTableStmt1 CommaOpt ')'
 	{
 		nm := $3.(string)
 		$$ = &createTableStmt{tableName: nm, cols: append([]*col{$5.(*col)}, $6.([]*col)...)}
@@ -399,7 +399,7 @@ CreateTableStmt:
 			return 1
 		}
 	}
-|	create tableKwd ifKwd not exists TableName '(' ColumnDef CreateTableStmt1 CommaOpt ')'
+|	"CREATE" "TABLE" "IF" "NOT" "EXISTS" TableName '(' ColumnDef CreateTableStmt1 CommaOpt ')'
 	{
 		nm := $6.(string)
 		$$ = &createTableStmt{ifNotExists: true, tableName: nm, cols: append([]*col{$8.(*col)}, $9.([]*col)...)}
@@ -425,7 +425,7 @@ CreateTableStmt1:
 	}
 
 Default:
-	defaultKwd Expression
+	"DEFAULT" Expression
 	{
 		$$ = $2
 	}
@@ -437,7 +437,7 @@ DefaultOpt:
 |	Default
 
 DeleteFromStmt:
-	deleteKwd from TableName
+	"DELETE" "FROM" TableName
 	{
 		$$ = &truncateTableStmt{$3.(string)}
 
@@ -450,7 +450,7 @@ DeleteFromStmt:
 			return 1
 		}
 	}
-|	deleteKwd from TableName WhereClause
+|	"DELETE" "FROM" TableName WhereClause
 	{
 		$$ = &deleteStmt{tableName: $3.(string), where: $4.(*whereRset).expr}
 
@@ -465,7 +465,7 @@ DeleteFromStmt:
 	}
 
 DropIndexStmt:
-	drop index DropIndexIfExists identifier
+	"DROP" "INDEX" DropIndexIfExists identifier
 	{
 		$$ = &dropIndexStmt{ifExists: $3.(bool), indexName: $4.(string)}
 	}
@@ -474,13 +474,13 @@ DropIndexIfExists:
 	{
 		$$ = false
 	}
-|	ifKwd exists
+|	"IF" "EXISTS"
 	{
 		$$ = true
 	}
 
 DropTableStmt:
-	drop tableKwd TableName
+	"DROP" "TABLE" TableName
 	{
 		nm := $3.(string)
 		$$ = &dropTableStmt{tableName: nm}
@@ -494,7 +494,7 @@ DropTableStmt:
 			return 1
 		}
 	}
-|	drop tableKwd ifKwd exists TableName
+|	"DROP" "TABLE" "IF" "EXISTS" TableName
 	{
 		nm := $5.(string)
 		$$ = &dropTableStmt{ifExists: true, tableName: nm}
@@ -527,10 +527,10 @@ Expression:
 	}
 
 logOr:
-	oror
+	"||"
 	{
 	}
-|	or
+|	"OR"
 	{
 	}
 
@@ -552,23 +552,23 @@ ExpressionList1:
 
 Factor:
 	Factor1
-|       Factor1 in '(' ExpressionList ')'
+|       Factor1 "IN" '(' ExpressionList ')'
         {
 		$$ = &pIn{expr: $1.(expression), list: $4.([]expression)}
         }
-|       Factor1 not in '(' ExpressionList ')'
+|       Factor1 "NOT" "IN" '(' ExpressionList ')'
         {
 		$$ = &pIn{expr: $1.(expression), not: true, list: $5.([]expression)}
         }
-|       Factor1 in '(' SelectStmt semiOpt ')'
+|       Factor1 "IN" '(' SelectStmt semiOpt ')'
         {
 		$$ = &pIn{expr: $1.(expression), sel: $4.(*selectStmt)}
         }
-|       Factor1 not in '(' SelectStmt semiOpt ')'
+|       Factor1 "NOT" "IN" '(' SelectStmt semiOpt ')'
         {
 		$$ = &pIn{expr: $1.(expression), not: true, sel: $5.(*selectStmt)}
         }
-|       Factor1 between PrimaryFactor and PrimaryFactor
+|       Factor1 "BETWEEN" PrimaryFactor "AND" PrimaryFactor
         {
 		var err error
 		if $$, err = newBetween($1, $3, $5, false); err != nil {
@@ -576,7 +576,7 @@ Factor:
 			return 1
 		}
         }
-|       Factor1 not between PrimaryFactor and PrimaryFactor
+|       Factor1 "NOT" "BETWEEN" PrimaryFactor "AND" PrimaryFactor
         {
 		var err error
 		if $$, err = newBetween($1, $4, $6, true); err != nil {
@@ -584,18 +584,18 @@ Factor:
 			return 1
 		}
         }
-|       Factor1 is null
+|       Factor1 "IS" "NULL"
         {
 		$$ = &isNull{expr: $1.(expression)}
         }
-|       Factor1 is not null
+|       Factor1 "IS" "NOT" "NULL"
         {
 		$$ = &isNull{expr: $1.(expression), not: true}
         }
 
 Factor1:
         PrimaryFactor
-|       Factor1 ge PrimaryFactor
+|       Factor1 ">=" PrimaryFactor
         {
 		var err error
 		if $$, err = newBinaryOperation(ge, $1, $3); err != nil {
@@ -611,7 +611,7 @@ Factor1:
 			return 1
 		}
         }
-|       Factor1 le PrimaryFactor
+|       Factor1 "<=" PrimaryFactor
         {
 		var err error
 		if $$, err = newBinaryOperation(le, $1, $3); err != nil {
@@ -627,7 +627,7 @@ Factor1:
 			return 1
 		}
         }
-|       Factor1 neq PrimaryFactor
+|       Factor1 "!=" PrimaryFactor
         {
 		var err error
 		if $$, err = newBinaryOperation(neq, $1, $3); err != nil {
@@ -635,7 +635,7 @@ Factor1:
 			return 1
 		}
         }
-|       Factor1 eq PrimaryFactor
+|       Factor1 "==" PrimaryFactor
         {
 		var err error
 		if $$, err = newBinaryOperation(eq, $1, $3); err != nil {
@@ -643,7 +643,7 @@ Factor1:
 			return 1
 		}
         }
-|	Factor1 like PrimaryFactor
+|	Factor1 "LIKE" PrimaryFactor
 	{
 		$$ = &pLike{expr: $1.(expression), pattern: $3.(expression)}
 	}
@@ -666,7 +666,7 @@ Field1:
 	{
 		$$ = ""
 	}
-|	as identifier
+|	"AS" identifier
 	{
 		$$ = $2
 	}
@@ -690,7 +690,7 @@ FieldList:
 	}
 
 GroupByClause:
-	group by ColumnNameList
+	"GROUP" "BY" ColumnNameList
 	{
 		$$ = &groupByRset{colNames: $3.([]string)}
 	}
@@ -702,7 +702,7 @@ Index:
 	}
 
 InsertIntoStmt:
-	insert into TableName InsertIntoStmt1 values '(' ExpressionList ')' InsertIntoStmt2 CommaOpt
+	"INSERT" "INTO" TableName InsertIntoStmt1 "VALUES" '(' ExpressionList ')' InsertIntoStmt2 CommaOpt
 	{
 		$$ = &insertIntoStmt{tableName: $3.(string), colNames: $4.([]string), lists: append([][]expression{$7.([]expression)}, $9.([][]expression)...)}
 
@@ -715,7 +715,7 @@ InsertIntoStmt:
 			return 1
 		}
 	}
-|	insert into TableName InsertIntoStmt1 SelectStmt
+|	"INSERT" "INTO" TableName InsertIntoStmt1 SelectStmt
 	{
 		$$ = &insertIntoStmt{tableName: $3.(string), colNames: $4.([]string), sel: $5.(*selectStmt)}
 	}
@@ -741,9 +741,9 @@ InsertIntoStmt2:
 	}
 
 Literal:
-	falseKwd
-|	null
-|	trueKwd
+	"false"
+|	"NULL"
+|	"true"
 |	floatLit
 |	imaginaryLit
 |	intLit
@@ -775,7 +775,7 @@ Operand:
 	}
 
 OrderBy:
-	order by ExpressionList OrderBy1
+	"ORDER" "BY" ExpressionList OrderBy1
 	{
 		$$ = &orderByRset{by: $3.([]expression), asc: $4.(bool)}
 	}
@@ -785,11 +785,11 @@ OrderBy1:
 	{
 		$$ = true // ASC by default
 	}
-|	asc
+|	"ASC"
 	{
 		$$ = true
 	}
-|	desc
+|	"DESC"
 	{
 		$$ = false
 	}
@@ -872,7 +872,7 @@ PrimaryFactor:
 
 PrimaryTerm:
 	UnaryExpr
-|	PrimaryTerm andnot UnaryExpr
+|	PrimaryTerm "&^" UnaryExpr
 	{
 		var err error
 		$$, err = newBinaryOperation(andnot, $1, $3)
@@ -890,7 +890,7 @@ PrimaryTerm:
 			return 1
 		}
 	}
-|	PrimaryTerm lsh UnaryExpr
+|	PrimaryTerm "<<" UnaryExpr
 	{
 		var err error
 		$$, err = newBinaryOperation(lsh, $1, $3)
@@ -899,7 +899,7 @@ PrimaryTerm:
 			return 1
 		}
 	}
-|	PrimaryTerm rsh UnaryExpr
+|	PrimaryTerm ">>" UnaryExpr
 	{
 		var err error
 		$$, err = newBinaryOperation(rsh, $1, $3)
@@ -965,7 +965,7 @@ RecordSet2:
 	{
 		$$ = ""
 	}
-|	as identifier
+|	"AS" identifier
 	{
 		$$ = $2
 	}
@@ -981,21 +981,21 @@ RecordSetList:
 	}
 
 RollbackStmt:
-	rollback
+	"ROLLBACK"
 	{
 		$$ = rollbackStmt{}
 	}
 
 JoinType:
-	left
+	"LEFT"
 	{
 		$$ = leftJoin
 	}
-|	right
+|	"RIGHT"
 	{
 		$$ = rightJoin
 	}
-|	full
+|	"FULL"
 	{
 		$$ = fullJoin
 	}
@@ -1004,10 +1004,10 @@ OuterOpt:
 	{
 		$$ = nil
 	}
-|	outer
+|	"OUTER"
 
 JoinClause:
-	JoinType OuterOpt join RecordSet on Expression
+	JoinType OuterOpt "JOIN" RecordSet "ON" Expression
 	{
 		$$ = &outerJoinRset{
 			typ: $1.(int),
@@ -1023,7 +1023,7 @@ JoinClauseOpt:
 |	JoinClause
 
 SelectStmt:
-	selectKwd SelectStmtDistinct SelectStmtFieldList from RecordSetList
+	"SELECT" SelectStmtDistinct SelectStmtFieldList "FROM" RecordSetList
 	CommaOpt JoinClauseOpt SelectStmtWhere SelectStmtGroup SelectStmtOrder
 	SelectStmtLimit SelectStmtOffset
 	{
@@ -1048,7 +1048,7 @@ SelectStmtLimit:
 	{
 		$$ = (*limitRset)(nil)
 	}
-|	limit Expression
+|	"LIMIT" Expression
 	{
 		$$ = &limitRset{expr: $2.(expression)}
 	}
@@ -1057,7 +1057,7 @@ SelectStmtOffset:
 	{
 		$$ = (*offsetRset)(nil)
 	}
-|	offset Expression
+|	"OFFSET" Expression
 	{
 		$$ = &offsetRset{expr: $2.(expression)}
 	}
@@ -1067,7 +1067,7 @@ SelectStmtDistinct:
 	{
 		$$ = false
 	}
-|	distinct
+|	"DISTINCT"
 	{
 		$$ = true
 	}
@@ -1174,47 +1174,47 @@ Term:
 	}
 
 logAnd:
-	andand
+	"&&"
 	{
 	}
-|	and
+|	"AND"
 	{
 	}
 
 TruncateTableStmt:
-	truncate tableKwd TableName
+	"TRUNCATE" "TABLE" TableName
 	{
 		$$ = &truncateTableStmt{tableName: $3.(string)}
 	}
 
 Type:
-	bigIntType
-|	bigRatType
-|	blobType
-|	boolType
-|	byteType
-|	complex128Type
-|	complex64Type
-|	durationType
-|	floatType
-|	float32Type
-|	float64Type
-|	intType
-|	int16Type
-|	int32Type
-|	int64Type
-|	int8Type
-|	runeType
-|	stringType
-|	timeType
-|	uintType
-|	uint16Type
-|	uint32Type
-|	uint64Type
-|	uint8Type
+	"bigint"
+|	"bigrat"
+|	"blob"
+|	"bool"
+|	"byte"
+|	"complex128"
+|	"complex64"
+|	"duration"
+|	"float"
+|	"float32"
+|	"float64"
+|	"int"
+|	"int16"
+|	"int32"
+|	"int64"
+|	"int8"
+|	"rune"
+|	"string"
+|	"time"
+|	"uint"
+|	"uint16"
+|	"uint32"
+|	"uint64"
+|	"uint8"
 
 UpdateStmt:
-	update TableName SetOpt AssignmentList UpdateStmt1
+	"UPDATE" TableName SetOpt AssignmentList UpdateStmt1
 	{
 		var expr expression
 		if w := $5; w != nil {
@@ -1279,7 +1279,7 @@ UnaryExpr:
 	}
 
 WhereClause:
-	where Expression
+	"WHERE" Expression
 	{
 		$$ = &whereRset{expr: $2.(expression)}
 	}
@@ -1288,7 +1288,7 @@ WhereClause:
 SetOpt:
 	{
 	}
-|	set
+|	"SET"
 	{
 	}
 
