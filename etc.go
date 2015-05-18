@@ -325,7 +325,7 @@ func indexExpr(s *string, x interface{}) (i uint64, err error) {
 
 		return uint64(x), nil
 	default:
-		return 0, fmt.Errorf("non-integer string index %v", x)
+		return 0, fmt.Errorf("non-integer string index %v (value of type %T)", x, x)
 	}
 }
 

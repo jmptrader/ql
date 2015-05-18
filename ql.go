@@ -273,6 +273,7 @@ type whereRset struct {
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	var f func(plan, expression) (plan, expression, error)
 	f = func(p plan, expr expression) (plan, expression, error) {
+		dbg("---- f(%v)", expr)
 		switch x := expr.(type) {
 		case *binaryOperation:
 			dbg("binary: %v, l: %v, r: %v", x, x.l, x.r)
@@ -317,10 +318,19 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			}
 
 			return nil, nil, nil
+		case *isNull:
+			//TODO optimize
+			return nil, nil, nil
+		case *pIn:
+			//TODO optimize
+			return nil, nil, nil
+		case *unaryOperation:
+			//TODO optimize
+			return nil, nil, nil
 		case value:
 			switch x2 := x.val.(type) {
 			case bool:
-				use(x2)
+				dbg("%T(%v)", x2, x2)
 				panic("TODO")
 			default:
 				return nil, nil, nil
