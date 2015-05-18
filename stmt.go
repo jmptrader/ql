@@ -652,10 +652,8 @@ func (s *alterTableAddStmt) exec(ctx *execCtx) (Recordset, error) {
 func (s *alterTableAddStmt) isUpdating() bool { return true }
 
 type selectStmt struct {
-	distinct bool
-	flds     []*fld
-	//TODO- from          *crossJoinRset
-	//TODO- outer         *outerJoinRset
+	distinct      bool
+	flds          []*fld
 	from          *joinRset
 	group         *groupByRset
 	hasAggregates bool
@@ -688,32 +686,6 @@ func (s *selectStmt) String() string {
 	}
 	b.WriteString(" FROM ")
 	b.WriteString(s.from.String())
-	//TODO- if o := s.outer; o != nil {
-	//TODO- 	switch o.typ {
-	//TODO- 	case leftJoin:
-	//TODO- 		b.WriteString(" LEFT")
-	//TODO- 	case rightJoin:
-	//TODO- 		b.WriteString(" RIGHT")
-	//TODO- 	case fullJoin:
-	//TODO- 		b.WriteString(" FULL")
-	//TODO- 	}
-	//TODO- 	b.WriteString(" OUTER JOIN ")
-	//TODO- 	switch x := o.source[0].(type) {
-	//TODO- 	case string:
-	//TODO- 		b.WriteString(x)
-	//TODO- 	case *selectStmt:
-	//TODO- 		b.WriteString("(")
-	//TODO- 		b.WriteString(x.String())
-	//TODO- 		b.WriteString(")")
-	//TODO- 	default:
-	//TODO- 		panic("internal error 075")
-	//TODO- 	}
-	//TODO- 	if s := o.source[1].(string); s != "" {
-	//TODO- 		b.WriteString(" AS " + s)
-	//TODO- 	}
-	//TODO- 	b.WriteString(" ON ")
-	//TODO- 	b.WriteString(o.on.String())
-	//TODO- }
 	if s.where != nil {
 		b.WriteString(" WHERE ")
 		b.WriteString(s.where.expr.String())
