@@ -1009,16 +1009,12 @@ OuterOpt:
 JoinClause:
 	JoinType OuterOpt "JOIN" RecordSet "ON" Expression
 	{
-		$$ = &outerJoinRset{
-			typ: $1.(int),
-			source: $4.([]interface{}),
-			on: $6.(expression),
-		}
+		$$ = []interface{}{$1, $4, $6}
 	}
 
 JoinClauseOpt:
 	{
-		$$ = (*outerJoinRset)(nil)
+		$$ = nil
 	}
 |	JoinClause
 
@@ -1029,12 +1025,18 @@ SelectStmt:
 	{
 		x := yylex.(*lexer)
 		n := len(x.agg)
+		join := &joinRset{sources: $5}
+		if o := $7; o != nil {
+			o := o.([]interface{})
+			join.typ = o[0].(int)
+			join.sources = append(join.sources, o[1].([]interface{}))
+			join.on = o[2].(expression)
+		}
 		$$ = &selectStmt{
 			distinct:      $2.(bool),
 			flds:          $3.([]*fld),
-			from:          &crossJoinRset{sources: $5},
+			from:          join,
 			hasAggregates: x.agg[n-1],
-			outer:         $7.(*outerJoinRset),
 			where:         $8.(*whereRset),
 			group:         $9.(*groupByRset),
 			order:         $10.(*orderByRset),

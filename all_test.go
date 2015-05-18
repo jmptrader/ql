@@ -2812,9 +2812,6 @@ func testMentionedColumns(s stmt) (err error) {
 		for _, f := range x.flds {
 			mentionedColumns(f.expr)
 		}
-		if o := x.outer; o != nil {
-			mentionedColumns(o.on)
-		}
 		if l := x.limit; l != nil {
 			mentionedColumns(l.expr)
 		}
