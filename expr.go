@@ -337,7 +337,7 @@ func (b *binaryOperation) clone(unqualify ...string) expression {
 func (o *binaryOperation) isStatic() bool { return o.l.isStatic() && o.r.isStatic() }
 
 func (o *binaryOperation) String() string {
-	return fmt.Sprintf("%s%s%s", o.l, iop(o.op), o.r)
+	return fmt.Sprintf("%s %s %s", o.l, iop(o.op), o.r)
 }
 
 func (o *binaryOperation) eval(execCtx *execCtx, ctx map[interface{}]interface{}, arg []interface{}) (r interface{}, err error) {

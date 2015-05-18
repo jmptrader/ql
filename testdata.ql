@@ -9806,7 +9806,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM __Column2;
 |"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
-[t i false i>44 ]
+[t i false i > 44 ]
 
 -- 819 // https://github.com/cznic/ql/issues/85
 BEGIN TRANSACTION;
@@ -9814,7 +9814,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM __Column2;
 |"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
-[t i false i>45 46]
+[t i false i > 45 46]
 
 -- 820 // https://github.com/cznic/ql/issues/85
 BEGIN TRANSACTION;
@@ -10606,10 +10606,10 @@ SELECT * FROM __Table WHERE !hasPrefix(Name, "__") ORDER BY Name;
 |"Name", "Schema"
 [t1 CREATE TABLE t1 (a int64, b int64, c int64);]
 [t2 CREATE TABLE t2 (a int64, b int64 NOT NULL, c int64);]
-[t3 CREATE TABLE t3 (a int64, b int64 a<b&&b<c, c int64);]
-[t4 CREATE TABLE t4 (a int64, b int64 a<b&&b<c DEFAULT (a+c)/2, c int64);]
-[t5 CREATE TABLE t5 (a int64, b int64 NOT NULL DEFAULT (a+c)/2, c int64);]
-[t6 CREATE TABLE t6 (a int64, b int64 DEFAULT (a+c)/2, c int64);]
+[t3 CREATE TABLE t3 (a int64, b int64 a < b && b < c, c int64);]
+[t4 CREATE TABLE t4 (a int64, b int64 a < b && b < c DEFAULT (a + c) / 2, c int64);]
+[t5 CREATE TABLE t5 (a int64, b int64 NOT NULL DEFAULT (a + c) / 2, c int64);]
+[t6 CREATE TABLE t6 (a int64, b int64 DEFAULT (a + c) / 2, c int64);]
 
 -- 890 // https://github.com/cznic/ql/issues/85
 BEGIN TRANSACTION;
@@ -10623,10 +10623,10 @@ COMMIT;
 SELECT * FROM __Column2 ORDER BY TableName, Name;
 |"TableName", "Name", "NotNull", "ConstraintExpr", "DefaultExpr"
 [t2 b true  ]
-[t3 b false a<b&&b<c ]
-[t4 b false a<b&&b<c (a+c)/2]
-[t5 b true  (a+c)/2]
-[t6 b false  (a+c)/2]
+[t3 b false a < b && b < c ]
+[t4 b false a < b && b < c (a + c) / 2]
+[t5 b true  (a + c) / 2]
+[t6 b false  (a + c) / 2]
 
 -- 891 // https://github.com/cznic/ql/issues/85
 BEGIN TRANSACTION;
@@ -10653,16 +10653,16 @@ ORDER BY __Column.TableName, __Column.Ordinal;
 [t2 2 b int64 true  ]
 [t2 3 c int64 <nil> <nil> <nil>]
 [t3 1 a int64 <nil> <nil> <nil>]
-[t3 2 b int64 false a<b&&b<c ]
+[t3 2 b int64 false a < b && b < c ]
 [t3 3 c int64 <nil> <nil> <nil>]
 [t4 1 a int64 <nil> <nil> <nil>]
-[t4 2 b int64 false a<b&&b<c (a+c)/2]
+[t4 2 b int64 false a < b && b < c (a + c) / 2]
 [t4 3 c int64 <nil> <nil> <nil>]
 [t5 1 a int64 <nil> <nil> <nil>]
-[t5 2 b int64 true  (a+c)/2]
+[t5 2 b int64 true  (a + c) / 2]
 [t5 3 c int64 <nil> <nil> <nil>]
 [t6 1 a int64 <nil> <nil> <nil>]
-[t6 2 b int64 false  (a+c)/2]
+[t6 2 b int64 false  (a + c) / 2]
 [t6 3 c int64 <nil> <nil> <nil>]
 
 -- 892
@@ -11343,8 +11343,8 @@ WHERE Index2_ID IN (
 )
 ORDER BY Expr;
 |"Expr"
-[a+c]
-[c-b]
+[a + c]
+[c - b]
 
 -- 940
 BEGIN TRANSACTION;

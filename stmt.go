@@ -743,12 +743,6 @@ func (s *selectStmt) plan(ctx *execCtx) (plan, error) { //LATER overlapping goro
 		return nil, err
 	}
 
-	//TODO- if o := s.outer; o != nil {
-	//TODO- 	o.src = r.(*crossJoinDefaultPlan)
-	//TODO- 	if r, err = o.plan(ctx); err != nil {
-	//TODO- 		return nil, err
-	//TODO- 	}
-	//TODO- }
 	if w := s.where; w != nil {
 		if r, err = (&whereRset{expr: w.expr, src: r}).plan(ctx); err != nil {
 			return nil, err

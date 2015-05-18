@@ -35,14 +35,12 @@ const (
 // goroutines.  If the do method requires any execution domain local data, they
 // must be held out of the implementing instance.
 var (
-	//TODO- _ rset = (*crossJoinRset)(nil)
 	_ rset = (*distinctRset)(nil)
-	_ rset = (*joinRset)(nil)
 	_ rset = (*groupByRset)(nil)
+	_ rset = (*joinRset)(nil)
 	_ rset = (*limitRset)(nil)
 	_ rset = (*offsetRset)(nil)
 	_ rset = (*orderByRset)(nil)
-	//TODO- _ rset = (*outerJoinRset)(nil)
 	_ rset = (*selectRset)(nil)
 	_ rset = (*selectStmt)(nil)
 	_ rset = (*tableRset)(nil)
@@ -1226,10 +1224,6 @@ type constraint struct {
 	expr expression // If expr == nil: constraint is 'NOT NULL'
 }
 
-//TODO- type crossJoinRset struct {
-//TODO- 	sources []interface{}
-//TODO- }
-
 type joinRset struct {
 	sources []interface{}
 	typ     int
@@ -1349,146 +1343,7 @@ func (r *joinRset) plan(ctx *execCtx) (plan, error) {
 	}
 }
 
-//TODO- func (r *crossJoinRset) String() string {
-//TODO- 	a := make([]string, len(r.sources))
-//TODO- 	for i, pair0 := range r.sources {
-//TODO- 		pair := pair0.([]interface{})
-//TODO- 		altName := pair[1].(string)
-//TODO- 		switch x := pair[0].(type) {
-//TODO- 		case string: // table name
-//TODO- 			switch {
-//TODO- 			case altName == "":
-//TODO- 				a[i] = x
-//TODO- 			default:
-//TODO- 				a[i] = fmt.Sprintf("%s AS %s", x, altName)
-//TODO- 			}
-//TODO- 		case *selectStmt:
-//TODO- 			switch {
-//TODO- 			case altName == "":
-//TODO- 				a[i] = fmt.Sprintf("(%s)", x)
-//TODO- 			default:
-//TODO- 				a[i] = fmt.Sprintf("(%s) AS %s", x, altName)
-//TODO- 			}
-//TODO- 		default:
-//TODO- 			log.Panic("internal error 054")
-//TODO- 		}
-//TODO- 	}
-//TODO- 	return strings.Join(a, ", ")
-//TODO- }
-//TODO-
-//TODO- func (r *crossJoinRset) plan(ctx *execCtx) (plan, error) {
-//TODO- 	p := crossJoinDefaultPlan{}
-//TODO- 	p.rsets = make([]plan, len(r.sources))
-//TODO- 	p.names = make([]string, len(r.sources))
-//TODO- 	var err error
-//TODO- 	m := map[string]bool{}
-//TODO- 	for i, v := range r.sources {
-//TODO- 		pair := v.([]interface{})
-//TODO- 		src := pair[0]
-//TODO- 		nm := pair[1].(string)
-//TODO- 		if s, ok := src.(string); ok {
-//TODO- 			src = tableRset(s)
-//TODO- 			if nm == "" {
-//TODO- 				nm = s
-//TODO- 			}
-//TODO- 		}
-//TODO- 		if m[nm] {
-//TODO- 			return nil, fmt.Errorf("%s: duplicate name %s", r.String(), nm)
-//TODO- 		}
-//TODO-
-//TODO- 		if nm != "" {
-//TODO- 			m[nm] = true
-//TODO- 		}
-//TODO- 		p.names[i] = nm
-//TODO- 		var q plan
-//TODO- 		switch x := src.(type) {
-//TODO- 		case rset:
-//TODO- 			if q, err = x.plan(ctx); err != nil {
-//TODO- 				return nil, err
-//TODO- 			}
-//TODO- 		case plan:
-//TODO- 			q = x
-//TODO- 		default:
-//TODO- 			panic("internal error 008")
-//TODO- 		}
-//TODO-
-//TODO- 		switch {
-//TODO- 		case len(r.sources) == 1:
-//TODO- 			p.fields = q.fieldNames()
-//TODO- 		default:
-//TODO- 			for _, f := range q.fieldNames() {
-//TODO- 				if strings.Contains(f, ".") {
-//TODO- 					return nil, fmt.Errorf("cannot join on recordset with already qualified field names (use the AS clause): %s", f)
-//TODO- 				}
-//TODO-
-//TODO- 				if f != "" && nm != "" {
-//TODO- 					f = fmt.Sprintf("%s.%s", nm, f)
-//TODO- 				}
-//TODO- 				if nm == "" {
-//TODO- 					f = ""
-//TODO- 				}
-//TODO- 				p.fields = append(p.fields, f)
-//TODO- 			}
-//TODO- 		}
-//TODO- 		p.rsets[i] = q
-//TODO- 	}
-//TODO- 	return &p, nil
-//TODO- }
-
 type fld struct {
 	expr expression
 	name string
 }
-
-//TODO- type outerJoinRset struct {
-//TODO- 	typ    int // leftJoin, rightJoin, fullJoin
-//TODO- 	src    *crossJoinDefaultPlan
-//TODO- 	source []interface{}
-//TODO- 	on     expression
-//TODO- }
-//TODO-
-//TODO- func (r *outerJoinRset) plan(ctx *execCtx) (plan, error) {
-//TODO- 	c := &crossJoinRset{}
-//TODO- 	for i, v := range r.src.rsets {
-//TODO- 		c.sources = append(c.sources, []interface{}{v, r.src.names[i]})
-//TODO- 	}
-//TODO- 	c.sources = append(c.sources, r.source)
-//TODO- 	p, err := c.plan(ctx)
-//TODO- 	if err != nil {
-//TODO- 		return nil, err
-//TODO- 	}
-//TODO-
-//TODO- 	c2 := p.(*crossJoinDefaultPlan)
-//TODO- 	switch r.typ {
-//TODO- 	case leftJoin:
-//TODO- 		return &leftJoinDefaultPlan{
-//TODO- 			on:     r.on,
-//TODO- 			rsets:  c2.rsets,
-//TODO- 			names:  c2.names,
-//TODO- 			right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
-//TODO- 			fields: p.fieldNames(),
-//TODO- 		}, nil
-//TODO- 	case rightJoin:
-//TODO- 		return &rightJoinDefaultPlan{
-//TODO- 			leftJoinDefaultPlan{
-//TODO- 				on:     r.on,
-//TODO- 				rsets:  c2.rsets,
-//TODO- 				names:  c2.names,
-//TODO- 				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
-//TODO- 				fields: p.fieldNames(),
-//TODO- 			},
-//TODO- 		}, nil
-//TODO- 	case fullJoin:
-//TODO- 		return &fullJoinDefaultPlan{
-//TODO- 			leftJoinDefaultPlan{
-//TODO- 				on:     r.on,
-//TODO- 				rsets:  c2.rsets,
-//TODO- 				names:  c2.names,
-//TODO- 				right:  len(c2.rsets[len(c2.rsets)-1].fieldNames()),
-//TODO- 				fields: p.fieldNames(),
-//TODO- 			},
-//TODO- 		}, nil
-//TODO- 	default:
-//TODO- 		panic("internal error 009")
-//TODO- 	}
-//TODO- }
