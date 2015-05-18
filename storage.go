@@ -70,6 +70,7 @@ type index2 struct { // Expression list index.
 	unique   bool
 	x        btreeIndex
 	xroot    int64
+	sources  []string
 	exprList []expression
 }
 
@@ -460,11 +461,14 @@ func (t *table) addIndex2(execCtx *execCtx, unique bool, indexName string, exprL
 	}
 
 	hx, x, err := t.store.CreateIndex(unique)
-	//dbg("addIndex2: %s, exprlist %v, root %v", indexName, exprList, hx)
 	if err != nil {
 		return -1, err
 	}
-	x2 := &index2{unique, x, hx, exprList}
+	var a []string
+	for _, v := range exprList {
+		a = append(a, v.String())
+	}
+	x2 := &index2{unique, x, hx, a, exprList}
 	if t.indices2 == nil {
 		t.indices2 = map[string]*index2{}
 	}

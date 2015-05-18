@@ -719,21 +719,6 @@ func (s *selectStmt) plan(ctx *execCtx) (plan, error) { //LATER overlapping goro
 		if r, err = (&whereRset{expr: w.expr, src: r}).plan(ctx); err != nil {
 			return nil, err
 		}
-
-		r2, err := r.filter(w.expr, true)
-		if err != nil {
-			return nil, err
-		}
-
-		if r2 == nil {
-			if r2, err = r.filter(w.expr, false); err != nil {
-				return nil, err
-			}
-		}
-
-		if r2 != nil {
-			r = r2
-		}
 	}
 	switch {
 	case !s.hasAggregates && s.group == nil: // nop
