@@ -271,7 +271,80 @@ type whereRset struct {
 }
 
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
-	return &whereDefaultPlan{expr: r.expr, src: r.src, fields: r.src.fieldNames()}, nil
+	var f func(plan, expression) (plan, expression, error)
+	f = func(p plan, expr expression) (plan, expression, error) {
+		switch x := expr.(type) {
+		case *binaryOperation:
+			dbg("binary: %v, l: %v, r: %v", x, x.l, x.r)
+			p2, err := p.filterUsingIndex(expr)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if p2 != nil {
+				panic("TODO")
+			}
+
+			lp, lexpr, err := f(p, x.l)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if lp != nil {
+				use(lp, lexpr)
+				panic("TODO")
+			}
+
+			rp, rexpr, err := f(p, x.r)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if rp != nil {
+				use(rp, rexpr)
+				panic("TODO")
+			}
+
+			return nil, nil, nil
+		case *ident:
+			p2, err := p.filterUsingIndex(expr)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if p2 != nil {
+				panic("TODO")
+			}
+
+			return nil, nil, nil
+		case value:
+			switch x2 := x.val.(type) {
+			case bool:
+				use(x2)
+				panic("TODO")
+			default:
+				return nil, nil, nil
+			}
+		default:
+			dbg("%T(%v)", x, x)
+			panic("TODO")
+		}
+	}
+
+	p2, expr2, err := f(r.src, r.expr.clone())
+	if err != nil {
+		return nil, err
+	}
+
+	if p2 != nil {
+		if expr2 != nil {
+			panic("internal error 009")
+		}
+
+		return p2, nil
+	}
+
+	return &filterDefaultPlan{r.src, r.expr}, nil
 }
 
 type offsetRset struct {
@@ -313,11 +386,11 @@ type tableRset string
 func (r tableRset) plan(ctx *execCtx) (plan, error) {
 	switch r {
 	case "__Table":
-		return sysTableDefaultPlan{}, nil
+		return &sysTableDefaultPlan{}, nil
 	case "__Column":
-		return sysColumnDefaultPlan{}, nil
+		return &sysColumnDefaultPlan{}, nil
 	case "__Index":
-		return sysIndexDefaultPlan{}, nil
+		return &sysIndexDefaultPlan{}, nil
 	}
 
 	t, ok := ctx.db.root.tables[string(r)]
@@ -521,6 +594,7 @@ func newDB(store storage) (db *DB, err error) {
 			return nil, fmt.Errorf("index has no expression: %s", xn)
 		}
 
+		var sources []string
 		var list []expression
 		for _, row := range rows {
 			src, ok := row[0].(string)
@@ -533,9 +607,11 @@ func newDB(store storage) (db *DB, err error) {
 				return nil, fmt.Errorf("index %s: expression error: %v", xn, err)
 			}
 
+			sources = append(sources, src)
 			list = append(list, expr)
 		}
 
+		ix.sources = sources
 		ix.exprList = list
 		if t.indices2 == nil {
 			t.indices2 = map[string]*index2{}
@@ -1328,6 +1404,11 @@ func (r *joinRset) plan(ctx *execCtx) (plan, error) {
 		}
 		rsets[i] = q
 	}
+
+	if len(rsets) == 1 {
+		return rsets[0], nil
+	}
+
 	right := len(rsets[len(rsets)-1].fieldNames())
 	switch r.typ {
 	case crossJoin:
