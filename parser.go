@@ -2397,26 +2397,28 @@ yynewstate:
 		}
 	case 131:
 		{
-			yyVAL.item = &outerJoinRset{
-				typ:    yyS[yypt-5].item.(int),
-				source: yyS[yypt-2].item.([]interface{}),
-				on:     yyS[yypt-0].item.(expression),
-			}
+			yyVAL.item = []interface{}{yyS[yypt-5].item, yyS[yypt-2].item, yyS[yypt-0].item}
 		}
 	case 132:
 		{
-			yyVAL.item = (*outerJoinRset)(nil)
+			yyVAL.item = nil
 		}
 	case 134:
 		{
 			x := yylex.(*lexer)
 			n := len(x.agg)
+			join := &joinRset{sources: yyS[yypt-7].list}
+			if o := yyS[yypt-5].item; o != nil {
+				o := o.([]interface{})
+				join.typ = o[0].(int)
+				join.sources = append(join.sources, o[1].([]interface{}))
+				join.on = o[2].(expression)
+			}
 			yyVAL.item = &selectStmt{
 				distinct:      yyS[yypt-10].item.(bool),
 				flds:          yyS[yypt-9].item.([]*fld),
-				from:          &crossJoinRset{sources: yyS[yypt-7].list},
+				from:          join,
 				hasAggregates: x.agg[n-1],
-				outer:         yyS[yypt-5].item.(*outerJoinRset),
 				where:         yyS[yypt-4].item.(*whereRset),
 				group:         yyS[yypt-3].item.(*groupByRset),
 				order:         yyS[yypt-2].item.(*orderByRset),

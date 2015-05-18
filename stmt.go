@@ -652,10 +652,11 @@ func (s *alterTableAddStmt) exec(ctx *execCtx) (Recordset, error) {
 func (s *alterTableAddStmt) isUpdating() bool { return true }
 
 type selectStmt struct {
-	distinct      bool
-	flds          []*fld
-	from          *crossJoinRset
-	outer         *outerJoinRset
+	distinct bool
+	flds     []*fld
+	//TODO- from          *crossJoinRset
+	//TODO- outer         *outerJoinRset
+	from          *joinRset
 	group         *groupByRset
 	hasAggregates bool
 	limit         *limitRset
@@ -687,32 +688,32 @@ func (s *selectStmt) String() string {
 	}
 	b.WriteString(" FROM ")
 	b.WriteString(s.from.String())
-	if o := s.outer; o != nil {
-		switch o.typ {
-		case leftJoin:
-			b.WriteString(" LEFT")
-		case rightJoin:
-			b.WriteString(" RIGHT")
-		case fullJoin:
-			b.WriteString(" FULL")
-		}
-		b.WriteString(" OUTER JOIN ")
-		switch x := o.source[0].(type) {
-		case string:
-			b.WriteString(x)
-		case *selectStmt:
-			b.WriteString("(")
-			b.WriteString(x.String())
-			b.WriteString(")")
-		default:
-			panic("internal error 075")
-		}
-		if s := o.source[1].(string); s != "" {
-			b.WriteString(" AS " + s)
-		}
-		b.WriteString(" ON ")
-		b.WriteString(o.on.String())
-	}
+	//TODO- if o := s.outer; o != nil {
+	//TODO- 	switch o.typ {
+	//TODO- 	case leftJoin:
+	//TODO- 		b.WriteString(" LEFT")
+	//TODO- 	case rightJoin:
+	//TODO- 		b.WriteString(" RIGHT")
+	//TODO- 	case fullJoin:
+	//TODO- 		b.WriteString(" FULL")
+	//TODO- 	}
+	//TODO- 	b.WriteString(" OUTER JOIN ")
+	//TODO- 	switch x := o.source[0].(type) {
+	//TODO- 	case string:
+	//TODO- 		b.WriteString(x)
+	//TODO- 	case *selectStmt:
+	//TODO- 		b.WriteString("(")
+	//TODO- 		b.WriteString(x.String())
+	//TODO- 		b.WriteString(")")
+	//TODO- 	default:
+	//TODO- 		panic("internal error 075")
+	//TODO- 	}
+	//TODO- 	if s := o.source[1].(string); s != "" {
+	//TODO- 		b.WriteString(" AS " + s)
+	//TODO- 	}
+	//TODO- 	b.WriteString(" ON ")
+	//TODO- 	b.WriteString(o.on.String())
+	//TODO- }
 	if s.where != nil {
 		b.WriteString(" WHERE ")
 		b.WriteString(s.where.expr.String())
@@ -743,12 +744,12 @@ func (s *selectStmt) plan(ctx *execCtx) (plan, error) { //LATER overlapping goro
 		return nil, err
 	}
 
-	if o := s.outer; o != nil {
-		o.src = r.(*crossJoinDefaultPlan)
-		if r, err = o.plan(ctx); err != nil {
-			return nil, err
-		}
-	}
+	//TODO- if o := s.outer; o != nil {
+	//TODO- 	o.src = r.(*crossJoinDefaultPlan)
+	//TODO- 	if r, err = o.plan(ctx); err != nil {
+	//TODO- 		return nil, err
+	//TODO- 	}
+	//TODO- }
 	if w := s.where; w != nil {
 		if r, err = (&whereRset{expr: w.expr, src: r}).plan(ctx); err != nil {
 			return nil, err
