@@ -1991,8 +1991,11 @@ SELECT "foo"[3] FROM foo;
 ||invalid string index.*out of bounds
 
 -- 184
+BEGIN TRANSACTION;
+	CREATE TABLE foo(i int);
+COMMIT;
 SELECT "foo"["bar">true] FROM foo;
-||non-integer
+||mismatched types
 
 -- S 185
 SELECT DepartmentID[0] FROM employee;

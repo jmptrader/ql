@@ -281,25 +281,51 @@ type binaryOperation struct {
 }
 
 func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
-	if l, ok := x.(value); ok {
-		if b, ok := l.val.(bool); ok {
-			if b { // true == y: y
-				return y.(expression), nil
-			}
+	if op == eq {
+		if l, ok := x.(value); ok {
+			if b, ok := l.val.(bool); ok {
+				if b { // true == y: y
+					return y.(expression), nil
+				}
 
-			// false == y: !y
-			return newUnaryOperation('!', y)
+				// false == y: !y
+				return newUnaryOperation('!', y)
+			}
+		}
+
+		if r, ok := y.(value); ok {
+			if b, ok := r.val.(bool); ok {
+				if b { // x == true: x
+					return x.(expression), nil
+				}
+
+				// x == false: !x
+				return newUnaryOperation('!', x)
+			}
 		}
 	}
 
-	if r, ok := y.(value); ok {
-		if b, ok := r.val.(bool); ok {
-			if b { // x == true: x
+	if op == neq {
+		if l, ok := x.(value); ok {
+			if b, ok := l.val.(bool); ok {
+				if b { // true != y: !y
+					return newUnaryOperation('!', y)
+				}
+
+				// false != y: y
+				return y.(expression), nil
+			}
+		}
+
+		if r, ok := y.(value); ok {
+			if b, ok := r.val.(bool); ok {
+				if b { // x != true: !x
+					return newUnaryOperation('!', x)
+				}
+
+				// x != false: x
 				return x.(expression), nil
 			}
-
-			// x == false: !x
-			return newUnaryOperation('!', x)
 		}
 	}
 
@@ -3130,9 +3156,14 @@ func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 		log.Panic("internal error 038")
 	}
 
-	pe, ok := l.(*pexpr)
-	if ok {
-		l = pe.expr
+	for {
+		pe, ok := l.(*pexpr)
+		if ok {
+			l = pe.expr
+			continue
+		}
+
+		break
 	}
 
 	if op == '!' {
