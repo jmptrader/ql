@@ -313,7 +313,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			}
 
 			if p2 != nil {
-				panic("TODO")
+				return p2, nil, nil
 			}
 
 			return nil, nil, nil
