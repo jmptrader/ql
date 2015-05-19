@@ -1345,6 +1345,17 @@ func overflow(v interface{}, typ int) error {
 	return fmt.Errorf("constant %v overflows %s", v, typeStr(typ))
 }
 
+func typeCheck1(val interface{}, c *col) (interface{}, error) {
+	rec := []interface{}{val}
+	c = c.clone()
+	c.index = 0
+	if err := typeCheck(rec, []*col{c}); err != nil {
+		return nil, err
+	}
+
+	return rec[0], nil
+}
+
 func typeCheck(rec []interface{}, cols []*col) (err error) {
 	for _, c := range cols {
 		i := c.index
