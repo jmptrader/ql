@@ -889,7 +889,7 @@ func constraintsAndDefaults(ctx *execCtx, table string) (constraints []*constrai
 	constraints = make([]*constraint, len(cols))
 	defaults = make([]expression, len(cols))
 	arg := []interface{}{table}
-	rs, err := selectColumn2.l[0].exec(&execCtx{db: ctx.db})
+	rs, err := selectColumn2.l[0].exec(&execCtx{db: ctx.db, arg: arg})
 	if err != nil {
 		return nil, nil, err
 	}

@@ -221,6 +221,7 @@ func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 	for _, c := range r.colNames {
 		i, ok := m[c]
 		if !ok {
+			dbg("", c)
 			return fmt.Errorf("unknown column %s", c)
 		}
 
@@ -773,12 +774,14 @@ func (r *tableDefaultPlan) filter(expr expression) (plan, error) {
 }
 
 func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
+	dbg("", expr)
 	t := r.t
 	cols := mentionedColumns(expr)
 	for _, v := range r.fields {
 		delete(cols, v)
 	}
 	for k := range cols {
+		dbg("", k)
 		return nil, fmt.Errorf("unknown column %s", k)
 	}
 
@@ -786,12 +789,15 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 		return nil, nil
 	}
 
-	sexpr := expr.String()
+	var sexpr string
 	for _, ix := range t.indices2 {
 		if len(ix.exprList) != 1 {
 			continue
 		}
 
+		if sexpr == "" {
+			sexpr = expr.String()
+		}
 		if ix.sources[0] != sexpr {
 			continue
 		}
@@ -806,6 +812,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 			return nil, err
 		}
 
+		dbg("", ok, cn, rval, err)
 		if ok {
 			switch cn {
 			case "id()":
@@ -867,6 +874,8 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 							ix.x,
 							rval,
 						}, nil
+					case neq:
+						return nil, nil
 					default:
 						dbg("", string(x.op))
 						dbg("", x.op)
