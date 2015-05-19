@@ -463,6 +463,12 @@ func findCol(cols []*col, name string) (c *col) {
 	return nil
 }
 
+func (f *col) clone() *col {
+	var r col
+	r = *f
+	return &r
+}
+
 func (f *col) typeCheck(x interface{}) (ok bool) { //NTYPE
 	switch x.(type) {
 	case nil:

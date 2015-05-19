@@ -6442,7 +6442,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(10, "foo");
 COMMIT;
 SELECT * FROM t WHERE i < "30";
-||int64 .* string
+||type string.*type int64
 
 -- 580
 BEGIN TRANSACTION;

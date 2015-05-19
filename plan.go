@@ -818,6 +818,11 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 						continue
 					}
 
+					rval, err := typeCheck1(rval, v)
+					if err != nil {
+						return nil, err
+					}
+
 					xi := v.index + 1 // 0: id()
 					if xi >= len(t.indices) {
 						return nil, nil
@@ -833,8 +838,8 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 						switch {
 						case ix.unique:
 							if rval != nil {
-								dbg("--> tableUXEqPlan %v: %v", cn, expr)
-								return &tableUXEqPlan{
+								dbg("--> uniqueIndexEq %v: %v", cn, expr)
+								return &uniqueIndexEq{
 									tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 									ix.x,
 									rval,
@@ -850,6 +855,13 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 								rval,
 							}, nil
 						}
+					case '<':
+						dbg("--> tableXLTPlan %v: %v", cn, expr)
+						return &tableXLTPlan{
+							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.x,
+							rval,
+						}, nil
 					default:
 						dbg("", string(x.op))
 						dbg("", x.op)
@@ -972,7 +984,7 @@ func (r *tableUXEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface
 	return err
 }
 
-type tableXEqPlan struct { // column == val, val is not null
+type tableXEqPlan struct { // column == val
 	tableDefaultPlan
 	x   btreeIndex
 	val interface{}
@@ -1055,6 +1067,68 @@ func (r *tableXBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interfac
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
+		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+			return err
+		}
+	}
+}
+
+type tableXLTPlan struct { // column < val
+	tableDefaultPlan
+	x   btreeIndex
+	val interface{}
+}
+
+func (r *tableXLTPlan) filter(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *tableXLTPlan) filterUsingIndex(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *tableXLTPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	cmp0, err := newBinaryOperation('<', &ident{}, value{val: r.val})
+	if err != nil {
+		return err
+	}
+
+	cmp := cmp0.(*binaryOperation)
+	t := r.t
+	it, err := r.x.SeekFirst()
+	if err != nil {
+		return err
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		cmp.l = value{val: k[0]}
+		v, err := cmp.eval(ctx, nil, nil)
+		if err != nil {
+			return err
+		}
+
+		if v == nil {
+			continue
+		}
+
+		if !v.(bool) {
+			return nil
+		}
+
+		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		if err != nil {
+			return err
+		}
+
+		if d := len(t.cols) - (len(rec) - 2); d != 0 {
+			rec = append(rec, make([]interface{}, d))
+		}
+		dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
