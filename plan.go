@@ -837,7 +837,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 								return &tableUXEqPlan{
 									tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 									ix.x,
-									[]interface{}{rval},
+									rval,
 								}, nil
 							}
 
@@ -847,10 +847,11 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 							return &tableXEqPlan{
 								tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 								ix.x,
-								[]interface{}{rval},
+								rval,
 							}, nil
 						}
 					default:
+						dbg("", string(x.op))
 						dbg("", x.op)
 						panic("TODO")
 					}
@@ -882,7 +883,11 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 				return nil, nil
 			}
 
-			panic("TODO")
+			dbg("--> tableXBoolPlan %v(%v): %v", cn, ix.name, expr)
+			return &tableXBoolPlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.x,
+			}, nil
 		}
 	default:
 		dbg("%T(%v)", x, x)
@@ -927,7 +932,7 @@ func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
 type tableUXEqPlan struct { // column == val, val is not null
 	tableDefaultPlan
 	x   btreeIndex
-	val []interface{}
+	val interface{}
 }
 
 func (r *tableUXEqPlan) filter(expr expression) (plan, error) {
@@ -941,18 +946,18 @@ func (r *tableUXEqPlan) filterUsingIndex(expr expression) (plan, error) {
 // Returns 0 or 1 record.
 func (r *tableUXEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
 	t := r.t
-	it, hit, err := r.x.Seek(r.val)
+	it, _, err := r.x.Seek([]interface{}{r.val})
 	if err != nil {
 		return err
 	}
 
-	if !hit {
-		return nil
-	}
-
-	_, h, err := it.Next()
+	k, h, err := it.Next()
 	if err != nil {
 		return noEOF(err)
+	}
+
+	if k[0] != r.val {
+		return nil
 	}
 
 	rec, err := ctx.db.store.Read(nil, h, t.cols...)
@@ -970,7 +975,7 @@ func (r *tableUXEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface
 type tableXEqPlan struct { // column == val, val is not null
 	tableDefaultPlan
 	x   btreeIndex
-	val []interface{}
+	val interface{}
 }
 
 func (r *tableXEqPlan) filter(expr expression) (plan, error) {
@@ -983,13 +988,9 @@ func (r *tableXEqPlan) filterUsingIndex(expr expression) (plan, error) {
 
 func (r *tableXEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
 	t := r.t
-	it, hit, err := r.x.Seek(r.val)
+	it, _, err := r.x.Seek([]interface{}{r.val})
 	if err != nil {
 		return err
-	}
-
-	if !hit {
-		return nil
 	}
 
 	for {
@@ -998,7 +999,51 @@ func (r *tableXEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{
 			return noEOF(err)
 		}
 
-		if k[0] != r.val[0] {
+		if k[0] != r.val {
+			return nil
+		}
+
+		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		if err != nil {
+			return err
+		}
+
+		if d := len(t.cols) - (len(rec) - 2); d != 0 {
+			rec = append(rec, make([]interface{}, d))
+		}
+		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+			return err
+		}
+	}
+}
+
+type tableXBoolPlan struct { // column (of type bool)
+	tableDefaultPlan
+	x btreeIndex
+}
+
+func (r *tableXBoolPlan) filter(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *tableXBoolPlan) filterUsingIndex(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *tableXBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	t := r.t
+	it, _, err := r.x.Seek([]interface{}{true})
+	if err != nil {
+		return err
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if k[0] != true {
 			return nil
 		}
 
