@@ -367,6 +367,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	}
 
 	p := r.src
+more:
 	p2, expr2, err := f(p, expr)
 	if err != nil {
 		return nil, err
@@ -374,7 +375,9 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 
 	if p2 != nil {
 		if expr2 != nil {
-			return &filterDefaultPlan{p2, expr2}, nil
+			p = p2
+			expr = expr2
+			goto more
 		}
 
 		return p2, nil
