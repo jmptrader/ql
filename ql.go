@@ -301,8 +301,18 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			}
 
 			if rp != nil {
-				use(rp, rexpr)
-				panic("TODO")
+				if rexpr != nil {
+					panic("internal error 011")
+				}
+
+				switch x.op {
+				case andand:
+					return rp, x.l, nil
+				default:
+					dbg("", string(x.op))
+					dbg("", x.op)
+					panic("TODO")
+				}
 			}
 
 			return nil, nil, nil
@@ -352,7 +362,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 
 	if p2 != nil {
 		if expr2 != nil {
-			panic("internal error 009")
+			return &filterDefaultPlan{p2, expr2}, nil
 		}
 
 		return p2, nil
