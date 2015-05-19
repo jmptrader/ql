@@ -435,7 +435,7 @@ func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
 	}
 }
 
-func (b *binaryOperation) isIdentRelOpVal(ctx *execCtx) (bool, string, interface{}, error) {
+func (b *binaryOperation) isIdentRelOpVal() (bool, string, interface{}, error) {
 	id, ok := b.l.(*ident)
 	if !ok {
 		return false, "", nil, nil
@@ -443,15 +443,6 @@ func (b *binaryOperation) isIdentRelOpVal(ctx *execCtx) (bool, string, interface
 
 	if v, ok := b.r.(value); ok {
 		return true, id.s, v.val, nil
-	}
-
-	if p, ok := b.r.(*parameter); ok {
-		v, err := p.eval(ctx, nil, ctx.arg)
-		if err != nil {
-			return false, "", nil, err
-		}
-
-		return true, id.s, v, nil
 	}
 
 	return false, "", nil, nil
