@@ -775,6 +775,7 @@ func (r *tableDefaultPlan) filter(expr expression) (plan, error) {
 }
 
 func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
+	t := r.t
 	cols := mentionedColumns(expr)
 	for _, v := range r.fields {
 		delete(cols, v)
@@ -783,13 +784,12 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 		return nil, fmt.Errorf("unknown column %s", k)
 	}
 
-	dbg("", r.t.name, r.fields, expr)
-	if !r.t.hasIndices() {
+	if !t.hasIndices() {
 		return nil, nil
 	}
 
 	sexpr := expr.String()
-	for _, ix := range r.t.indices2 {
+	for _, ix := range t.indices2 {
 		if len(ix.exprList) != 1 {
 			continue
 		}
@@ -803,7 +803,77 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 
 	switch x := expr.(type) {
 	case *binaryOperation:
+		ok, cn, rval, err := x.isIdentRelOpVal()
+		if err != nil {
+			return nil, err
+		}
+
+		if ok {
+			switch cn {
+			case "id()":
+				panic("TODO")
+			default:
+				for _, v := range t.cols {
+					if v.name != cn {
+						continue
+					}
+
+					xi := v.index + 1 // 0: id()
+					if xi >= len(t.indices) {
+						return nil, nil
+					}
+
+					ix := t.indices[xi]
+					if ix == nil { // Column cn has no index.
+						return nil, nil
+					}
+
+					switch x.op {
+					case eq:
+						switch {
+						case ix.unique:
+							if rval != nil {
+								dbg("--> tableUXEqPlan %v: %v", cn, expr)
+								return &tableUXEqPlan{
+									tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+									ix.x,
+									[]interface{}{rval},
+								}, nil
+							}
+
+							panic("TODO")
+						default:
+							dbg("--> tableXEqPlan %v: %v", cn, expr)
+							return &tableXEqPlan{
+								tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+								ix.x,
+								[]interface{}{rval},
+							}, nil
+						}
+					default:
+						dbg("", x.op)
+						panic("TODO")
+					}
+				}
+
+				panic("TODO")
+			}
+		}
+
 		panic("TODO")
+	case *ident:
+		cn := x.s
+		for _, v := range t.cols {
+			if v.name != cn {
+				continue
+			}
+
+			if v.typ != qBool {
+				return nil, nil
+			}
+
+			panic("TODO")
+		}
 	default:
 		dbg("%T(%v)", x, x)
 		panic("TODO")
@@ -843,6 +913,98 @@ func (r *tableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 }
 
 func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
+
+type tableUXEqPlan struct { // column == val, val is not null
+	tableDefaultPlan
+	x   btreeIndex
+	val []interface{}
+}
+
+func (r *tableUXEqPlan) filter(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *tableUXEqPlan) filterUsingIndex(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+// Returns 0 or 1 record.
+func (r *tableUXEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	t := r.t
+	it, hit, err := r.x.Seek(r.val)
+	if err != nil {
+		return err
+	}
+
+	if !hit {
+		return nil
+	}
+
+	_, h, err := it.Next()
+	if err != nil {
+		return noEOF(err)
+	}
+
+	rec, err := ctx.db.store.Read(nil, h, t.cols...)
+	if err != nil {
+		return err
+	}
+
+	if d := len(t.cols) - (len(rec) - 2); d != 0 {
+		rec = append(rec, make([]interface{}, d))
+	}
+	_, err = f(rec[1], rec[2:])
+	return err
+}
+
+type tableXEqPlan struct { // column == val, val is not null
+	tableDefaultPlan
+	x   btreeIndex
+	val []interface{}
+}
+
+func (r *tableXEqPlan) filter(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *tableXEqPlan) filterUsingIndex(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *tableXEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	t := r.t
+	it, hit, err := r.x.Seek(r.val)
+	if err != nil {
+		return err
+	}
+
+	if !hit {
+		return nil
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if k[0] != r.val[0] {
+			return nil
+		}
+
+		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		if err != nil {
+			return err
+		}
+
+		if d := len(t.cols) - (len(rec) - 2); d != 0 {
+			rec = append(rec, make([]interface{}, d))
+		}
+		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+			return err
+		}
+	}
+}
 
 type leftJoinDefaultPlan struct {
 	on     expression

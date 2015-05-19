@@ -275,14 +275,14 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		dbg("---- f(%v)", expr)
 		switch x := expr.(type) {
 		case *binaryOperation:
-			dbg("binary: %v, l: %v, r: %v", x, x.l, x.r)
+			//dbg("binary: %v, l: %v, r: %v", x, x.l, x.r)
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
 				return nil, nil, err
 			}
 
 			if p2 != nil {
-				panic("TODO")
+				return p2, nil, nil
 			}
 
 			lp, lexpr, err := f(p, x.l)
