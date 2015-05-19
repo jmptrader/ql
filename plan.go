@@ -872,6 +872,16 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 				return nil, nil
 			}
 
+			xi := v.index + 1 // 0: id()
+			if xi >= len(t.indices) {
+				return nil, nil
+			}
+
+			ix := t.indices[xi]
+			if ix == nil { // Column cn has no index.
+				return nil, nil
+			}
+
 			panic("TODO")
 		}
 	default:
