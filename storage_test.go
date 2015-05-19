@@ -301,6 +301,7 @@ func test(t *testing.T, s testDB) (panicked error) {
 
 				nfo, err := db.Info()
 				if err != nil {
+					dbg("", err)
 					panic(err)
 				}
 

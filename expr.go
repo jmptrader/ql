@@ -56,8 +56,10 @@ func mentionedColumns0(e expression, m map[string]struct{}) {
 		mentionedColumns0(x.l, m)
 		mentionedColumns0(x.r, m)
 	case *call:
-		for _, e := range x.arg {
-			mentionedColumns0(e, m)
+		if x.f != "id" {
+			for _, e := range x.arg {
+				mentionedColumns0(e, m)
+			}
 		}
 	case *conversion:
 		mentionedColumns0(x.val, m)
@@ -350,8 +352,6 @@ func newBinaryOperation0(op int, x, y interface{}) (v expression, err error) {
 	}
 
 	b := binaryOperation{op, x.(expression), y.(expression)}
-	//dbg("newBinaryOperation %s", &b)
-	//defer func() { dbg("newBinaryOperation -> %v, %v", v, err) }()
 	var lv interface{}
 	if e := b.l; e.isStatic() {
 		if lv, err = e.eval(nil, nil, nil); err != nil {
@@ -413,9 +413,18 @@ func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
 		return expr, nil
 	}
 
-	r, ok := b.r.(*ident)
-	if !ok {
+	if c, ok := b.l.(*call); ok && c.f == "id" {
 		return expr, nil
+	}
+
+	var r expression
+	if r, ok = b.r.(*ident); !ok {
+		r1, ok := b.r.(*call)
+		if !ok || r1.f != "id" || len(r1.arg) != 0 {
+			return expr, nil
+		}
+
+		r = r1
 	}
 
 	// Normalize expr relOp indent: ident invRelOp expr
@@ -436,13 +445,21 @@ func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
 }
 
 func (b *binaryOperation) isIdentRelOpVal() (bool, string, interface{}, error) {
+	sid := ""
 	id, ok := b.l.(*ident)
 	if !ok {
-		return false, "", nil, nil
+		f, ok := b.l.(*call)
+		if !ok || f.f != "id" || len(f.arg) != 0 {
+			return false, "", nil, nil
+		}
+
+		sid = "id()"
+	} else {
+		sid = id.s
 	}
 
 	if v, ok := b.r.(value); ok {
-		return true, id.s, v.val, nil
+		return true, sid, v.val, nil
 	}
 
 	return false, "", nil, nil

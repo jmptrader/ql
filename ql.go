@@ -355,6 +355,23 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			default:
 				return nil, nil, nil
 			}
+		case *call:
+			if x.f != "id" || len(x.arg) != 0 {
+				return nil, nil, nil
+			}
+
+			p2, err := p.filterUsingIndex(expr)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if p2 != nil {
+				panic("TODO")
+			}
+
+			return nil, nil, nil
+		case *pLike:
+			return nil, nil, nil
 		default:
 			dbg("%T(%v)", x, x)
 			panic("TODO")
@@ -1278,7 +1295,7 @@ func (db *DB) info() (r *DbInfo, err error) {
 		ti := TableInfo{Name: nm}
 		m := map[string]*ColumnInfo{}
 		if hasColumn2 {
-			rs, err := selectColumn2.l[0].exec(&execCtx{db: db})
+			rs, err := selectColumn2.l[0].exec(&execCtx{db: db, arg: []interface{}{nm}})
 			if err != nil {
 				return nil, err
 			}
