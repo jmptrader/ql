@@ -366,7 +366,8 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		return nil, err
 	}
 
-	p2, expr2, err := f(r.src, expr)
+	p := r.src
+	p2, expr2, err := f(p, expr)
 	if err != nil {
 		return nil, err
 	}
