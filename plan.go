@@ -90,14 +90,15 @@ func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 			return nil, err
 		}
 
-		dbg("", i, e2)
+		dbg("", i, e2, v)
 		p2, err := r.rsets[i].filterUsingIndex(e2)
 		if err != nil {
 			return nil, err
 		}
 
 		if p2 != nil {
-			panic("TODO")
+			r.rsets[i] = p2
+			return r, nil
 		}
 	}
 	return nil, nil
@@ -302,6 +303,7 @@ func (r *selectIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []
 	case *index2:
 		x = ix.x
 	default:
+		dbg("%T(%v)", ix, ix)
 		panic("internal error 007")
 	}
 
@@ -652,9 +654,7 @@ func (r *sysColumnDefaultPlan) filter(expr expression) (plan, error) {
 	panic("TODO")
 }
 
-func (r sysColumnDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	panic("TODO")
-}
+func (r sysColumnDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
 
 func (r sysColumnDefaultPlan) fieldNames() []string {
 	return []string{"TableName", "Ordinal", "Name", "Type"}
@@ -726,9 +726,7 @@ func (r *sysTableDefaultPlan) filter(expr expression) (plan, error) {
 	panic("TODO")
 }
 
-func (r sysTableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	panic("TODO")
-}
+func (r sysTableDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
 
 func (r sysTableDefaultPlan) fieldNames() []string { return []string{"Name", "Schema"} }
 
@@ -862,6 +860,13 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 							ix.x,
 							rval,
 						}, nil
+					case '>':
+						dbg("--> indexGtPlan %v: %v", cn, expr)
+						return &indexGtPlan{
+							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.x,
+							rval,
+						}, nil
 					default:
 						dbg("", string(x.op))
 						dbg("", x.op)
@@ -869,11 +874,11 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 					}
 				}
 
-				panic("TODO")
+				return nil, nil
 			}
 		}
 
-		panic("TODO")
+		return nil, nil
 	case *ident:
 		cn := x.s
 		for _, v := range t.cols {
@@ -906,7 +911,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 		panic("TODO")
 	}
 
-	panic("TODO")
+	return nil, nil
 }
 
 func (r *tableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
@@ -1138,6 +1143,68 @@ func (r *indexLePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	}
 }
 
+type indexGtPlan struct { // column > val
+	tableDefaultPlan
+	x   btreeIndex
+	val interface{}
+}
+
+func (r *indexGtPlan) filter(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *indexGtPlan) filterUsingIndex(expr expression) (plan, error) {
+	panic("TODO")
+}
+
+func (r *indexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	cmp0, err := newBinaryOperation('>', &ident{}, value{val: r.val})
+	if err != nil {
+		return err
+	}
+
+	cmp := cmp0.(*binaryOperation)
+	t := r.t
+	it, err := r.x.SeekLast()
+	if err != nil {
+		return err
+	}
+
+	for {
+		k, h, err := it.Prev()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		cmp.l = value{val: k[0]}
+		v, err := cmp.eval(ctx, nil, nil)
+		if err != nil {
+			return err
+		}
+
+		if v == nil {
+			continue
+		}
+
+		if !v.(bool) {
+			return nil
+		}
+
+		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		if err != nil {
+			return err
+		}
+
+		if d := len(t.cols) - (len(rec) - 2); d != 0 {
+			rec = append(rec, make([]interface{}, d))
+		}
+		dbg("", rec)
+		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+			return err
+		}
+	}
+}
+
 type indexLtPlan struct { // column < val
 	tableDefaultPlan
 	x   btreeIndex
@@ -1169,6 +1236,10 @@ func (r *indexLtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		k, h, err := it.Next()
 		if err != nil {
 			return noEOF(err)
+		}
+
+		if len(k) == 0 {
+			continue
 		}
 
 		cmp.l = value{val: k[0]}
