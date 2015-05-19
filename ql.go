@@ -50,7 +50,6 @@ var (
 )
 
 type rset interface {
-	//do(ctx *execCtx, onlyNames bool, f func(id interface{}, data []interface{}) (more bool, err error)) error
 	plan(ctx *execCtx) (plan, error)
 }
 
@@ -341,7 +340,12 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		}
 	}
 
-	p2, expr2, err := f(r.src, r.expr.clone())
+	expr, err := r.expr.clone(ctx.arg)
+	if err != nil {
+		return nil, err
+	}
+
+	p2, expr2, err := f(r.src, expr)
 	if err != nil {
 		return nil, err
 	}

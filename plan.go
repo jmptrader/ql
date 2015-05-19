@@ -85,7 +85,11 @@ func (r *crossJoinDefaultPlan) filter(expr expression) (plan, error) {
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	dbg("", expr)
 	for i, v := range r.names {
-		e2 := expr.clone(v)
+		e2, err := expr.clone(nil, v)
+		if err != nil {
+			return nil, err
+		}
+
 		dbg("", i, e2)
 		p2, err := r.rsets[i].filterUsingIndex(e2)
 		if err != nil {
@@ -784,14 +788,27 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 		return nil, nil
 	}
 
-	s := expr.String()
-	dbg("", s)
-	for i, v := range r.t.indices {
-		dbg("", i, v.name)
+	sexpr := expr.String()
+	for _, ix := range r.t.indices2 {
+		if len(ix.exprList) != 1 {
+			continue
+		}
+
+		if ix.sources[0] != sexpr {
+			continue
+		}
+
+		panic("TODO")
 	}
-	for k, v := range r.t.indices2 {
-		dbg("", k, v.sources)
+
+	switch x := expr.(type) {
+	case *binaryOperation:
+		panic("TODO")
+	default:
+		dbg("%T(%v)", x, x)
+		panic("TODO")
 	}
+
 	panic("TODO")
 }
 
