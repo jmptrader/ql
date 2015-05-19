@@ -375,6 +375,7 @@ more:
 
 	if p2 != nil {
 		if expr2 != nil {
+			dbg("more: %v", expr2)
 			p = p2
 			expr = expr2
 			goto more

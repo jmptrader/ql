@@ -1216,6 +1216,15 @@ func (r *indexLtPlan) filter(expr expression) (plan, error) {
 }
 
 func (r *indexLtPlan) filterUsingIndex(expr expression) (plan, error) {
+	p2, err := r.tableDefaultPlan.filterUsingIndex(expr)
+	if err != nil {
+		return nil, err
+	}
+
+	if p2 == nil {
+		return nil, nil
+	}
+
 	panic("TODO")
 }
 
