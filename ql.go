@@ -35,6 +35,7 @@ const (
 // must be held out of the implementing instance.
 var (
 	_ rset = (*distinctRset)(nil)
+	_ rset = (*explainStmt)(nil)
 	_ rset = (*groupByRset)(nil)
 	_ rset = (*joinRset)(nil)
 	_ rset = (*limitRset)(nil)

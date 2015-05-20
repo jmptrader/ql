@@ -9,12 +9,14 @@ import (
 	"strings"
 
 	"github.com/cznic/b"
+	"github.com/cznic/strutil"
 )
 
 // Note: All plans must have a pointer receiver. Enables planA == planB operation.
 var (
 	_ plan = (*crossJoinDefaultPlan)(nil)
 	_ plan = (*distinctDefaultPlan)(nil)
+	_ plan = (*explainDefaultPlan)(nil)
 	_ plan = (*filterDefaultPlan)(nil)
 	_ plan = (*fullJoinDefaultPlan)(nil)
 	_ plan = (*groupByDefaultPlan)(nil)
@@ -33,13 +35,34 @@ var (
 
 type plan interface {
 	do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error
+	explain(w strutil.Formatter)
 	fieldNames() []string
 	filterUsingIndex(expr expression) (plan, error)
 }
 
+type explainDefaultPlan struct {
+	p plan
+}
+
+func (r *explainDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
+	panic("TODO")
+}
+
+func (r *explainDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
+
+func (r *explainDefaultPlan) fieldNames() []string { return []string{""} }
+
+func (r *explainDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
+
 type filterDefaultPlan struct {
 	plan
 	expr expression
+}
+
+func (r *filterDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
 }
 
 func (r *filterDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
@@ -76,6 +99,38 @@ type crossJoinDefaultPlan struct {
 	rsets  []plan
 	names  []string
 	fields []string
+}
+
+func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
+	/*
+
+		cartesian product of
+		(
+			asasa
+		),
+		(
+			djfhdj
+		) AS foo,
+		(
+			dfjjdf
+		).
+		output fields "...".
+
+	*/
+
+	w.Format("Compute Cartesian product of\n")
+	for i, v := range r.rsets {
+		w.Format("(%i\n")
+		v.explain(w)
+		w.Format("%u) as %s", r.names[i])
+		if i == len(r.rsets)-1 {
+			w.Format(".")
+		} else {
+			w.Format(",")
+		}
+		w.Format("\n")
+	}
+	w.Format("Output fields %v", r.fields)
 }
 
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -125,6 +180,10 @@ type distinctDefaultPlan struct {
 	fields []string
 }
 
+func (r *distinctDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
+
 func (r *distinctDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	return nil, nil
 }
@@ -171,6 +230,10 @@ type groupByDefaultPlan struct {
 	colNames []string
 	src      plan
 	fields   []string
+}
+
+func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
 }
 
 func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -273,6 +336,10 @@ type selectIndexDefaultPlan struct {
 	x  interface{}
 }
 
+func (r *selectIndexDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
+
 func (r *selectIndexDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	return nil, nil
 }
@@ -315,6 +382,10 @@ type limitDefaultPlan struct {
 	expr   expression
 	src    plan
 	fields []string
+}
+
+func (r *limitDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
 }
 
 func (r *limitDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -366,6 +437,10 @@ type offsetDefaultPlan struct {
 	fields []string
 }
 
+func (r *offsetDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
+
 func (r *offsetDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	return nil, nil
 }
@@ -413,6 +488,10 @@ type orderByDefaultPlan struct {
 	by     []expression
 	src    plan
 	fields []string
+}
+
+func (r *orderByDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
 }
 
 func (r *orderByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -496,6 +575,10 @@ type selectFieldsDefaultPlan struct {
 	flds   []*fld
 	src    plan
 	fields []string
+}
+
+func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
 }
 
 func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -615,13 +698,17 @@ func (r *selectFieldsDefaultPlan) fieldNames() []string { return r.fields }
 
 type sysColumnDefaultPlan struct{}
 
-func (r sysColumnDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
+func (r *sysColumnDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
 
-func (r sysColumnDefaultPlan) fieldNames() []string {
+func (r *sysColumnDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
+
+func (r *sysColumnDefaultPlan) fieldNames() []string {
 	return []string{"TableName", "Ordinal", "Name", "Type"}
 }
 
-func (r sysColumnDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+func (r *sysColumnDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	rec := make([]interface{}, 4)
 	di, err := ctx.db.info()
 	if err != nil {
@@ -648,15 +735,19 @@ func (r sysColumnDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 
 type sysIndexDefaultPlan struct{}
 
-func (r sysIndexDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
+func (r *sysIndexDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
+
+func (r *sysIndexDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	return nil, nil
 }
 
-func (r sysIndexDefaultPlan) fieldNames() []string {
+func (r *sysIndexDefaultPlan) fieldNames() []string {
 	return []string{"TableName", "ColumnName", "Name", "IsUnique"}
 }
 
-func (r sysIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+func (r *sysIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	rec := make([]interface{}, 4)
 	di, err := ctx.db.info()
 	if err != nil {
@@ -679,11 +770,15 @@ func (r sysIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 
 type sysTableDefaultPlan struct{}
 
-func (r sysTableDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
+func (r *sysTableDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
 
-func (r sysTableDefaultPlan) fieldNames() []string { return []string{"Name", "Schema"} }
+func (r *sysTableDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
 
-func (r sysTableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+func (r *sysTableDefaultPlan) fieldNames() []string { return []string{"Name", "Schema"} }
+
+func (r *sysTableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	rec := make([]interface{}, 2)
 	di, err := ctx.db.info()
 	if err != nil {
@@ -719,6 +814,10 @@ func (r sysTableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 type tableDefaultPlan struct {
 	t      *table
 	fields []string
+}
+
+func (r *tableDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
 }
 
 func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1186,6 +1285,10 @@ type leftJoinDefaultPlan struct {
 	fields []string
 }
 
+func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
+
 func (r *leftJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	return nil, nil //TODO
 }
@@ -1194,12 +1297,20 @@ type rightJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
 
+func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
+}
+
 func (r *rightJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	return nil, nil //TODO
 }
 
 type fullJoinDefaultPlan struct {
 	leftJoinDefaultPlan
+}
+
+func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
+	panic("TODO")
 }
 
 func (r *fullJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
