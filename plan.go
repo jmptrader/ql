@@ -918,15 +918,12 @@ func (r *indexEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 			return nil
 		}
 
-		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		id, data, err := t.row(ctx, h)
 		if err != nil {
 			return err
 		}
 
-		if d := len(t.cols) - (len(rec) - 2); d != 0 {
-			rec = append(rec, make([]interface{}, d))
-		}
-		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+		if more, err := f(id, data); err != nil || !more {
 			return err
 		}
 	}
@@ -958,15 +955,12 @@ func (r *indexBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interface
 			return nil
 		}
 
-		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		id, data, err := t.row(ctx, h)
 		if err != nil {
 			return err
 		}
 
-		if d := len(t.cols) - (len(rec) - 2); d != 0 {
-			rec = append(rec, make([]interface{}, d))
-		}
-		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+		if more, err := f(id, data); err != nil || !more {
 			return err
 		}
 	}
@@ -999,15 +993,12 @@ func (r *indexGePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 			return noEOF(err)
 		}
 
-		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		id, data, err := t.row(ctx, h)
 		if err != nil {
 			return err
 		}
 
-		if d := len(t.cols) - (len(rec) - 2); d != 0 {
-			rec = append(rec, make([]interface{}, d))
-		}
-		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+		if more, err := f(id, data); err != nil || !more {
 			return err
 		}
 	}
@@ -1056,15 +1047,12 @@ func (r *indexLePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 			return nil
 		}
 
-		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		id, data, err := t.row(ctx, h)
 		if err != nil {
 			return err
 		}
 
-		if d := len(t.cols) - (len(rec) - 2); d != 0 {
-			rec = append(rec, make([]interface{}, d))
-		}
-		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+		if more, err := f(id, data); err != nil || !more {
 			return err
 		}
 	}
@@ -1113,15 +1101,12 @@ func (r *indexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 			return nil
 		}
 
-		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		id, data, err := t.row(ctx, h)
 		if err != nil {
 			return err
 		}
 
-		if d := len(t.cols) - (len(rec) - 2); d != 0 {
-			rec = append(rec, make([]interface{}, d))
-		}
-		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+		if more, err := f(id, data); err != nil || !more {
 			return err
 		}
 	}
@@ -1183,15 +1168,12 @@ func (r *indexLtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 			return nil
 		}
 
-		rec, err := ctx.db.store.Read(nil, h, t.cols...)
+		id, data, err := t.row(ctx, h)
 		if err != nil {
 			return err
 		}
 
-		if d := len(t.cols) - (len(rec) - 2); d != 0 {
-			rec = append(rec, make([]interface{}, d))
-		}
-		if more, err := f(rec[1], rec[2:]); err != nil || !more {
+		if more, err := f(id, data); err != nil || !more {
 			return err
 		}
 	}

@@ -759,7 +759,7 @@ func (t *table) updateCols() *table {
 	return t
 }
 
-func (t *table) row(ctx *execCtx, h int64) (int64, []interface{}, error) { //TODO use everywhere
+func (t *table) row(ctx *execCtx, h int64) (int64, []interface{}, error) {
 	rec, err := ctx.db.store.Read(nil, h, t.cols...)
 	if err != nil {
 		return -1, nil, err
