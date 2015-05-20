@@ -64,6 +64,7 @@ import (
 	durationType	"duration"
 	eq		"=="
 	exists		"EXISTS"
+	explain		"EXPLAIN"
 	falseKwd	"false"
 	floatType	"float"
 	float32Type	"float32"
@@ -151,6 +152,7 @@ import (
 	DropIndexIfExists	"DROP INDEX statement optional IF EXISTS clause"
 	DropTableStmt		"DROP TABLE statement"
 	EmptyStmt		"empty statement"
+	ExplainStmt		"EXPLAIN statement"
 	Expression		"expression"
 	ExpressionList		"expression list"
 	ExpressionList1		"expression list expression"
@@ -513,6 +515,12 @@ EmptyStmt:
 	/* EMPTY */
 	{
 		$$ = nil
+	}
+
+ExplainStmt:
+	"EXPLAIN" Statement
+	{
+		$$ = &explainStmt{$2.(stmt)}
 	}
 
 Expression:
@@ -1141,6 +1149,7 @@ Statement:
 |	DeleteFromStmt
 |	DropIndexStmt
 |	DropTableStmt
+|	ExplainStmt
 |	InsertIntoStmt
 |	RollbackStmt
 |	SelectStmt

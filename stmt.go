@@ -22,6 +22,7 @@ var (
 	_ stmt = (*deleteStmt)(nil) //TODO optimizer plan
 	_ stmt = (*dropIndexStmt)(nil)
 	_ stmt = (*dropTableStmt)(nil)
+	_ stmt = (*explainStmt)(nil)
 	_ stmt = (*insertIntoStmt)(nil)
 	_ stmt = (*selectStmt)(nil)
 	_ stmt = (*truncateTableStmt)(nil)
@@ -119,6 +120,24 @@ type stmt interface {
 type execCtx struct { //LATER +shared temp
 	db  *DB
 	arg []interface{}
+}
+
+type explainStmt struct {
+	s stmt
+}
+
+func (e *explainStmt) String() string {
+	return "EXPLAIN " + e.s.String()
+}
+
+func (e *explainStmt) plan(ctx *execCtx) (plan, error) {
+	panic("TODO")
+}
+
+func (e *explainStmt) isUpdating() bool { return false }
+
+func (e *explainStmt) exec(ctx *execCtx) (_ Recordset, err error) {
+	panic("TODO")
 }
 
 type updateStmt struct {
