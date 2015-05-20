@@ -864,7 +864,7 @@ func Example_recordsetFields() {
 		)
 		WHERE I < $1
 		ORDER BY S;
-		`)
+		`, 42)
 	if err != nil {
 		panic(err)
 	}
