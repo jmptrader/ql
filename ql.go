@@ -272,7 +272,7 @@ type whereRset struct {
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	var f func(plan, expression) (plan, expression, error)
 	f = func(p plan, expr expression) (plan, expression, error) {
-		dbg("---- f(%v)", expr)
+		//dbg("---- f(%v)", expr)
 		switch x := expr.(type) {
 		case *binaryOperation:
 			//dbg("binary: %v, l: %v, r: %v", x, x.l, x.r)
@@ -290,28 +290,15 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				return nil, nil, err
 			}
 
-			if lp != nil {
-				if lexpr != nil {
-					dbg("", lexpr)
-					panic("TODO")
-				}
-
-				switch x.op {
-				case andand:
-					return lp, x.r, nil
-				default:
-					dbg("", string(x.op))
-					dbg("", x.op)
-					panic("TODO")
-				}
-			}
-
 			rp, rexpr, err := f(p, x.r)
 			if err != nil {
 				return nil, nil, err
 			}
 
-			if rp != nil {
+			switch {
+			case lp == nil && rp == nil:
+				return nil, nil, nil
+			case lp == nil && rp != nil:
 				if rexpr != nil {
 					panic("TODO")
 				}
@@ -320,13 +307,42 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				case andand:
 					return rp, x.l, nil
 				default:
-					dbg("", string(x.op))
-					dbg("", x.op)
+					//dbg("", x.op, string(x.op))
+					panic("TODO")
+				}
+			case lp != nil && rp == nil:
+				if lexpr != nil {
+					panic("TODO")
+				}
+
+				switch x.op {
+				case andand:
+					return lp, x.r, nil
+				default:
+					//dbg("", x.op, string(x.op))
+					panic("TODO")
+				}
+			default: // case lp != nil && rp != nil:
+				if lexpr != nil || rexpr != nil {
+					panic("TODO")
+				}
+
+				switch x.op {
+				case andand:
+					if lp == rp {
+						return lp, nil, nil
+					}
+
+					panic("TODO")
+				case oror:
+					return nil, nil, nil
+				default:
+					//dbg("%T(%v) %T(%v)", lp, lp, rp, rp)
+					//dbg("", x.op, string(x.op))
 					panic("TODO")
 				}
 			}
 
-			return nil, nil, nil
 		case *ident:
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
@@ -348,9 +364,9 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			//TODO optimize
 			return nil, nil, nil
 		case value:
-			switch x2 := x.val.(type) {
+			switch x.val.(type) {
 			case bool:
-				dbg("%T(%v)", x2, x2)
+				//dbg("%T(%v)", x2, x2)
 				panic("TODO")
 			default:
 				return nil, nil, nil
@@ -373,7 +389,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		case *pLike:
 			return nil, nil, nil
 		default:
-			dbg("%T(%v)", x, x)
+			//dbg("%T(%v)", x, x)
 			panic("TODO")
 		}
 	}
@@ -384,7 +400,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	}
 
 	p := r.src
-more:
 	p2, expr2, err := f(p, expr)
 	if err != nil {
 		return nil, err
@@ -392,16 +407,13 @@ more:
 
 	if p2 != nil {
 		if expr2 != nil {
-			dbg("more: %v", expr2)
-			p = p2
-			expr = expr2
-			goto more
+			return &filterDefaultPlan{p2, expr2}, nil
 		}
 
 		return p2, nil
 	}
 
-	return &filterDefaultPlan{r.src, r.expr}, nil
+	return &filterDefaultPlan{p, expr}, nil
 }
 
 type offsetRset struct {

@@ -759,6 +759,19 @@ func (t *table) updateCols() *table {
 	return t
 }
 
+func (t *table) row(ctx *execCtx, h int64) (int64, []interface{}, error) { //TODO use everywhere
+	rec, err := ctx.db.store.Read(nil, h, t.cols...)
+	if err != nil {
+		return -1, nil, err
+	}
+
+	if d := len(t.cols) - (len(rec) - 2); d != 0 {
+		rec = append(rec, make([]interface{}, d))
+	}
+
+	return rec[1].(int64), rec[2:], nil
+}
+
 // storage fields
 // 0: handle of first table in DB int64
 type root struct {

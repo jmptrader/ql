@@ -11,6 +11,7 @@ import (
 	"github.com/cznic/b"
 )
 
+// Note: All plans must have a pointer receiver. Enables planA == planB operation.
 var (
 	_ plan = (*crossJoinDefaultPlan)(nil)
 	_ plan = (*distinctDefaultPlan)(nil)
@@ -83,14 +84,14 @@ func (r *crossJoinDefaultPlan) filter(expr expression) (plan, error) {
 }
 
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	dbg("", expr)
+	//dbg("", expr)
 	for i, v := range r.names {
 		e2, err := expr.clone(nil, v)
 		if err != nil {
 			return nil, err
 		}
 
-		dbg("", i, e2, v)
+		//dbg("", i, e2, v)
 		p2, err := r.rsets[i].filterUsingIndex(e2)
 		if err != nil {
 			return nil, err
@@ -221,7 +222,7 @@ func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 	for _, c := range r.colNames {
 		i, ok := m[c]
 		if !ok {
-			dbg("", c)
+			//dbg("", c)
 			return fmt.Errorf("unknown column %s", c)
 		}
 
@@ -304,7 +305,7 @@ func (r *selectIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []
 	case *index2:
 		x = ix.x
 	default:
-		dbg("%T(%v)", ix, ix)
+		//dbg("%T(%v)", ix, ix)
 		panic("internal error 007")
 	}
 
@@ -774,14 +775,14 @@ func (r *tableDefaultPlan) filter(expr expression) (plan, error) {
 }
 
 func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	dbg("", expr)
+	//dbg("", expr)
 	t := r.t
 	cols := mentionedColumns(expr)
 	for _, v := range r.fields {
 		delete(cols, v)
 	}
 	for k := range cols {
-		dbg("", k)
+		//dbg("", k)
 		return nil, fmt.Errorf("unknown column %s", k)
 	}
 
@@ -812,7 +813,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 			return nil, err
 		}
 
-		dbg("", ok, cn, rval, err)
+		//dbg("", ok, cn, rval, err)
 		if ok {
 			switch cn {
 			case "id()":
@@ -840,35 +841,35 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 
 					switch x.op {
 					case eq:
-						dbg("--> indexEqPlan %v: %v", cn, expr)
+						//dbg("--> indexEqPlan %v: %v", cn, expr)
 						return &indexEqPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case '<':
-						dbg("--> indexLtPlan %v: %v", cn, expr)
+						//dbg("--> indexLtPlan %v: %v", cn, expr)
 						return &indexLtPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case le:
-						dbg("--> indexLePlan %v: %v", cn, expr)
+						//dbg("--> indexLePlan %v: %v", cn, expr)
 						return &indexLePlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case ge:
-						dbg("--> indexGePlan %v: %v", cn, expr)
+						//dbg("--> indexGePlan %v: %v", cn, expr)
 						return &indexGePlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case '>':
-						dbg("--> indexGtPlan %v: %v", cn, expr)
+						//dbg("--> indexGtPlan %v: %v", cn, expr)
 						return &indexGtPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
@@ -877,8 +878,8 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 					case neq:
 						return nil, nil
 					default:
-						dbg("", string(x.op))
-						dbg("", x.op)
+						//dbg("", string(x.op))
+						//dbg("", x.op)
 						panic("TODO")
 					}
 				}
@@ -909,14 +910,14 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 				return nil, nil
 			}
 
-			dbg("--> indexBoolPlan %v(%v): %v", cn, ix.name, expr)
+			//dbg("--> indexBoolPlan %v(%v): %v", cn, ix.name, expr)
 			return &indexBoolPlan{
 				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 				ix.x,
 			}, nil
 		}
 	default:
-		dbg("%T(%v)", x, x)
+		//dbg("%T(%v)", x, x)
 		panic("TODO")
 	}
 
@@ -1083,7 +1084,7 @@ func (r *indexGePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		dbg("", rec)
+		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
@@ -1145,7 +1146,7 @@ func (r *indexLePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		dbg("", rec)
+		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
@@ -1207,7 +1208,7 @@ func (r *indexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		dbg("", rec)
+		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
@@ -1282,7 +1283,7 @@ func (r *indexLtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		dbg("", rec)
+		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
