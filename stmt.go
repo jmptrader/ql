@@ -7,7 +7,6 @@ package ql
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"strings"
 	"sync"
 )
@@ -958,36 +957,30 @@ type beginTransactionStmt struct{}
 
 func (beginTransactionStmt) String() string { return "BEGIN TRANSACTION;" }
 func (beginTransactionStmt) exec(*execCtx) (Recordset, error) {
-	log.Panic("internal error 059")
-	panic("unreachable")
+	panic("internal error 059")
 }
 func (beginTransactionStmt) isUpdating() bool {
-	log.Panic("internal error 060")
-	panic("unreachable")
+	panic("internal error 060")
 }
 
 type commitStmt struct{}
 
 func (commitStmt) String() string { return "COMMIT;" }
 func (commitStmt) exec(*execCtx) (Recordset, error) {
-	log.Panic("internal error 061")
-	panic("unreachable")
+	panic("internal error 061")
 }
 func (commitStmt) isUpdating() bool {
-	log.Panic("internal error 062")
-	panic("unreachable")
+	panic("internal error 062")
 }
 
 type rollbackStmt struct{}
 
 func (rollbackStmt) String() string { return "ROLLBACK;" }
 func (rollbackStmt) exec(*execCtx) (Recordset, error) {
-	log.Panic("internal error 063")
-	panic("unreachable")
+	panic("internal error 063")
 }
 func (rollbackStmt) isUpdating() bool {
-	log.Panic("internal error 064")
-	panic("unreachable")
+	panic("internal error 064")
 }
 
 type createIndexStmt struct {
@@ -1096,7 +1089,7 @@ func (s *createIndexStmt) exec(ctx *execCtx) (Recordset, error) {
 			return nil, ctx.db.insertIndex2(s.tableName, s.indexName, []string{s.colName}, s.unique, true, h)
 		}
 	default:
-		panic("internal error 076")
+		panic("internal error 011")
 	}
 
 	exprList := make([]string, 0, len(s.exprList))

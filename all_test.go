@@ -1029,14 +1029,6 @@ func dumpDB(db *DB, tag string) (string, error) {
 	return buf.String(), nil
 }
 
-func dumpTables4(db *DB) {
-	dbg("---- db.root.head is %v", db.root.head)
-	for t := db.root.thead; t != nil; t = t.tnext {
-		dbg("\ttable @ %v: %q, next %v", t.h, t.name, t.next)
-	}
-	dbg("----")
-}
-
 func testIndices(db *DB, t *testing.T) {
 	ctx := NewRWCtx()
 	var err error
@@ -2836,7 +2828,6 @@ func testMentionedColumns(s stmt) (err error) {
 			mentionedColumns(e)
 		}
 	default:
-		dbg("%T", x)
 		panic("internal error 056")
 	}
 	return nil

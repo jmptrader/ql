@@ -6,7 +6,6 @@ package ql
 
 import (
 	"fmt"
-	"log"
 	"math/big"
 	"regexp"
 	"strings"
@@ -93,7 +92,7 @@ func mentionedColumns0(e expression, m map[string]struct{}) {
 	case *unaryOperation:
 		mentionedColumns0(x.v, m)
 	default:
-		panic("internal error 073")
+		panic("internal error 052")
 	}
 }
 
@@ -2984,8 +2983,7 @@ func (o *binaryOperation) eval(execCtx *execCtx, ctx map[interface{}]interface{}
 			return invOp2(a, b, op)
 		}
 	default:
-		log.Panic("internal error 037")
-		panic("unreachable")
+		panic("internal error 037")
 	}
 }
 
@@ -3268,7 +3266,7 @@ type unaryOperation struct {
 func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 	l, ok := x.(expression)
 	if !ok {
-		log.Panic("internal error 038")
+		panic("internal error 038")
 	}
 
 	for {
@@ -3553,8 +3551,7 @@ func (u *unaryOperation) eval(execCtx *execCtx, ctx map[interface{}]interface{},
 			return undOp(a, op)
 		}
 	default:
-		log.Panic("internal error 039")
-		panic("unreachable")
+		panic("internal error 039")
 	}
 }
 
