@@ -444,11 +444,11 @@ func newBinaryOperation(op int, x, y interface{}) (v expression, err error) {
 	}
 }
 
-func (b *binaryOperation) isIdentRelOpVal() (bool, string, interface{}, error) {
+func (o *binaryOperation) isIdentRelOpVal() (bool, string, interface{}, error) {
 	sid := ""
-	id, ok := b.l.(*ident)
+	id, ok := o.l.(*ident)
 	if !ok {
-		f, ok := b.l.(*call)
+		f, ok := o.l.(*call)
 		if !ok || f.f != "id" || len(f.arg) != 0 {
 			return false, "", nil, nil
 		}
@@ -458,25 +458,25 @@ func (b *binaryOperation) isIdentRelOpVal() (bool, string, interface{}, error) {
 		sid = id.s
 	}
 
-	if v, ok := b.r.(value); ok {
+	if v, ok := o.r.(value); ok {
 		return true, sid, v.val, nil
 	}
 
 	return false, "", nil, nil
 }
 
-func (b *binaryOperation) clone(arg []interface{}, unqualify ...string) (expression, error) {
-	l, err := b.l.clone(arg, unqualify...)
+func (o *binaryOperation) clone(arg []interface{}, unqualify ...string) (expression, error) {
+	l, err := o.l.clone(arg, unqualify...)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := b.r.clone(arg, unqualify...)
+	r, err := o.r.clone(arg, unqualify...)
 	if err != nil {
 		return nil, err
 	}
 
-	return newBinaryOperation(b.op, l, r)
+	return newBinaryOperation(o.op, l, r)
 }
 
 func (o *binaryOperation) isStatic() bool { return o.l.isStatic() && o.r.isStatic() }
@@ -3046,13 +3046,13 @@ type pIn struct {
 	sel  *selectStmt
 }
 
-func (p *pIn) clone(arg []interface{}, unqualify ...string) (expression, error) {
-	expr, err := p.expr.clone(arg, unqualify...)
+func (n *pIn) clone(arg []interface{}, unqualify ...string) (expression, error) {
+	expr, err := n.expr.clone(arg, unqualify...)
 	if err != nil {
 		return nil, err
 	}
 
-	list, err := cloneExpressionList(arg, p.list)
+	list, err := cloneExpressionList(arg, n.list)
 	if err != nil {
 		return nil, err
 	}
@@ -3060,8 +3060,8 @@ func (p *pIn) clone(arg []interface{}, unqualify ...string) (expression, error) 
 	return &pIn{
 		expr: expr,
 		list: list,
-		not:  p.not,
-		sel:  p.sel,
+		not:  n.not,
+		sel:  n.sel,
 	}, nil
 }
 
@@ -3692,13 +3692,13 @@ type isNull struct {
 
 //LATER newIsNull
 
-func (i *isNull) clone(arg []interface{}, unqualify ...string) (expression, error) {
-	expr, err := i.expr.clone(arg, unqualify...)
+func (is *isNull) clone(arg []interface{}, unqualify ...string) (expression, error) {
+	expr, err := is.expr.clone(arg, unqualify...)
 	if err != nil {
 		return nil, err
 	}
 
-	return &isNull{expr: expr, not: i.not}, nil
+	return &isNull{expr: expr, not: is.not}, nil
 }
 
 func (is *isNull) isStatic() bool { return is.expr.isStatic() }
@@ -3768,18 +3768,18 @@ func newIndex(sv, xv expression) (v expression, err error) {
 	return &x, nil
 }
 
-func (i *indexOp) clone(arg []interface{}, unqualify ...string) (expression, error) {
-	expr, err := i.expr.clone(arg, unqualify...)
+func (x *indexOp) clone(arg []interface{}, unqualify ...string) (expression, error) {
+	expr, err := x.expr.clone(arg, unqualify...)
 	if err != nil {
 		return nil, err
 	}
 
-	x, err := i.x.clone(arg, unqualify...)
+	x2, err := x.x.clone(arg, unqualify...)
 	if err != nil {
 		return nil, err
 	}
 
-	return &indexOp{expr: expr, x: x}, nil
+	return &indexOp{expr: expr, x: x2}, nil
 }
 
 func (x *indexOp) isStatic() bool {
