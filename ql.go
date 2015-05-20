@@ -14,7 +14,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"math/big"
 	"strconv"
 	"strings"
@@ -1384,7 +1383,7 @@ func (r *joinRset) String() string {
 				a[i] = fmt.Sprintf("(%s) AS %s", x, altName)
 			}
 		default:
-			log.Panic("internal error 054")
+			panic("internal error 054")
 		}
 	}
 	n := len(a)

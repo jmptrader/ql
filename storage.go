@@ -6,7 +6,6 @@ package ql
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -457,7 +456,7 @@ func (t *table) addIndex(unique bool, indexName string, colIndex int) (int64, er
 
 func (t *table) addIndex2(execCtx *execCtx, unique bool, indexName string, exprList []expression) (int64, error) {
 	if _, ok := t.indices2[indexName]; ok {
-		panic("internal error 077")
+		panic("internal error 009")
 	}
 
 	hx, x, err := t.store.CreateIndex(unique)
@@ -717,7 +716,7 @@ func (r *root) updated() (err error) {
 
 func (r *root) createTable(name string, cols []*col) (t *table, err error) {
 	if _, ok := r.tables[name]; ok {
-		log.Panic("internal error 065")
+		panic("internal error 065")
 	}
 
 	if t, err = newTable(r.store, name, r.head, cols, nil, r.thead); err != nil {

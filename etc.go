@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"math"
 	"math/big"
 	"strings"
@@ -1327,10 +1326,8 @@ func convert(val interface{}, typ int) (v interface{}, err error) { //NTYPE
 			return invConv(val, typ)
 		}
 	default:
-		log.Panic("internal error 006")
+		panic("internal error 006")
 	}
-	//dbg("%T(%v) %s", val, val, typeStr(typ))
-	panic("unreachable")
 }
 
 func invShiftRHS(lhs, rhs interface{}) (interface{}, error) {
@@ -2677,12 +2674,12 @@ func collate1(a, b interface{}) int {
 		case chunk:
 			a, err := x.expand()
 			if err != nil {
-				log.Panic(err)
+				panic(err)
 			}
 
 			b, err := y.expand()
 			if err != nil {
-				log.Panic(err)
+				panic(err)
 			}
 
 			return collate1(a, b)
