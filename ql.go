@@ -272,10 +272,8 @@ type whereRset struct {
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	var f func(plan, expression) (plan, expression, error)
 	f = func(p plan, expr expression) (plan, expression, error) {
-		//dbg("---- f(%v)", expr)
 		switch x := expr.(type) {
 		case *binaryOperation:
-			//dbg("binary: %v, l: %v, r: %v", x, x.l, x.r)
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
 				return nil, nil, err
@@ -307,7 +305,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				case andand:
 					return rp, x.l, nil
 				default:
-					//dbg("", x.op, string(x.op))
 					panic("TODO")
 				}
 			case lp != nil && rp == nil:
@@ -319,7 +316,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				case andand:
 					return lp, x.r, nil
 				default:
-					//dbg("", x.op, string(x.op))
 					panic("TODO")
 				}
 			default: // case lp != nil && rp != nil:
@@ -337,8 +333,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				case oror:
 					return nil, nil, nil
 				default:
-					//dbg("%T(%v) %T(%v)", lp, lp, rp, rp)
-					//dbg("", x.op, string(x.op))
 					panic("TODO")
 				}
 			}
@@ -366,7 +360,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		case value:
 			switch x.val.(type) {
 			case bool:
-				//dbg("%T(%v)", x2, x2)
 				panic("TODO")
 			default:
 				return nil, nil, nil
@@ -389,7 +382,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		case *pLike:
 			return nil, nil, nil
 		default:
-			//dbg("%T(%v)", x, x)
 			panic("TODO")
 		}
 	}
@@ -634,7 +626,6 @@ func newDB(store storage) (db *DB, err error) {
 		unique := row[3].(bool)
 		xroot := row[4].(int64)
 
-		//dbg("newDB: tn %v, xn %v, xroot %v", tn, xn, xroot)
 		t := db0.root.tables[tn]
 		if t == nil {
 			return nil, fmt.Errorf("DB index refers to nonexistent table: %s", tn)
@@ -1013,15 +1004,6 @@ func (db *DB) Execute(ctx *TCtx, l List, arg ...interface{}) (rs []Recordset, in
 }
 
 func (db *DB) run1(pc *TCtx, s stmt, arg ...interface{}) (rs Recordset, err error) {
-	//dbg("=================================================================")
-	//dbg("BEFORE %s", s)
-	//dumpTables4(db)
-	//defer func() {
-	//	dbg("AFTER")
-	//	dumpTables4(db)
-	//	dbg("*****************************************************************")
-	//}()
-	//dbg("%v", s)
 	db.mu.Lock()
 	switch db.rw {
 	case false:

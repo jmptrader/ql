@@ -34,7 +34,6 @@ var (
 type plan interface {
 	do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error
 	fieldNames() []string
-	//TODO- filter(expr expression) (plan, error)
 	filterUsingIndex(expr expression) (plan, error)
 }
 
@@ -56,7 +55,7 @@ func (r *filterDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inter
 			return false, err
 		}
 
-		if val == nil { //TODO bug if expr is 'IS NULL' ?
+		if val == nil {
 			return true, nil
 		}
 
@@ -79,19 +78,13 @@ type crossJoinDefaultPlan struct {
 	fields []string
 }
 
-//TODO- func (r *crossJoinDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	//dbg("", expr)
 	for i, v := range r.names {
 		e2, err := expr.clone(nil, v)
 		if err != nil {
 			return nil, err
 		}
 
-		//dbg("", i, e2, v)
 		p2, err := r.rsets[i].filterUsingIndex(e2)
 		if err != nil {
 			return nil, err
@@ -131,10 +124,6 @@ type distinctDefaultPlan struct {
 	src    plan
 	fields []string
 }
-
-//TODO- func (r *distinctDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *distinctDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
@@ -184,10 +173,6 @@ type groupByDefaultPlan struct {
 	fields   []string
 }
 
-//TODO- func (r *groupByDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	p2, err := r.src.filterUsingIndex(expr)
 	if err != nil {
@@ -222,7 +207,6 @@ func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 	for _, c := range r.colNames {
 		i, ok := m[c]
 		if !ok {
-			//dbg("", c)
 			return fmt.Errorf("unknown column %s", c)
 		}
 
@@ -289,10 +273,6 @@ type selectIndexDefaultPlan struct {
 	x  interface{}
 }
 
-//TODO- func (r *selectIndexDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r *selectIndexDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
 }
@@ -305,7 +285,6 @@ func (r *selectIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []
 	case *index2:
 		x = ix.x
 	default:
-		//dbg("%T(%v)", ix, ix)
 		panic("internal error 007")
 	}
 
@@ -337,10 +316,6 @@ type limitDefaultPlan struct {
 	src    plan
 	fields []string
 }
-
-//TODO- func (r *limitDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *limitDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
@@ -391,10 +366,6 @@ type offsetDefaultPlan struct {
 	fields []string
 }
 
-//TODO- func (r *offsetDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r *offsetDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
 }
@@ -443,10 +414,6 @@ type orderByDefaultPlan struct {
 	src    plan
 	fields []string
 }
-
-//TODO- func (r *orderByDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *orderByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
@@ -530,10 +497,6 @@ type selectFieldsDefaultPlan struct {
 	src    plan
 	fields []string
 }
-
-//TODO- func (r *selectFieldsDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	//TODO (297) p2, err := r.src.filterUsingIndex(expr)
@@ -652,10 +615,6 @@ func (r *selectFieldsDefaultPlan) fieldNames() []string { return r.fields }
 
 type sysColumnDefaultPlan struct{}
 
-//TODO- func (r *sysColumnDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r sysColumnDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
 
 func (r sysColumnDefaultPlan) fieldNames() []string {
@@ -689,10 +648,6 @@ func (r sysColumnDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 
 type sysIndexDefaultPlan struct{}
 
-//TODO- func (r *sysIndexDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r sysIndexDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
 }
@@ -723,10 +678,6 @@ func (r sysIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 }
 
 type sysTableDefaultPlan struct{}
-
-//TODO- func (r *sysTableDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r sysTableDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
 
@@ -770,19 +721,13 @@ type tableDefaultPlan struct {
 	fields []string
 }
 
-//TODO- func (r *tableDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	//dbg("", expr)
 	t := r.t
 	cols := mentionedColumns(expr)
 	for _, v := range r.fields {
 		delete(cols, v)
 	}
 	for k := range cols {
-		//dbg("", k)
 		return nil, fmt.Errorf("unknown column %s", k)
 	}
 
@@ -813,7 +758,6 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 			return nil, err
 		}
 
-		//dbg("", ok, cn, rval, err)
 		if ok {
 			switch cn {
 			case "id()":
@@ -841,35 +785,30 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 
 					switch x.op {
 					case eq:
-						//dbg("--> indexEqPlan %v: %v", cn, expr)
 						return &indexEqPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case '<':
-						//dbg("--> indexLtPlan %v: %v", cn, expr)
 						return &indexLtPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case le:
-						//dbg("--> indexLePlan %v: %v", cn, expr)
 						return &indexLePlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case ge:
-						//dbg("--> indexGePlan %v: %v", cn, expr)
 						return &indexGePlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
 							rval,
 						}, nil
 					case '>':
-						//dbg("--> indexGtPlan %v: %v", cn, expr)
 						return &indexGtPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 							ix.x,
@@ -878,8 +817,6 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 					case neq:
 						return nil, nil
 					default:
-						//dbg("", string(x.op))
-						//dbg("", x.op)
 						panic("TODO")
 					}
 				}
@@ -910,14 +847,12 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 				return nil, nil
 			}
 
-			//dbg("--> indexBoolPlan %v(%v): %v", cn, ix.name, expr)
 			return &indexBoolPlan{
 				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
 				ix.x,
 			}, nil
 		}
 	default:
-		//dbg("%T(%v)", x, x)
 		panic("TODO")
 	}
 
@@ -962,10 +897,6 @@ type indexEqPlan struct { // column == val
 	val interface{}
 }
 
-//TODO- func (r *indexEqPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r *indexEqPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
 }
@@ -1005,10 +936,6 @@ type indexBoolPlan struct { // column (of type bool)
 	tableDefaultPlan
 	x btreeIndex
 }
-
-//TODO- func (r *indexBoolPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *indexBoolPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
@@ -1051,10 +978,6 @@ type indexGePlan struct { // column <= val
 	val interface{}
 }
 
-//TODO- func (r *indexGePlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
-
 func (r *indexGePlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
 }
@@ -1084,7 +1007,6 @@ func (r *indexGePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
@@ -1096,10 +1018,6 @@ type indexLePlan struct { // column <= val
 	x   btreeIndex
 	val interface{}
 }
-
-//TODO- func (r *indexLePlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *indexLePlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
@@ -1146,7 +1064,6 @@ func (r *indexLePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
@@ -1158,10 +1075,6 @@ type indexGtPlan struct { // column > val
 	x   btreeIndex
 	val interface{}
 }
-
-//TODO- func (r *indexGtPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *indexGtPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
@@ -1208,7 +1121,6 @@ func (r *indexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
@@ -1220,10 +1132,6 @@ type indexLtPlan struct { // column < val
 	x   btreeIndex
 	val interface{}
 }
-
-//TODO- func (r *indexLtPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *indexLtPlan) filterUsingIndex(expr expression) (plan, error) {
 	p2, err := r.tableDefaultPlan.filterUsingIndex(expr)
@@ -1283,7 +1191,6 @@ func (r *indexLtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		if d := len(t.cols) - (len(rec) - 2); d != 0 {
 			rec = append(rec, make([]interface{}, d))
 		}
-		//dbg("", rec)
 		if more, err := f(rec[1], rec[2:]); err != nil || !more {
 			return err
 		}
@@ -1297,10 +1204,6 @@ type leftJoinDefaultPlan struct {
 	right  int
 	fields []string
 }
-
-//TODO- func (r *leftJoinDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *leftJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
@@ -1317,10 +1220,6 @@ func (r *rightJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 type fullJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
-
-//TODO- func (r *fullJoinDefaultPlan) filter(expr expression) (plan, error) {
-//TODO- 	panic("TODO")
-//TODO- }
 
 func (r *fullJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	panic("TODO")
