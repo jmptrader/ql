@@ -238,7 +238,7 @@ func test(t *testing.T, s testDB) (panicked error) {
 		max = n
 	}
 	for itest, test := range testdata[*oN:max] {
-		//dbg("------------------------------------------------------------- ( itest %d ) ----", itest)
+		dbg("------------------------------------------------------------- ( itest %d ) ----", itest)
 		var re *regexp.Regexp
 		a := strings.Split(test+"|", "|")
 		q, rset := a[0], strings.TrimSpace(a[1])
@@ -291,6 +291,7 @@ func test(t *testing.T, s testDB) (panicked error) {
 			continue
 		}
 
+		dbg("****")
 		if !func() (ok bool) {
 			tnl0 := db.tnl
 			defer func() {
@@ -340,6 +341,28 @@ func test(t *testing.T, s testDB) (panicked error) {
 			rs, _, err := db.Execute(tctx, list, int64(30))
 			if err != nil {
 				return chk(itest, err, expErr, re)
+			}
+
+			for _, v := range list.l {
+				src := "EXPLAIN " + v.String()
+				//dbg("", src)
+				rs, _, err := db.Run(tctx, src, int64(30))
+				if err != nil {
+					t.Errorf("(%d) %s: %v", itest, src, err)
+					return
+				}
+
+				rows, err := rs[0].Rows(-1, 0)
+				if err != nil {
+					t.Errorf("%s: %v", src, err)
+					return
+				}
+
+				var a []string
+				for _, v := range rows {
+					a = append(a, v[0].(string))
+				}
+				//dbg("\n----\n%s\n----\n", strings.Join(a, "\n"))
 			}
 
 			if rs == nil {

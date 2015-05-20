@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+
+	"github.com/cznic/strutil"
 )
 
 // NOTE: all stmt implementations must be safe for concurrent use by multiple
@@ -109,6 +111,8 @@ type stmt interface {
 	// - rollbackStmt
 	exec(ctx *execCtx) (Recordset, error)
 
+	explain(ctx *execCtx, w strutil.Formatter)
+
 	// return value ignored for
 	// - beginTransactionStmt
 	// - commitStmt
@@ -126,24 +130,28 @@ type explainStmt struct {
 	s stmt
 }
 
-func (e *explainStmt) String() string {
-	return "EXPLAIN " + e.s.String()
+func (s *explainStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	panic("TODO")
 }
 
-func (e *explainStmt) plan(ctx *execCtx) (plan, error) {
-	panic("TODO")
+func (e *explainStmt) String() string {
+	return "EXPLAIN " + e.s.String()
 }
 
 func (e *explainStmt) isUpdating() bool { return false }
 
 func (e *explainStmt) exec(ctx *execCtx) (_ Recordset, err error) {
-	panic("TODO")
+	return recordset{ctx, &explainDefaultPlan{e.s}, ctx.db.cc}, nil
 }
 
 type updateStmt struct {
 	tableName string
 	list      []assignment
 	where     expression
+}
+
+func (s *updateStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
 }
 
 func (s *updateStmt) String() string {
@@ -304,6 +312,10 @@ type deleteStmt struct {
 	where     expression
 }
 
+func (s *deleteStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
+}
+
 func (s *deleteStmt) String() string {
 	switch {
 	case s.where == nil:
@@ -431,6 +443,10 @@ type truncateTableStmt struct {
 	tableName string
 }
 
+func (s *truncateTableStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
+}
+
 func (s *truncateTableStmt) String() string { return fmt.Sprintf("TRUNCATE TABLE %s;", s.tableName) }
 
 func (s *truncateTableStmt) exec(ctx *execCtx) (Recordset, error) {
@@ -447,6 +463,10 @@ func (s *truncateTableStmt) isUpdating() bool { return true }
 type dropIndexStmt struct {
 	ifExists  bool
 	indexName string
+}
+
+func (s *dropIndexStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
 }
 
 func (s *dropIndexStmt) String() string { return fmt.Sprintf("DROP INDEX %s;", s.indexName) }
@@ -491,6 +511,10 @@ type dropTableStmt struct {
 	tableName string
 }
 
+func (s *dropTableStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
+}
+
 func (s *dropTableStmt) String() string { return fmt.Sprintf("DROP TABLE %s;", s.tableName) }
 
 func (s *dropTableStmt) exec(ctx *execCtx) (Recordset, error) {
@@ -516,6 +540,10 @@ func (s *dropTableStmt) isUpdating() bool { return true }
 
 type alterTableDropColumnStmt struct {
 	tableName, colName string
+}
+
+func (s *alterTableDropColumnStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
 }
 
 func (s *alterTableDropColumnStmt) String() string {
@@ -592,6 +620,10 @@ func (s *alterTableDropColumnStmt) isUpdating() bool { return true }
 type alterTableAddStmt struct {
 	tableName string
 	c         *col
+}
+
+func (s *alterTableAddStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
 }
 
 func (s *alterTableAddStmt) String() string {
@@ -680,6 +712,16 @@ type selectStmt struct {
 	offset        *offsetRset
 	order         *orderByRset
 	where         *whereRset
+}
+
+func (s *selectStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	p, err := s.plan(ctx)
+	if err != nil {
+		w.Format("ERROR: %v\n", err)
+		return
+	}
+
+	p.explain(w)
 }
 
 func (s *selectStmt) String() string {
@@ -797,6 +839,10 @@ type insertIntoStmt struct {
 	lists     [][]expression
 	sel       *selectStmt
 	tableName string
+}
+
+func (s *insertIntoStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
 }
 
 func (s *insertIntoStmt) String() string {
@@ -974,6 +1020,10 @@ func (s *insertIntoStmt) isUpdating() bool { return true }
 
 type beginTransactionStmt struct{}
 
+func (s beginTransactionStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
+}
+
 func (beginTransactionStmt) String() string { return "BEGIN TRANSACTION;" }
 func (beginTransactionStmt) exec(*execCtx) (Recordset, error) {
 	panic("internal error 059")
@@ -984,6 +1034,10 @@ func (beginTransactionStmt) isUpdating() bool {
 
 type commitStmt struct{}
 
+func (s commitStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
+}
+
 func (commitStmt) String() string { return "COMMIT;" }
 func (commitStmt) exec(*execCtx) (Recordset, error) {
 	panic("internal error 061")
@@ -993,6 +1047,10 @@ func (commitStmt) isUpdating() bool {
 }
 
 type rollbackStmt struct{}
+
+func (s rollbackStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
+}
 
 func (rollbackStmt) String() string { return "ROLLBACK;" }
 func (rollbackStmt) exec(*execCtx) (Recordset, error) {
@@ -1009,6 +1067,10 @@ type createIndexStmt struct {
 	tableName   string
 	unique      bool
 	exprList    []expression
+}
+
+func (s *createIndexStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
 }
 
 func (s *createIndexStmt) isSimpleIndex() bool { return s.colName != "" }
@@ -1126,6 +1188,10 @@ type createTableStmt struct {
 	cols        []*col
 }
 
+func (s *createTableStmt) explain(ctx *execCtx, w strutil.Formatter) {
+	w.Format("%s\n", s)
+}
+
 func (s *createTableStmt) String() string {
 	a := make([]string, len(s.cols))
 	for i, v := range s.cols {
@@ -1151,6 +1217,10 @@ func (s *createTableStmt) String() string {
 }
 
 func (s *createTableStmt) exec(ctx *execCtx) (_ Recordset, err error) {
+	var cols []*col
+	for _, v := range s.cols {
+		cols = append(cols, v.clone())
+	}
 	root := ctx.db.root
 	if _, ok := root.tables[s.tableName]; ok {
 		if s.ifNotExists {
@@ -1166,7 +1236,7 @@ func (s *createTableStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 
 	m := map[string]bool{}
 	mustCreateColumn2 := true
-	for i, c := range s.cols {
+	for i, c := range cols {
 		nm := c.name
 		if m[nm] {
 			return nil, fmt.Errorf("CREATE TABLE: duplicate column %s", nm)

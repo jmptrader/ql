@@ -2795,3 +2795,11 @@ func mustSelector(s string) string {
 
 	return q
 }
+
+func qnames(l []string) []string {
+	r := make([]string, len(l))
+	for i, v := range l {
+		r[i] = fmt.Sprintf("%q", v)
+	}
+	return r
+}
