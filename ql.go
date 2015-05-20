@@ -298,29 +298,29 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				return nil, nil, nil
 			case lp == nil && rp != nil:
 				if rexpr != nil {
-					panic("TODO")
+					return nil, nil, nil //TODO
 				}
 
 				switch x.op {
 				case andand:
 					return rp, x.l, nil
 				default:
-					panic("TODO")
+					return nil, nil, nil //TODO
 				}
 			case lp != nil && rp == nil:
 				if lexpr != nil {
-					panic("TODO")
+					return nil, nil, nil //TODO
 				}
 
 				switch x.op {
 				case andand:
 					return lp, x.r, nil
 				default:
-					panic("TODO")
+					return nil, nil, nil //TODO
 				}
 			default: // case lp != nil && rp != nil:
 				if lexpr != nil || rexpr != nil {
-					panic("TODO")
+					return nil, nil, nil //TODO
 				}
 
 				switch x.op {
@@ -329,11 +329,11 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 						return lp, nil, nil
 					}
 
-					panic("TODO")
+					return nil, nil, nil //TODO
 				case oror:
 					return nil, nil, nil
 				default:
-					panic("TODO")
+					return nil, nil, nil //TODO
 				}
 			}
 
@@ -360,7 +360,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		case value:
 			switch x.val.(type) {
 			case bool:
-				panic("TODO")
+				return nil, nil, nil //TODO
 			default:
 				return nil, nil, nil
 			}
@@ -375,14 +375,14 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			}
 
 			if p2 != nil {
-				panic("TODO")
+				return nil, nil, nil //TODO
 			}
 
 			return nil, nil, nil
 		case *pLike:
 			return nil, nil, nil
 		default:
-			panic("TODO")
+			return nil, nil, nil //TODO
 		}
 	}
 
