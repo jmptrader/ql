@@ -5,6 +5,7 @@
 package ql
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -31,6 +32,12 @@ var (
 	_ plan = (*sysIndexDefaultPlan)(nil)
 	_ plan = (*sysTableDefaultPlan)(nil)
 	_ plan = (*tableDefaultPlan)(nil)
+	_ plan = (*indexEqPlan)(nil)
+	_ plan = (*indexLtPlan)(nil)
+	_ plan = (*indexLePlan)(nil)
+	_ plan = (*indexGePlan)(nil)
+	_ plan = (*indexGtPlan)(nil)
+	_ plan = (*indexBoolPlan)(nil)
 )
 
 type plan interface {
@@ -41,20 +48,37 @@ type plan interface {
 }
 
 type explainDefaultPlan struct {
-	p plan
+	s stmt
 }
 
 func (r *explainDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
-	panic("TODO")
+	var buf bytes.Buffer
+	switch x := r.s.(type) {
+	default:
+		w := strutil.IndentFormatter(&buf, "\t")
+		x.explain(ctx, w)
+	}
+
+	a := bytes.Split(buf.Bytes(), []byte{'\n'})
+	for _, v := range a[:len(a)-1] {
+		if more, err := f(nil, []interface{}{string(v)}); !more || err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (r *explainDefaultPlan) explain(w strutil.Formatter) {
 	panic("TODO")
 }
 
-func (r *explainDefaultPlan) fieldNames() []string { return []string{""} }
+func (r *explainDefaultPlan) fieldNames() []string {
+	panic("TODO")
+}
 
-func (r *explainDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
+func (r *explainDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
+	panic("TODO")
+}
 
 type filterDefaultPlan struct {
 	plan
@@ -62,7 +86,8 @@ type filterDefaultPlan struct {
 }
 
 func (r *filterDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	r.plan.explain(w)
+	w.Format("Filter on %v\n%iOutput field names %v%u\n", r.expr, qnames(r.plan.fieldNames()))
 }
 
 func (r *filterDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
@@ -102,35 +127,11 @@ type crossJoinDefaultPlan struct {
 }
 
 func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
-	/*
-
-		cartesian product of
-		(
-			asasa
-		),
-		(
-			djfhdj
-		) AS foo,
-		(
-			dfjjdf
-		).
-		output fields "...".
-
-	*/
-
-	w.Format("Compute Cartesian product of\n")
-	for i, v := range r.rsets {
-		w.Format("(%i\n")
+	w.Format("Compute Cartesian product of%i\n")
+	for _, v := range r.rsets {
 		v.explain(w)
-		w.Format("%u) as %s", r.names[i])
-		if i == len(r.rsets)-1 {
-			w.Format(".")
-		} else {
-			w.Format(",")
-		}
-		w.Format("\n")
 	}
-	w.Format("Output fields %v", r.fields)
+	w.Format("%uOutput field names %v\n", qnames(r.fields))
 }
 
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -181,7 +182,8 @@ type distinctDefaultPlan struct {
 }
 
 func (r *distinctDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	r.src.explain(w)
+	w.Format("Select distinct rows%i\nOutput field names %v%u\n", r.fields)
 }
 
 func (r *distinctDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -233,7 +235,17 @@ type groupByDefaultPlan struct {
 }
 
 func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	r.src.explain(w)
+	switch {
+	case len(r.colNames) == 0:
+		w.Format("Select distinct rows")
+	default:
+		w.Format("Group by")
+		for _, v := range r.colNames {
+			w.Format(" %s,", v)
+		}
+	}
+	w.Format("\n%iOutput fieldNames %v%u\n", qnames(r.fields))
 }
 
 func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -337,7 +349,7 @@ type selectIndexDefaultPlan struct {
 }
 
 func (r *selectIndexDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Iterate all values of index %q\n", r.nm)
 }
 
 func (r *selectIndexDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -378,14 +390,15 @@ func (r *selectIndexDefaultPlan) fieldNames() []string {
 	return []string{r.nm}
 }
 
-type limitDefaultPlan struct {
+type limitDefaultPlan struct { //TODO optimize for expr < 1
 	expr   expression
 	src    plan
 	fields []string
 }
 
 func (r *limitDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	r.src.explain(w)
+	w.Format("Pass first %v records\n%iOutput fieldNames %v%u\n", r.expr, r.fields)
 }
 
 func (r *limitDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -431,14 +444,15 @@ func (r *limitDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 	})
 }
 
-type offsetDefaultPlan struct {
+type offsetDefaultPlan struct { //TODO optimize for expr < 1
 	expr   expression
 	src    plan
 	fields []string
 }
 
 func (r *offsetDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	r.src.explain(w)
+	w.Format("Skip first %v records%i\nOutput fieldNames %v%u\n", r.expr, qnames(r.fields))
 }
 
 func (r *offsetDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -491,7 +505,12 @@ type orderByDefaultPlan struct {
 }
 
 func (r *orderByDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	r.src.explain(w)
+	w.Format("Order%s by", map[bool]string{false: " descending"}[r.asc])
+	for _, v := range r.by {
+		w.Format(" %s,", v)
+	}
+	w.Format("\n%iOutput field names %v%u\n", qnames(r.fields))
 }
 
 func (r *orderByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -577,8 +596,14 @@ type selectFieldsDefaultPlan struct {
 	fields []string
 }
 
-func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) { //TODO optimize #582
+	//TODO check for non existing fields
+	r.src.explain(w)
+	w.Format("Compute")
+	for _, v := range r.flds {
+		w.Format(" %s as %s,", v.expr, fmt.Sprintf("%q", v.name))
+	}
+	w.Format("\n%iOutput field names %v%u\n", qnames(r.fields))
 }
 
 func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -597,10 +622,6 @@ func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, error
 func (r *selectFieldsDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
 	if _, ok := r.src.(*groupByDefaultPlan); ok { //TODO different plan, also possible conflict with optimizer
 		return r.doGroup(ctx, f)
-	}
-
-	if len(r.flds) == 0 {
-		return r.src.do(ctx, f)
 	}
 
 	fields := r.src.fieldNames()
@@ -699,7 +720,7 @@ func (r *selectFieldsDefaultPlan) fieldNames() []string { return r.fields }
 type sysColumnDefaultPlan struct{}
 
 func (r *sysColumnDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Iterate all rows of table \"__Column\"\n")
 }
 
 func (r *sysColumnDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
@@ -736,7 +757,7 @@ func (r *sysColumnDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []in
 type sysIndexDefaultPlan struct{}
 
 func (r *sysIndexDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Iterate all rows of table \"__Index\"\n")
 }
 
 func (r *sysIndexDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -771,7 +792,7 @@ func (r *sysIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 type sysTableDefaultPlan struct{}
 
 func (r *sysTableDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Iterate all rows of table \"__Table\"\n")
 }
 
 func (r *sysTableDefaultPlan) filterUsingIndex(expr expression) (plan, error) { return nil, nil }
@@ -817,7 +838,7 @@ type tableDefaultPlan struct {
 }
 
 func (r *tableDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Iterate all rows of table %s\n%iOutput field names %v%u\n", r.t.name, qnames(r.fields))
 }
 
 func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -885,30 +906,35 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 					case eq:
 						return &indexEqPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.name,
 							ix.x,
 							rval,
 						}, nil
 					case '<':
 						return &indexLtPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.name,
 							ix.x,
 							rval,
 						}, nil
 					case le:
 						return &indexLePlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.name,
 							ix.x,
 							rval,
 						}, nil
 					case ge:
 						return &indexGePlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.name,
 							ix.x,
 							rval,
 						}, nil
 					case '>':
 						return &indexGtPlan{
 							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.name,
 							ix.x,
 							rval,
 						}, nil
@@ -947,6 +973,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 
 			return &indexBoolPlan{
 				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
 				ix.x,
 			}, nil
 		}
@@ -991,8 +1018,16 @@ func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
 
 type indexEqPlan struct { // column == val
 	tableDefaultPlan
+	xn  string
 	x   btreeIndex
 	val interface{}
+}
+
+func (r *indexEqPlan) explain(w strutil.Formatter) {
+	w.Format(
+		"Iterate all rows from table %q using index %q where the indexed value is %v\n%iOutput fieldNames %v%u\n",
+		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
+	)
 }
 
 func (r *indexEqPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1029,7 +1064,15 @@ func (r *indexEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 
 type indexBoolPlan struct { // column (of type bool)
 	tableDefaultPlan
-	x btreeIndex
+	xn string
+	x  btreeIndex
+}
+
+func (r *indexBoolPlan) explain(w strutil.Formatter) {
+	w.Format(
+		"Iterate all rows from table %q using index %q where the indexed value is true\n%iOutput fieldNames %v%u\n",
+		r.tableDefaultPlan.t.name, r.xn, qnames(r.fields),
+	)
 }
 
 func (r *indexBoolPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1066,8 +1109,16 @@ func (r *indexBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interface
 
 type indexGePlan struct { // column <= val
 	tableDefaultPlan
+	xn  string
 	x   btreeIndex
 	val interface{}
+}
+
+func (r *indexGePlan) explain(w strutil.Formatter) {
+	w.Format(
+		"Iterate all rows from table %q using index %q where the indexed value is >= %v\n%iOutput fieldNames %v%u\n",
+		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
+	)
 }
 
 func (r *indexGePlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1104,8 +1155,16 @@ func (r *indexGePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 
 type indexLePlan struct { // column <= val
 	tableDefaultPlan
+	xn  string
 	x   btreeIndex
 	val interface{}
+}
+
+func (r *indexLePlan) explain(w strutil.Formatter) {
+	w.Format(
+		"Iterate all rows from table %q using index %q where the indexed value is <= %v\n%iOutput fieldNames %v%u\n",
+		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
+	)
 }
 
 func (r *indexLePlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1158,8 +1217,16 @@ func (r *indexLePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 
 type indexGtPlan struct { // column > val
 	tableDefaultPlan
+	xn  string
 	x   btreeIndex
 	val interface{}
+}
+
+func (r *indexGtPlan) explain(w strutil.Formatter) {
+	w.Format(
+		"Iterate all rows from table %q using index %q where the indexed value is > %v\n%iOutput fieldNames %v%u\n",
+		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
+	)
 }
 
 func (r *indexGtPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1212,8 +1279,16 @@ func (r *indexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 
 type indexLtPlan struct { // column < val
 	tableDefaultPlan
+	xn  string
 	x   btreeIndex
 	val interface{}
+}
+
+func (r *indexLtPlan) explain(w strutil.Formatter) {
+	w.Format(
+		"Iterate all rows from table %q using index %q where the indexed value is < %v\n%iOutput fieldNames %v%u\n",
+		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
+	)
 }
 
 func (r *indexLtPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1286,7 +1361,12 @@ type leftJoinDefaultPlan struct {
 }
 
 func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Compute Cartesian product of%i\n")
+	for _, v := range r.rsets {
+		v.explain(w)
+	}
+	w.Format("%uExtend the product with all NULL rows from %s when no match for %v%i\n", r.names[len(r.names)-1], r.on)
+	w.Format("Output field names %v%u\n", qnames(r.fields))
 }
 
 func (r *leftJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1298,7 +1378,12 @@ type rightJoinDefaultPlan struct {
 }
 
 func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Compute Cartesian product of%i\n")
+	for _, v := range r.rsets {
+		v.explain(w)
+	}
+	w.Format("%uExtend the product with all NULL rows from all but %s when no match for %v%i\n", r.names[len(r.names)-1], r.on)
+	w.Format("Output field names %v%u\n", qnames(r.fields))
 }
 
 func (r *rightJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1310,7 +1395,13 @@ type fullJoinDefaultPlan struct {
 }
 
 func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	w.Format("Compute Cartesian product of%i\n")
+	for _, v := range r.rsets {
+		v.explain(w)
+	}
+	w.Format("%uExtend the product with all NULL rows from %s when no match for %v\n", r.names[len(r.names)-1], r.on)
+	w.Format("Extend the product with all NULL rows from all but %s when no match for %v%i\n", r.names[len(r.names)-1], r.on)
+	w.Format("Output field names %v%u\n", qnames(r.fields))
 }
 
 func (r *fullJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {

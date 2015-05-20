@@ -35,7 +35,6 @@ const (
 // must be held out of the implementing instance.
 var (
 	_ rset = (*distinctRset)(nil)
-	_ rset = (*explainStmt)(nil)
 	_ rset = (*groupByRset)(nil)
 	_ rset = (*joinRset)(nil)
 	_ rset = (*limitRset)(nil)
@@ -145,6 +144,27 @@ func (l List) String() string {
 		}
 	}
 	return b.String()
+}
+
+// IsExplainStmt reports whether l is a single EXPLAIN statment or a single EXPLAIN
+// statment enclosed in a transaction.
+func (l List) IsExplainStmt() bool {
+	switch len(l.l) {
+	case 1:
+		_, ok := l.l[0].(*explainStmt)
+		return ok
+	case 3:
+		if _, ok := l.l[0].(beginTransactionStmt); !ok {
+			return false
+		}
+		if _, ok := l.l[1].(*explainStmt); !ok {
+			return false
+		}
+		_, ok := l.l[2].(commitStmt)
+		return ok
+	default:
+		return false
+	}
 }
 
 type groupByRset struct {
@@ -432,12 +452,24 @@ type selectRset struct {
 }
 
 func (r *selectRset) plan(ctx *execCtx) (plan, error) {
+	if len(r.flds) == 0 {
+		return r.src, nil
+	}
+
+	m := map[string]struct{}{}
+	for _, v := range r.flds {
+		mentionedColumns0(v.expr, m)
+	}
+	for _, v := range r.src.fieldNames() {
+		delete(m, v)
+	}
+	for k := range m {
+		return nil, fmt.Errorf("unknown column %s", k)
+	}
+
 	p := &selectFieldsDefaultPlan{flds: append([]*fld(nil), r.flds...), src: r.src}
 	for _, v := range r.flds {
 		p.fields = append(p.fields, v.name)
-	}
-	if len(r.flds) == 0 {
-		p.fields = r.src.fieldNames()
 	}
 	return p, nil
 }
