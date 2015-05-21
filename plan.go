@@ -1421,7 +1421,7 @@ func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
 			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
 		}
 	}
-	w.Format("Extend the product with all NULL rows from all but %s when no match for %v%n\n", r.names[len(r.names)-1], r.on)
+	w.Format("Extend the product with all NULL rows from all but %s when no match for %v%u\n", r.names[len(r.names)-1], r.on)
 	w.Format("└Output field names %v\n", qnames(r.fields))
 }
 

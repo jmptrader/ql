@@ -4904,10 +4904,10 @@
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table department
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID%!n(MISSING)
-│   └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
-│   ┌Order by employee.LastName,
-│   └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
+│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+└Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
+┌Order by employee.LastName,
+└Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 
 ---- 874
 ┌Compute Cartesian product of
@@ -4915,10 +4915,10 @@
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table department
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID%!n(MISSING)
-│   └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
-│   ┌Order by employee.LastName,
-│   └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
+│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+└Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
+┌Order by employee.LastName,
+└Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 
 ---- 875
 ┌Compute Cartesian product of
@@ -4966,10 +4966,10 @@
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table b
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from all but b when no match for a.i == b.i%!n(MISSING)
-│   └Output field names ["a.i" "a.s" "b.i" "b.s"]
-│   ┌Order by a.s, a.i, b.s, b.i,
-│   └Output field names ["a.i" "a.s" "b.i" "b.s"]
+│   Extend the product with all NULL rows from all but b when no match for a.i == b.i
+└Output field names ["a.i" "a.s" "b.i" "b.s"]
+┌Order by a.s, a.i, b.s, b.i,
+└Output field names ["a.i" "a.s" "b.i" "b.s"]
 
 ---- 880
 ┌Compute Cartesian product of
@@ -4988,10 +4988,10 @@
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table a
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from all but a when no match for a.i == b.i%!n(MISSING)
-│   └Output field names ["b.i" "b.s" "a.i" "a.s"]
-│   ┌Order by a.s, a.i, b.s, b.i,
-│   └Output field names ["b.i" "b.s" "a.i" "a.s"]
+│   Extend the product with all NULL rows from all but a when no match for a.i == b.i
+└Output field names ["b.i" "b.s" "a.i" "a.s"]
+┌Order by a.s, a.i, b.s, b.i,
+└Output field names ["b.i" "b.s" "a.i" "a.s"]
 
 ---- 882
 ┌Compute Cartesian product of
@@ -5062,10 +5062,10 @@
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table department
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID%!n(MISSING)
-│   └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
-│   ┌Order by t.s, employee.LastName,
-│   └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
+│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+└Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
+┌Order by t.s, employee.LastName,
+└Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 
 ---- 888
 ┌Compute Cartesian product of
