@@ -1050,7 +1050,7 @@ type indexEqPlan struct { // column == val
 
 func (r *indexEqPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows from table %q using index %q where the indexed value is %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is %v\n└Output fieldNames %v\n",
 		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
 	)
 }
@@ -1095,7 +1095,7 @@ type indexBoolPlan struct { // column (of type bool)
 
 func (r *indexBoolPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows from table %q using index %q where the indexed value is true\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is true\n└Output fieldNames %v\n",
 		r.tableDefaultPlan.t.name, r.xn, qnames(r.fields),
 	)
 }
@@ -1141,7 +1141,7 @@ type indexGePlan struct { // column <= val
 
 func (r *indexGePlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows from table %q using index %q where the indexed value is >= %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is >= %v\n└Output fieldNames %v\n",
 		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
 	)
 }
@@ -1187,7 +1187,7 @@ type indexLePlan struct { // column <= val
 
 func (r *indexLePlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows from table %q using index %q where the indexed value is <= %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is <= %v\n└Output fieldNames %v\n",
 		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
 	)
 }
@@ -1249,7 +1249,7 @@ type indexGtPlan struct { // column > val
 
 func (r *indexGtPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows from table %q using index %q where the indexed value is > %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows on table %q using index %q where the indexed value is > %v\n└Output fieldNames %v\n",
 		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
 	)
 }
@@ -1311,7 +1311,7 @@ type indexLtPlan struct { // column < val
 
 func (r *indexLtPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows from table %q using index %q where the indexed value is < %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is < %v\n└Output fieldNames %v\n",
 		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
 	)
 }
@@ -1397,7 +1397,7 @@ func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
 			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
 		}
 	}
-	w.Format("Extend the product with all NULL rows from %s when no match for %v%u\n", r.names[len(r.names)-1], r.on)
+	w.Format("Extend the product with all NULL rows of %q when no match for %v%u\n", r.names[len(r.names)-1], r.on)
 	w.Format("└Output field names %v\n", qnames(r.fields))
 }
 
@@ -1421,7 +1421,7 @@ func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
 			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
 		}
 	}
-	w.Format("Extend the product with all NULL rows from all but %s when no match for %v%u\n", r.names[len(r.names)-1], r.on)
+	w.Format("Extend the product with all NULL rows of all but %q when no match for %v%u\n", r.names[len(r.names)-1], r.on)
 	w.Format("└Output field names %v\n", qnames(r.fields))
 }
 
@@ -1445,8 +1445,8 @@ func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
 			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
 		}
 	}
-	w.Format("Extend the product with all NULL rows from %s when no match for %v\n", r.names[len(r.names)-1], r.on)
-	w.Format("Extend the product with all NULL rows from all but %s when no match for %v%u\n", r.names[len(r.names)-1], r.on)
+	w.Format("Extend the product with all NULL rows of %q when no match for %v\n", r.names[len(r.names)-1], r.on)
+	w.Format("Extend the product with all NULL rows of all but %q when no match for %v%u\n", r.names[len(r.names)-1], r.on)
 	w.Format("└Output field names %v\n", qnames(r.fields))
 }
 

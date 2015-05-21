@@ -3610,7 +3610,7 @@ SELECT i FROM t AS u;
 
 ---- 578
 SELECT i FROM t WHERE b ORDER BY i;
-┌Iterate all rows from table "t" using index "x" where the indexed value is true
+┌Iterate all rows of table "t" using index "x" where the indexed value is true
 └Output fieldNames ["i" "b"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
@@ -3633,7 +3633,7 @@ SELECT i FROM t WHERE i < 30;
 
 ---- 582
 SELECT i FROM t WHERE i < 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
@@ -3647,7 +3647,7 @@ SELECT * FROM t WHERE i <= 30;
 
 ---- 584
 SELECT * FROM t WHERE i <= 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
 └Output fieldNames ["i"]
 
 ---- 585
@@ -3661,7 +3661,7 @@ SELECT i FROM t WHERE i == 30;
 
 ---- 586
 SELECT i FROM t WHERE i == 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
@@ -3675,7 +3675,7 @@ SELECT * FROM t WHERE i >= 30;
 
 ---- 588
 SELECT * FROM t WHERE i >= 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is >= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
 └Output fieldNames ["i"]
 
 ---- 589
@@ -3687,7 +3687,7 @@ SELECT * FROM t WHERE i > 30;
 
 ---- 590
 SELECT * FROM t WHERE i > 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is > 30
+┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
 └Output fieldNames ["i"]
 
 ---- 591
@@ -3714,89 +3714,89 @@ SELECT i FROM t WHERE !b ORDER BY i;
 
 ---- 593
 SELECT i FROM t WHERE i < $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 
 ---- 594
 SELECT * FROM t WHERE i <= $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
 └Output fieldNames ["i"]
 
 ---- 595
 SELECT i FROM t WHERE i == $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 
 ---- 596
 SELECT * FROM t WHERE i >= $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is >= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
 └Output fieldNames ["i"]
 
 ---- 597
 SELECT * FROM t WHERE i > $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is > 30
+┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
 └Output fieldNames ["i"]
 
 ---- 598
 SELECT i FROM t WHERE i < $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 
 ---- 599
 SELECT * FROM t WHERE i <= $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
 └Output fieldNames ["i"]
 
 ---- 600
 SELECT i FROM t WHERE i == $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 
 ---- 601
 SELECT * FROM t WHERE i >= $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is >= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
 └Output fieldNames ["i"]
 
 ---- 602
 SELECT * FROM t WHERE i > $1;
-┌Iterate all rows from table "t" using index "x" where the indexed value is > 30
+┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
 └Output fieldNames ["i"]
 
 ---- 603
 SELECT i FROM t WHERE i < 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 
 ---- 604
 SELECT * FROM t WHERE i <= 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
 └Output fieldNames ["i"]
 
 ---- 605
 SELECT i FROM t WHERE i == 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 
 ---- 606
 SELECT * FROM t WHERE i >= 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is >= 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
 └Output fieldNames ["i"]
 
 ---- 607
 SELECT * FROM t WHERE i > 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is > 30
+┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
 └Output fieldNames ["i"]
 
 ---- 608
@@ -3808,7 +3808,7 @@ SELECT * FROM t WHERE i < 30;
 
 ---- 609
 SELECT * FROM t WHERE i < 30;
-┌Iterate all rows from table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
 
 ---- 624
@@ -3916,7 +3916,7 @@ SELECT * FROM t WHERE s == "test";
 
 ---- 637
 SELECT * FROM t WHERE s == "test";
-┌Iterate all rows from table "t" using index "idx_s" where the indexed value is test
+┌Iterate all rows of table "t" using index "idx_s" where the indexed value is test
 └Output fieldNames ["i" "s"]
 
 ---- 638
@@ -3963,7 +3963,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ---- 643
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows from table "t" using index "xk" where the indexed value is < 7
+│   ┌Iterate all rows of table "t" using index "xk" where the indexed value is < 7
 │   └Output fieldNames ["i" "j" "k"]
 │   ┌Iterate all rows of table "u"
 │   └Output field names ["x" "y" "z"]
@@ -3976,7 +3976,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
 │   ┌Iterate all rows of table "t"
 │   └Output field names ["i" "j" "k"]
-│   ┌Iterate all rows from table "u" using index "xy" where the indexed value is < 60
+│   ┌Iterate all rows of table "u" using index "xy" where the indexed value is < 60
 │   └Output fieldNames ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on t.k < 7
@@ -3985,9 +3985,9 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ---- 645
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows from table "t" using index "xk" where the indexed value is < 7
+│   ┌Iterate all rows of table "t" using index "xk" where the indexed value is < 7
 │   └Output fieldNames ["i" "j" "k"]
-│   ┌Iterate all rows from table "u" using index "xy" where the indexed value is < 60
+│   ┌Iterate all rows of table "u" using index "xy" where the indexed value is < 60
 │   └Output fieldNames ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
@@ -4672,7 +4672,7 @@ SELECT s FROM t WHERE s != "z";
 
 ---- 717
 SELECT s FROM t WHERE s < "z";
-┌Iterate all rows from table "t" using index "x" where the indexed value is < z
+┌Iterate all rows of table "t" using index "x" where the indexed value is < z
 └Output fieldNames ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
@@ -4769,7 +4769,7 @@ SELECT id() IN (SELECT id() FROM t WHERE username == "xiaolunwen";), username ==
 
 ---- 734
 SELECT user, remain, total FROM no_id_user WHERE user == "xlw" LIMIT 1;
-┌Iterate all rows from table "no_id_user" using index "UQE_no_id_user_user" where the indexed value is xlw
+┌Iterate all rows of table "no_id_user" using index "UQE_no_id_user_user" where the indexed value is xlw
 └Output fieldNames ["user" "remain" "total"]
 ┌Evaluate user as "user", remain as "remain", total as "total",
 └Output field names ["user" "remain" "total"]
@@ -4785,39 +4785,39 @@ SELECT * FROM t WHERE id() < 4;
 
 ---- 736
 SELECT * FROM t WHERE i < 4;
-┌Iterate all rows from table "t" using index "x" where the indexed value is < 4
+┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
 └Output fieldNames ["i"]
 
 ---- 737
 SELECT * FROM t WHERE i <= 4;
-┌Iterate all rows from table "t" using index "x" where the indexed value is <= 4
+┌Iterate all rows of table "t" using index "x" where the indexed value is <= 4
 └Output fieldNames ["i"]
 
 ---- 738
 SELECT * FROM t WHERE i == 4;
-┌Iterate all rows from table "t" using index "x" where the indexed value is 4
+┌Iterate all rows of table "t" using index "x" where the indexed value is 4
 └Output fieldNames ["i"]
 
 ---- 739
 SELECT * FROM t WHERE i >= 4;
-┌Iterate all rows from table "t" using index "x" where the indexed value is >= 4
+┌Iterate all rows of table "t" using index "x" where the indexed value is >= 4
 └Output fieldNames ["i"]
 
 ---- 740
 SELECT * FROM t WHERE i > 4;
-┌Iterate all rows from table "t" using index "x" where the indexed value is > 4
+┌Iterate all rows on table "t" using index "x" where the indexed value is > 4
 └Output fieldNames ["i"]
 
 ---- 741
 SELECT * FROM (SELECT i FROM t WHERE i < 4;) AS t, (SELECT * FROM u WHERE i < 40;) AS u;
 ┌Compute Cartesian product of
 │   ┌Iterate all rows of virtual table "t"
-│   │   ┌Iterate all rows from table "t" using index "x" where the indexed value is < 4
+│   │   ┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
 │   │   └Output fieldNames ["i"]
 │   │   ┌Evaluate i as "i",
 │   │   └Output field names ["i"]
 │   └Output field names ["i"]
-│   ┌Iterate all rows from table "u" using index "y" where the indexed value is < 40
+│   ┌Iterate all rows of table "u" using index "y" where the indexed value is < 40
 │   └Output fieldNames ["i"]
 └Output field names ["t.i" "u.i"]
 
@@ -5608,7 +5608,7 @@ SELECT * FROM employee LEFT OUTER JOIN department ON employee.DepartmentID == de
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName,
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5620,7 +5620,7 @@ SELECT * FROM employee LEFT OUTER JOIN department ON employee.DepartmentID == de
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName,
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5632,7 +5632,7 @@ SELECT * FROM employee RIGHT OUTER JOIN department ON employee.DepartmentID == d
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName,
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5644,7 +5644,7 @@ SELECT * FROM employee RIGHT OUTER JOIN department ON employee.DepartmentID == d
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName,
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5656,8 +5656,8 @@ SELECT * FROM employee FULL OUTER JOIN department ON employee.DepartmentID == no
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == none
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == none
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == none
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == none
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 
 ---- 876
@@ -5667,8 +5667,8 @@ SELECT * FROM employee FULL OUTER JOIN department ON employee.DepartmentID == no
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == none
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == none
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == none
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == none
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 
 ---- 877
@@ -5678,7 +5678,7 @@ SELECT * FROM t1 LEFT OUTER JOIN t2 ON t1.s1 == t2.s1;
 │   └Output field names ["s1"]
 │   ┌Iterate all rows of table "t2"
 │   └Output field names ["s1"]
-│   Extend the product with all NULL rows from t2 when no match for t1.s1 == t2.s1
+│   Extend the product with all NULL rows of "t2" when no match for t1.s1 == t2.s1
 └Output field names ["t1.s1" "t2.s1"]
 
 ---- 878
@@ -5688,7 +5688,7 @@ SELECT * FROM a LEFT OUTER JOIN b ON a.i == b.i ORDER BY a.s, a.i, b.s, b.i;
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from b when no match for a.i == b.i
+│   Extend the product with all NULL rows of "b" when no match for a.i == b.i
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
 ┌Order by a.s, a.i, b.s, b.i,
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
@@ -5700,7 +5700,7 @@ SELECT * FROM a RIGHT OUTER JOIN b ON a.i == b.i ORDER BY a.s, a.i, b.s, b.i;
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from all but b when no match for a.i == b.i
+│   Extend the product with all NULL rows of all but "b" when no match for a.i == b.i
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
 ┌Order by a.s, a.i, b.s, b.i,
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
@@ -5712,7 +5712,7 @@ SELECT * FROM b LEFT OUTER JOIN a ON a.i == b.i ORDER BY a.s, a.i, b.s, b.i;
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from a when no match for a.i == b.i
+│   Extend the product with all NULL rows of "a" when no match for a.i == b.i
 └Output field names ["b.i" "b.s" "a.i" "a.s"]
 ┌Order by a.s, a.i, b.s, b.i,
 └Output field names ["b.i" "b.s" "a.i" "a.s"]
@@ -5724,7 +5724,7 @@ SELECT * FROM b RIGHT OUTER JOIN a ON a.i == b.i ORDER BY a.s, a.i, b.s, b.i;
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from all but a when no match for a.i == b.i
+│   Extend the product with all NULL rows of all but "a" when no match for a.i == b.i
 └Output field names ["b.i" "b.s" "a.i" "a.s"]
 ┌Order by a.s, a.i, b.s, b.i,
 └Output field names ["b.i" "b.s" "a.i" "a.s"]
@@ -5736,8 +5736,8 @@ SELECT * FROM a FULL OUTER JOIN b ON a.i == b.i ORDER BY a.s, a.i, b.s, b.i;
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from b when no match for a.i == b.i
-│   Extend the product with all NULL rows from all but b when no match for a.i == b.i
+│   Extend the product with all NULL rows of "b" when no match for a.i == b.i
+│   Extend the product with all NULL rows of all but "b" when no match for a.i == b.i
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
 ┌Order by a.s, a.i, b.s, b.i,
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
@@ -5749,8 +5749,8 @@ SELECT * FROM a FULL OUTER JOIN b ON a.i == b.i ORDER BY a.s, a.i, b.s, b.i;
 │   └Output field names ["i" "s"]
 │   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
-│   Extend the product with all NULL rows from b when no match for a.i == b.i
-│   Extend the product with all NULL rows from all but b when no match for a.i == b.i
+│   Extend the product with all NULL rows of "b" when no match for a.i == b.i
+│   Extend the product with all NULL rows of all but "b" when no match for a.i == b.i
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
 ┌Order by a.s, a.i, b.s, b.i,
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
@@ -5762,8 +5762,8 @@ SELECT * FROM employee FULL OUTER JOIN department ON employee.DepartmentID == de
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName,
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5775,8 +5775,8 @@ SELECT * FROM employee FULL OUTER JOIN department ON employee.DepartmentID == de
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName,
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5790,7 +5790,7 @@ SELECT * FROM t,employee LEFT OUTER JOIN department ON employee.DepartmentID == 
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by t.s, employee.LastName,
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5804,7 +5804,7 @@ SELECT * FROM t,employee RIGHT OUTER JOIN department ON employee.DepartmentID ==
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by t.s, employee.LastName,
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5818,8 +5818,8 @@ SELECT * FROM t,employee FULL OUTER JOIN department ON employee.DepartmentID == 
 │   └Output field names ["LastName" "DepartmentID"]
 │   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
-│   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
-│   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of "department" when no match for employee.DepartmentID == department.DepartmentID
+│   Extend the product with all NULL rows of all but "department" when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by t.s, employee.LastName,
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5849,7 +5849,7 @@ SELECT __Column.TableName, __Column.Ordinal, __Column.Name, __Column.Type, __Col
 │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
 │   ┌Iterate all rows of table "__Column2"
 │   └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
-│   Extend the product with all NULL rows from __Column2 when no match for __Column.TableName == __Column2.TableName && __Column.Name == __Column2.Name
+│   Extend the product with all NULL rows of "__Column2" when no match for __Column.TableName == __Column2.TableName && __Column.Name == __Column2.Name
 └Output field names ["__Column.TableName" "__Column.Ordinal" "__Column.Name" "__Column.Type" "__Column2.TableName" "__Column2.Name" "__Column2.NotNull" "__Column2.ConstraintExpr" "__Column2.DefaultExpr"]
 ┌Filter on !hasPrefix(__Column.TableName, "__")
 └Output field names ["__Column.TableName" "__Column.Ordinal" "__Column.Name" "__Column.Type" "__Column2.TableName" "__Column2.Name" "__Column2.NotNull" "__Column2.ConstraintExpr" "__Column2.DefaultExpr"]
@@ -6248,7 +6248,7 @@ SELECT Expr FROM __Index2_Expr WHERE Index2_ID IN (SELECT id() FROM __Index2 WHE
 
 ---- 938
 SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 || Root == -1 FROM __Index2 WHERE TableName == "t";
-┌Iterate all rows from table "__Index2" using index "__xIndex2_TableName" where the indexed value is t
+┌Iterate all rows of table "__Index2" using index "__xIndex2_TableName" where the indexed value is t
 └Output fieldNames ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Evaluate TableName as "TableName", IndexName as "IndexName", IsUnique as "IsUnique", IsSimple as "IsSimple", Root > 0 || Root == -1 as "",
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]

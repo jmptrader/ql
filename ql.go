@@ -6,8 +6,6 @@
 //LATER profile cpu
 //LATER coverage
 
-//MAYBE CROSSJOIN (explicit form), LEFT JOIN, INNER JOIN, OUTER JOIN equivalents.
-
 package ql
 
 import (
@@ -375,6 +373,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			return nil, nil, nil
 		case *pIn:
 			//TODO optimize
+			//TODO show plan
 			return nil, nil, nil
 		case *unaryOperation:
 			//TODO optimize
