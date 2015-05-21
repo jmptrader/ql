@@ -171,8 +171,20 @@ type groupByRset struct {
 }
 
 func (r *groupByRset) plan(ctx *execCtx) (plan, error) {
-	//TODO detect non existing columns early (#271)
-	return &groupByDefaultPlan{colNames: r.colNames, src: r.src, fields: r.src.fieldNames()}, nil
+	fields := r.src.fieldNames()
+	for _, v := range r.colNames {
+		found := false
+		for _, v2 := range fields {
+			if v == v2 {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return nil, fmt.Errorf("unknown column %s", v)
+		}
+	}
+	return &groupByDefaultPlan{colNames: r.colNames, src: r.src, fields: fields}, nil
 }
 
 // TCtx represents transaction context. It enables to execute multiple
