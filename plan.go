@@ -264,7 +264,7 @@ func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
 	switch {
 	case len(r.colNames) == 0:
-		w.Format("┌Compute distinct rows")
+		w.Format("┌Group by distinct rows")
 	default:
 		w.Format("┌Group by")
 		for _, v := range r.colNames {
@@ -313,7 +313,7 @@ func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 
 		gcols = append(gcols, &col{name: c, index: i})
 	}
-	k := make([]interface{}, len(r.colNames)) //LATER optimize when len(r.cols) == 0
+	k := make([]interface{}, len(r.colNames)) //TODO optimize when len(r.cols) == 0
 	if err = r.src.do(ctx, func(rid interface{}, in []interface{}) (more bool, err error) {
 		infer(in, &cols)
 		for i, c := range gcols {
