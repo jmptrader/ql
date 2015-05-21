@@ -1,91 +1,91 @@
 ---- 0
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2" "c3"]
 
 ---- 3
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2" "c3" "c4"]
 
 ---- 8
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c3"]
 
 ---- 15
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 
 ---- 19
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2" "c3" "c4"]
 
 ---- 20
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2" "c4"]
 
 ---- 22
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 24
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 
 ---- 28
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Evaluate 3 * c1 as "v",
 └Output field names ["v"]
 
 ---- 29
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Evaluate c2 as "c2",
 └Output field names ["c2"]
 
 ---- 30
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Evaluate c1 as "X", c2 as "c2",
 └Output field names ["X" "c2"]
 
 ---- 31
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Evaluate c2 as "c2", c1 as "Y",
 └Output field names ["c2" "Y"]
 
 ---- 33
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Filter on c1 == 1
 └Output field names ["c1" "c2"]
 
 ---- 34
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Order by c3,
 └Output field names ["c1" "c2"]
 
 ---- 35
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Order by c1,
 └Output field names ["c1" "c2"]
 
 ---- 36
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Order by c1,
 └Output field names ["c1" "c2"]
 
 ---- 37
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Order descending by c1,
 └Output field names ["c1" "c2"]
 
 ---- 38
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Filter on c1 % 2 == 0
 └Output field names ["c1" "c2"]
@@ -93,22 +93,22 @@
 └Output field names ["c1" "c2"]
 
 ---- 39
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Order by c1, c2,
 └Output field names ["c1" "c2"]
 
 ---- 40
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Order by c2, c1,
 └Output field names ["c1" "c2"]
 
 ---- 44
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Evaluate employee.LastName as "employee.LastName",
@@ -116,9 +116,9 @@
 
 ---- 45
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName,
@@ -126,9 +126,9 @@
 
 ---- 46
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on employee.DepartmentID == department.DepartmentID
@@ -136,9 +136,9 @@
 
 ---- 47
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on employee.DepartmentID == department.DepartmentID
@@ -150,9 +150,9 @@
 
 ---- 48
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentName IN ("Sales","Engineering","HR","Clerical")
@@ -164,9 +164,9 @@
 
 ---- 49
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on (department.DepartmentID + 1000) IN (1031,1035,1036)
@@ -178,9 +178,9 @@
 
 ---- 50
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentName NOT IN ("Engineering","HR","Clerical")
@@ -190,9 +190,9 @@
 
 ---- 51
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentID >= 34 && department.DepartmentID <= 36
@@ -204,9 +204,9 @@
 
 ---- 52
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentID >= 34 && department.DepartmentID <= 36
@@ -218,9 +218,9 @@
 
 ---- 53
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentID < 33 || department.DepartmentID > 34
@@ -231,7 +231,7 @@
 └Output field names ["department.DepartmentName" "department.DepartmentID" "employee.LastName" "employee.DepartmentID"]
 
 ---- 56
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "a", LastName as "b",
 └Output field names ["a" "b"]
@@ -240,9 +240,9 @@
 
 ---- 57
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on employee.DepartmentID == department.DepartmentID
@@ -253,25 +253,25 @@
 └Output field names ["name" "id" "department" "id2"]
 
 ---- 59
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 60
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 65
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 66
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "Name",
 └Output field names ["Name"]
@@ -279,7 +279,7 @@
 └Output field names ["Name"]
 
 ---- 68
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "name",
 └Output field names ["name"]
@@ -289,7 +289,7 @@
 └Output field names ["Name"]
 
 ---- 69
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "name",
 └Output field names ["name"]
@@ -300,9 +300,9 @@
 
 ---- 70
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on employee.DepartmentID == department.DepartmentID
@@ -314,9 +314,9 @@
 
 ---- 71
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -328,9 +328,9 @@
 
 ---- 72
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -342,9 +342,9 @@
 
 ---- 73
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -358,17 +358,17 @@
 
 ---- 74
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["" "" "" ""]
 
 ---- 75
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "" ""]
 ┌Order by e.LastName, e.DepartmentID,
@@ -376,9 +376,9 @@
 
 ---- 76
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["" "" "d.DepartmentID" "d.DepartmentName"]
 ┌Order descending by d.DepartmentID,
@@ -386,9 +386,9 @@
 
 ---- 77
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "" ""]
 ┌Order by employee.LastName,
@@ -396,9 +396,9 @@
 
 ---- 78
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -408,9 +408,9 @@
 
 ---- 79
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on employee.DepartmentID == d.DepartmentID
@@ -420,9 +420,9 @@
 
 ---- 80
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -432,9 +432,9 @@
 
 ---- 81
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -444,9 +444,9 @@
 
 ---- 82
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -455,261 +455,261 @@
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 
 ---- 84
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 87
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 88
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 92
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 94
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 95
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 96
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 98
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 102
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 104
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 106
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 107
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 109
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 110
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 111
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 112
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 113
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 115
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 116
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 118
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 119
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 > 3
 └Output field names ["c1"]
 
 ---- 120
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1
 └Output field names ["c1"]
 
 ---- 122
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 123
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 124
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 125
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 126
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 127
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 128
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 129
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 130
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 131
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 132
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 133
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 134
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 135
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 136
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 137
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
 └Output field names ["c1"]
 
 ---- 138
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 139
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
 └Output field names ["c1"]
 
 ---- 140
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
 └Output field names ["c1"]
 
 ---- 141
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
 └Output field names ["c1"]
 
 ---- 142
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
 └Output field names ["c1"]
 
 ---- 143
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == "foo"
 └Output field names ["c1"]
 
 ---- 144
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2+5i
 └Output field names ["c1"]
 
 ---- 145
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == "2"
 └Output field names ["c1"]
 
 ---- 146
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2+5i
 └Output field names ["c1"]
 
 ---- 147
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
 └Output field names ["c1"]
 
 ---- 148
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == "foo"
 └Output field names ["c1"]
 
 ---- 153
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate 314 as "", 42 as "AUQLUE", DepartmentID as "DepartmentID", DepartmentID + 1000 as "", LastName as "Name",
 └Output field names ["" "AUQLUE" "DepartmentID" "" "Name"]
@@ -718,9 +718,9 @@
 
 ---- 154
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "" ""]
 ┌Order by e.LastName,
@@ -728,40 +728,40 @@
 
 ---- 155
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Order by e.LastName,
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 
 ---- 157
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c1"]
 
 ---- 158
-┌Iterate all rows of table p
+┌Iterate all rows of table "p"
 └Output field names ["p"]
 
 ---- 159
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table p
+│   ┌Iterate all rows of table "p"
 │   └Output field names ["p"]
-│   ┌Iterate all rows of table p
+│   ┌Iterate all rows of table "p"
 │   └Output field names ["p"]
 └Output field names ["p.p" "q.p"]
 ┌Evaluate p.p as "p", q.p as "q", p.p || q.p as "p_or_q", p.p && q.p as "p_and_q",
 └Output field names ["p" "q" "p_or_q" "p_and_q"]
 
 ---- 160
-┌Iterate all rows of table p
+┌Iterate all rows of table "p"
 └Output field names ["p"]
 ┌Evaluate p as "p", !p as "not_p",
 └Output field names ["p" "not_p"]
 
 ---- 161
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Filter on DepartmentID >= 33
 └Output field names ["DepartmentID" "DepartmentName"]
@@ -769,7 +769,7 @@
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 162
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Filter on DepartmentID <= 34
 └Output field names ["DepartmentID" "DepartmentName"]
@@ -777,7 +777,7 @@
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 163
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Filter on DepartmentID < 34
 └Output field names ["DepartmentID" "DepartmentName"]
@@ -785,25 +785,25 @@
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 164
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "DepartmentID",
 └Output field names ["DepartmentID"]
 
 ---- 165
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 166
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 167
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate 1023 + DepartmentID as "y",
 └Output field names ["y"]
@@ -811,7 +811,7 @@
 └Output field names ["y"]
 
 ---- 168
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "y",
 └Output field names ["y"]
@@ -819,25 +819,25 @@
 └Output field names ["y"]
 
 ---- 169
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by DepartmentID, LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 170
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by 0 + DepartmentID,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 171
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by DepartmentID,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 172
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate ^DepartmentID as "y",
 └Output field names ["y"]
@@ -845,7 +845,7 @@
 └Output field names ["y"]
 
 ---- 173
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate ^uint8(DepartmentID) as "y",
 └Output field names ["y"]
@@ -853,13 +853,13 @@
 └Output field names ["y"]
 
 ---- 174
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["r"]
 ┌Order by r,
 └Output field names ["r"]
 
 ---- 175
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate i ^ 1 as "y",
 └Output field names ["y"]
@@ -867,7 +867,7 @@
 └Output field names ["y"]
 
 ---- 176
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate i | 1 as "y",
 └Output field names ["y"]
@@ -875,13 +875,13 @@
 └Output field names ["y"]
 
 ---- 177
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate i & 1 as "",
 └Output field names [""]
 
 ---- 178
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate i &^ 1 as "y",
 └Output field names ["y"]
@@ -889,7 +889,7 @@
 └Output field names ["y"]
 
 ---- 179
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on LastName == "Jones" || DepartmentID IS NULL
 └Output field names ["LastName" "DepartmentID"]
@@ -897,7 +897,7 @@
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 180
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on LastName != "Jones" && DepartmentID IS NOT NULL
 └Output field names ["LastName" "DepartmentID"]
@@ -905,25 +905,25 @@
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 185
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID[0] as "",
 └Output field names [""]
 
 ---- 186
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate "foo"[-DepartmentID] as "",
 └Output field names [""]
 
 ---- 187
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName[100] as "",
 └Output field names [""]
 
 ---- 188
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName[0] as "", LastName as "LastName",
 └Output field names ["" "LastName"]
@@ -931,7 +931,7 @@
 └Output field names ["" "LastName"]
 
 ---- 189
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "LastName", string(LastName[0]) as "", string(LastName[1]) as "", string(LastName[2]) as "", string(LastName[3]) as "",
 └Output field names ["LastName" "" "" "" ""]
@@ -939,7 +939,7 @@
 └Output field names ["LastName" "" "" "" ""]
 
 ---- 190
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "LastName", LastName[:] as "", LastName[:2] as "", LastName[2:] as "", LastName[1:3] as "",
 └Output field names ["LastName" "" "" "" ""]
@@ -947,7 +947,7 @@
 └Output field names ["LastName" "" "" "" ""]
 
 ---- 191
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on department IS NULL
 └Output field names ["LastName" "DepartmentID"]
@@ -955,7 +955,7 @@
 └Output field names ["LastName"]
 
 ---- 192
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "DepartmentID", LastName as "LastName", LastName[:4] as "", LastName[:0 * DepartmentID] as "", LastName[0 * DepartmentID:0] as "", LastName[0 * DepartmentID:0 * DepartmentID] as "",
 └Output field names ["DepartmentID" "LastName" "" "" "" ""]
@@ -963,7 +963,7 @@
 └Output field names ["DepartmentID" "LastName" "" "" "" ""]
 
 ---- 193
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on DepartmentID IS NOT NULL
 └Output field names ["LastName" "DepartmentID"]
@@ -973,7 +973,7 @@
 └Output field names ["x" "a" "b"]
 
 ---- 194
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on DepartmentID IS NOT NULL
 └Output field names ["LastName" "DepartmentID"]
@@ -983,7 +983,7 @@
 └Output field names ["x" "a" "b"]
 
 ---- 195
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on DepartmentID IS NOT NULL
 └Output field names ["LastName" "DepartmentID"]
@@ -994,9 +994,9 @@
 
 ---- 196
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -1008,9 +1008,9 @@
 
 ---- 197
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -1024,9 +1024,9 @@
 
 ---- 198
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Order by employee.LastName, department.DepartmentID,
@@ -1034,9 +1034,9 @@
 
 ---- 199
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on employee.DepartmentID == department.DepartmentID
@@ -1045,29 +1045,29 @@
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 
 ---- 200
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Order by DepartmentID,
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 201
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Order by DepartmentID,
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 202
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 203
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Order by DepartmentID,
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 204
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate id() as "", LastName as "LastName",
 └Output field names ["" "LastName"]
@@ -1075,7 +1075,7 @@
 └Output field names ["" "LastName"]
 
 ---- 205
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate id() as "", LastName as "LastName",
 └Output field names ["" "LastName"]
@@ -1083,7 +1083,7 @@
 └Output field names ["" "LastName"]
 
 ---- 206
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate id() as "", LastName as "LastName",
 └Output field names ["" "LastName"]
@@ -1092,9 +1092,9 @@
 
 ---- 207
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -1106,13 +1106,13 @@
 
 ---- 208
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "e"
-│   │   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of virtual table "e"
+│   │   ┌Iterate all rows of table "employee"
 │   │   └Output field names ["LastName" "DepartmentID"]
 │   │   ┌Evaluate id() as "ID", LastName as "LastName", DepartmentID as "DepartmentID",
 │   │   └Output field names ["ID" "LastName" "DepartmentID"]
 │   └Output field names ["ID" "LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["e.ID" "e.LastName" "e.DepartmentID" "d.DepartmentID" "d.DepartmentName"]
 ┌Filter on e.DepartmentID == d.DepartmentID
@@ -1123,51 +1123,51 @@
 └Output field names ["e.ID" "e.LastName" "e.DepartmentID" "d.DepartmentID"]
 
 ---- 209
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 210
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 211
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 212
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 213
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 214
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 215
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 216
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 217
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 223
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName[:len(LastName) - 3] as "y",
 └Output field names ["y"]
@@ -1175,7 +1175,7 @@
 └Output field names ["y"]
 
 ---- 224
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate complex(float32(DepartmentID + int64(id())), 0) as "x", complex(DepartmentID + int64(id()), 0) as "",
 └Output field names ["x" ""]
@@ -1183,7 +1183,7 @@
 └Output field names ["x" ""]
 
 ---- 225
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate real(complex(float32(DepartmentID + int64(id())), 0)) as "x", real(complex(DepartmentID + int64(id()), 0)) as "",
 └Output field names ["x" ""]
@@ -1191,7 +1191,7 @@
 └Output field names ["x" ""]
 
 ---- 226
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate imag(complex(0, float32(DepartmentID + int64(id())))) as "x", imag(complex(0, DepartmentID + int64(id()))) as "",
 └Output field names ["x" ""]
@@ -1199,50 +1199,50 @@
 └Output field names ["x" ""]
 
 ---- 227
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate 100 * id() as "", c as "c",
 └Output field names ["" "c"]
 
 ---- 229
-┌Iterate all rows of table b
+┌Iterate all rows of table "b"
 └Output field names ["b"]
 
 ---- 230
-┌Iterate all rows of table c
+┌Iterate all rows of table "c"
 └Output field names ["c"]
 
 ---- 231
-┌Iterate all rows of table a
+┌Iterate all rows of table "a"
 └Output field names ["a"]
 
 ---- 233
-┌Iterate all rows of table c
+┌Iterate all rows of table "c"
 └Output field names ["c"]
 
 ---- 234
-┌Iterate all rows of table a
+┌Iterate all rows of table "a"
 └Output field names ["a"]
 
 ---- 235
-┌Iterate all rows of table b
+┌Iterate all rows of table "b"
 └Output field names ["b"]
 
 ---- 237
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["c"]
-│   ┌Iterate all rows of table b
+│   ┌Iterate all rows of table "b"
 │   └Output field names ["d"]
 └Output field names ["a.c" "b.d"]
 
 ---- 238
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["c"]
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["c"]
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["c"]
 └Output field names ["x2.c" "x1.c" "x0.c"]
 ┌Evaluate 9 * x2.c as "x2", 3 * x1.c as "x1", 1 * x0.c as "x0", 9 * x2.c + 3 * x1.c + x0.c as "y",
@@ -1251,57 +1251,57 @@
 └Output field names ["x2" "x1" "x0" "y"]
 
 ---- 239
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 243
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 244
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 247
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 
 ---- 248
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate i == 4294967280 as "",
 └Output field names [""]
 
 ---- 249
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Evaluate id() == 1 && s == "a" || id() == 2 && s == "�" && s == "�" || id() == 3 && s == "ø" && s == "ø" && s == "ø" || id() == 4 && s == "日" && s == "日" && s == "日" as "",
 └Output field names [""]
 
 ---- 250
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate 3.3 as "", 3.3 as "",
 └Output field names ["" ""]
 
 ---- 252
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 253
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 255
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 257
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 260
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1309,7 +1309,7 @@
 └Output field names [""]
 
 ---- 261
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1317,7 +1317,7 @@
 └Output field names ["y"]
 
 ---- 262
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1325,7 +1325,7 @@
 └Output field names ["y"]
 
 ---- 263
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1333,7 +1333,7 @@
 └Output field names [""]
 
 ---- 264
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1341,7 +1341,7 @@
 └Output field names [""]
 
 ---- 265
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1349,7 +1349,7 @@
 └Output field names [""]
 
 ---- 266
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1357,7 +1357,7 @@
 └Output field names ["" ""]
 
 ---- 267
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1365,7 +1365,7 @@
 └Output field names ["" ""]
 
 ---- 268
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1373,7 +1373,7 @@
 └Output field names ["" ""]
 
 ---- 269
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1381,7 +1381,7 @@
 └Output field names [""]
 
 ---- 270
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1389,7 +1389,7 @@
 └Output field names [""]
 
 ---- 271
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by none,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1397,7 +1397,7 @@
 └Output field names ["DepartmentID"]
 
 ---- 272
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1407,7 +1407,7 @@
 └Output field names ["DepartmentID" "s"]
 
 ---- 273
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1417,7 +1417,7 @@
 └Output field names ["DepartmentID" "y"]
 
 ---- 274
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1427,7 +1427,7 @@
 └Output field names ["DepartmentID" "s"]
 
 ---- 275
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1435,7 +1435,7 @@
 └Output field names [""]
 
 ---- 276
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1443,7 +1443,7 @@
 └Output field names [""]
 
 ---- 277
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Select distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1451,7 +1451,7 @@
 └Output field names [""]
 
 ---- 278
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1459,7 +1459,7 @@
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 279
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1469,7 +1469,7 @@
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 280
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID, LastName,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1479,7 +1479,7 @@
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 281
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by LastName, DepartmentID,
 └Output fieldNames ["LastName" "DepartmentID"]
@@ -1489,11 +1489,11 @@
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 282
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 283
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Select distinct rows
 └Output fieldNames ["n"]
@@ -1501,7 +1501,7 @@
 └Output field names [""]
 
 ---- 284
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Select distinct rows
 └Output fieldNames ["n"]
@@ -1509,7 +1509,7 @@
 └Output field names [""]
 
 ---- 285
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 2
 └Output field names ["n"]
@@ -1519,7 +1519,7 @@
 └Output field names [""]
 
 ---- 286
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 1
 └Output field names ["n"]
@@ -1529,7 +1529,7 @@
 └Output field names [""]
 
 ---- 287
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 0
 └Output field names ["n"]
@@ -1539,7 +1539,7 @@
 └Output field names [""]
 
 ---- 288
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 2
 └Output field names ["n"]
@@ -1551,7 +1551,7 @@
 └Output field names [""]
 
 ---- 289
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 1
 └Output field names ["n"]
@@ -1563,7 +1563,7 @@
 └Output field names [""]
 
 ---- 290
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 0
 └Output field names ["n"]
@@ -1575,7 +1575,7 @@
 └Output field names [""]
 
 ---- 291
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 2
 └Output field names ["n"]
@@ -1585,7 +1585,7 @@
 └Output field names ["s"]
 
 ---- 292
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 1
 └Output field names ["n"]
@@ -1595,7 +1595,7 @@
 └Output field names ["s"]
 
 ---- 293
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 0
 └Output field names ["n"]
@@ -1605,7 +1605,7 @@
 └Output field names ["s"]
 
 ---- 294
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Select distinct rows
 └Output fieldNames ["n"]
@@ -1613,7 +1613,7 @@
 └Output field names [""]
 
 ---- 295
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Select distinct rows
 └Output fieldNames ["n"]
@@ -1621,7 +1621,7 @@
 └Output field names [""]
 
 ---- 296
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Select distinct rows
 └Output fieldNames ["n"]
@@ -1629,7 +1629,7 @@
 └Output field names [""]
 
 ---- 297
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["S"]
 ┌Select distinct rows
 └Output fieldNames ["S"]
@@ -1637,7 +1637,7 @@
 └Output field names [""]
 
 ---- 298
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["S"]
 ┌Select distinct rows
 └Output fieldNames ["S"]
@@ -1645,127 +1645,127 @@
 └Output field names [""]
 
 ---- 299
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 300
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 301
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 302
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 303
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate string(c) as "",
 └Output field names [""]
 
 ---- 304
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate string(c) as "",
 └Output field names [""]
 
 ---- 305
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate string(c) as "",
 └Output field names [""]
 
 ---- 306
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 307
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 308
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 309
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 310
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 311
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 312
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 313
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 314
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 315
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 316
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 317
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Evaluate i as "i", string(b) as "",
 └Output field names ["i" ""]
 
 ---- 318
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Evaluate i as "i", string(b) as "",
 └Output field names ["i" ""]
 
 ---- 319
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Evaluate i as "i", string(b) as "",
 └Output field names ["i" ""]
 
 ---- 320
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Evaluate i as "i", string(b) as "",
 └Output field names ["i" ""]
 
 ---- 321
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Evaluate i as "i", string(b) as "",
 └Output field names ["i" ""]
 
 ---- 322
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Evaluate i as "i", string(b) as "",
 └Output field names ["i" ""]
 
 ---- 323
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by true, c, false,
 └Output field names ["c"]
 
 ---- 324
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1773,13 +1773,13 @@
 └Output field names ["c" ""]
 
 ---- 325
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 42, c, 24,
 └Output field names ["c"]
 
 ---- 326
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1787,13 +1787,13 @@
 └Output field names ["c" ""]
 
 ---- 327
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 42, c, 24,
 └Output field names ["c"]
 
 ---- 328
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1801,7 +1801,7 @@
 └Output field names ["c" ""]
 
 ---- 329
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1809,11 +1809,11 @@
 └Output field names ["c" ""]
 
 ---- 330
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 
 ---- 331
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1821,7 +1821,7 @@
 └Output field names ["c" ""]
 
 ---- 332
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1829,13 +1829,13 @@
 └Output field names ["c" ""]
 
 ---- 334
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 335
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1843,13 +1843,13 @@
 └Output field names ["c" ""]
 
 ---- 337
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 338
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1857,13 +1857,13 @@
 └Output field names ["c" ""]
 
 ---- 339
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 340
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1871,13 +1871,13 @@
 └Output field names ["c" ""]
 
 ---- 341
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 342
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1885,13 +1885,13 @@
 └Output field names ["c" ""]
 
 ---- 343
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 344
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1899,13 +1899,13 @@
 └Output field names ["c" ""]
 
 ---- 345
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 346
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1913,13 +1913,13 @@
 └Output field names ["c" ""]
 
 ---- 347
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 348
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1927,13 +1927,13 @@
 └Output field names ["c" ""]
 
 ---- 349
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 350
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1941,13 +1941,13 @@
 └Output field names ["c" ""]
 
 ---- 351
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 352
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1955,13 +1955,13 @@
 └Output field names ["c" ""]
 
 ---- 353
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 354
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1969,13 +1969,13 @@
 └Output field names ["c" ""]
 
 ---- 355
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 356
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1983,13 +1983,13 @@
 └Output field names ["c" ""]
 
 ---- 357
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 358
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -1997,13 +1997,13 @@
 └Output field names ["c" ""]
 
 ---- 359
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 360
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -2011,13 +2011,13 @@
 └Output field names ["c" ""]
 
 ---- 361
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 362
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -2025,13 +2025,13 @@
 └Output field names ["c" ""]
 
 ---- 363
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 364
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -2039,13 +2039,13 @@
 └Output field names ["c" ""]
 
 ---- 365
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 366
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -2053,61 +2053,61 @@
 └Output field names ["c" ""]
 
 ---- 367
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 
 ---- 368
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 
 ---- 369
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 
 ---- 370
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 371
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 372
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 373
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 374
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 375
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 376
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 377
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 378
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 379
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 380
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -2115,7 +2115,7 @@
 └Output field names ["c" ""]
 
 ---- 381
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c > 100
 └Output field names ["c"]
@@ -2123,7 +2123,7 @@
 └Output field names ["c"]
 
 ---- 382
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c < 110
 └Output field names ["c"]
@@ -2131,7 +2131,7 @@
 └Output field names ["c"]
 
 ---- 383
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c <= 110
 └Output field names ["c"]
@@ -2139,7 +2139,7 @@
 └Output field names ["c"]
 
 ---- 384
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c >= 110
 └Output field names ["c"]
@@ -2147,7 +2147,7 @@
 └Output field names ["c"]
 
 ---- 385
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c != 110
 └Output field names ["c"]
@@ -2155,7 +2155,7 @@
 └Output field names ["c"]
 
 ---- 386
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c == 110
 └Output field names ["c"]
@@ -2163,7 +2163,7 @@
 └Output field names ["c"]
 
 ---- 387
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate (c + 1000) as "s",
 └Output field names ["s"]
@@ -2171,7 +2171,7 @@
 └Output field names ["s"]
 
 ---- 388
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate (1000 - c) as "s",
 └Output field names ["s"]
@@ -2179,7 +2179,7 @@
 └Output field names ["s"]
 
 ---- 389
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate (c >> 1) as "s",
 └Output field names ["s"]
@@ -2187,7 +2187,7 @@
 └Output field names ["s"]
 
 ---- 390
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate (c << 1) as "s",
 └Output field names ["s"]
@@ -2195,67 +2195,67 @@
 └Output field names ["s"]
 
 ---- 391
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c & 349525 == 70992
 └Output field names ["c"]
 
 ---- 392
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c | 349525 == 358389
 └Output field names ["c"]
 
 ---- 393
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c &^ 349525 == 8864
 └Output field names ["c"]
 
 ---- 394
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c ^ 349525 == 287397
 └Output field names ["c"]
 
 ---- 395
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c % 256 == 240
 └Output field names ["c"]
 
 ---- 396
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c * 16 == 1277696
 └Output field names ["c"]
 
 ---- 397
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on ^c == -79857
 └Output field names ["c"]
 
 ---- 398
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c == 79856
 └Output field names ["c"]
 
 ---- 399
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on -c == -79856
 └Output field names ["c"]
 
 ---- 400
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 401
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
 └Output fieldNames ["c" "i"]
@@ -2263,151 +2263,151 @@
 └Output field names ["c" ""]
 
 ---- 402
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 403
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by 15, c, 16,
 └Output field names ["c"]
 
 ---- 404
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 405
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 406
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 407
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c / d as "",
 └Output field names [""]
 
 ---- 408
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c % d as "",
 └Output field names [""]
 
 ---- 409
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c == d as "",
 └Output field names [""]
 
 ---- 410
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c == d as "",
 └Output field names [""]
 
 ---- 411
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c != d as "",
 └Output field names [""]
 
 ---- 412
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c != d as "",
 └Output field names [""]
 
 ---- 413
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c < d as "",
 └Output field names [""]
 
 ---- 414
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c < d as "",
 └Output field names [""]
 
 ---- 415
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c <= d as "",
 └Output field names [""]
 
 ---- 416
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c <= d as "",
 └Output field names [""]
 
 ---- 417
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c > d as "",
 └Output field names [""]
 
 ---- 418
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c > d as "",
 └Output field names [""]
 
 ---- 419
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c >= d as "",
 └Output field names [""]
 
 ---- 420
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c >= d as "",
 └Output field names [""]
 
 ---- 421
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c / d as "",
 └Output field names [""]
 
 ---- 422
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c / d as "",
 └Output field names [""]
 
 ---- 424
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate c as "c", -d as "",
 └Output field names ["c" ""]
 
 ---- 425
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
 ┌Evaluate 1 + c as "", d + 1 as "", 1.5 + c as "", d + 1.5 as "",
 └Output field names ["" "" "" ""]
 
 ---- 426
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate float64(c) as "",
 └Output field names [""]
 
 ---- 427
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatTime(timeIn(c, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as "",
 └Output field names [""]
 
 ---- 428
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate c as "c", string(c) as "",
 └Output field names ["c" ""]
@@ -2415,217 +2415,217 @@
 └Output field names ["c" ""]
 
 ---- 429
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate since(c) > duration("24h0m0s") as "",
 └Output field names [""]
 
 ---- 430
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate since(c) >= duration("24h0m0s") as "",
 └Output field names [""]
 
 ---- 431
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a > a as "", a > b as "", a > c as "", b > a as "", b > b as "", b > c as "", c > a as "", c > b as "", c > c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 432
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a < a as "", a < b as "", a < c as "", b < a as "", b < b as "", b < c as "", c < a as "", c < b as "", c < c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 433
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a <= a as "", a <= b as "", a <= c as "", b <= a as "", b <= b as "", b <= c as "", c <= a as "", c <= b as "", c <= c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 434
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a >= a as "", a >= b as "", a >= c as "", b >= a as "", b >= b as "", b >= c as "", c >= a as "", c >= b as "", c >= c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 435
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a != a as "", a != b as "", a != c as "", b != a as "", b != b as "", b != c as "", c != a as "", c != b as "", c != c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 436
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a == a as "", a == b as "", a == c as "", b == a as "", b == b as "", b == c as "", c == a as "", c == b as "", c == c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 437
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate b + c as "", a + c as "", a + b as "", a + b + c as "",
 └Output field names ["" "" "" ""]
 
 ---- 438
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate b - c as "", a - c as "", a - b as "", a - b - c as "",
 └Output field names ["" "" "" ""]
 
 ---- 439
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a >> 1 as "", b >> 1 as "", c >> 1 as "",
 └Output field names ["" "" ""]
 
 ---- 440
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a << 1 as "", b << 1 as "", c << 1 as "",
 └Output field names ["" "" ""]
 
 ---- 441
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate a & 255 as "",
 └Output field names [""]
 
 ---- 442
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate a | 256 as "",
 └Output field names [""]
 
 ---- 443
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate a &^ 3376 as "",
 └Output field names [""]
 
 ---- 444
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate a % duration("2h0m0s") as "", a % duration("1m0s") as "",
 └Output field names ["" ""]
 
 ---- 445
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a / 2 as "", b / 2 as "", c / 2 as "",
 └Output field names ["" "" ""]
 
 ---- 446
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a * 2 as "", 2 * b as "", c * 2 as "",
 └Output field names ["" "" ""]
 
 ---- 447
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate ^a as "", ^b as "", ^c as "",
 └Output field names ["" "" ""]
 
 ---- 448
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a as "a", b as "b", c as "c",
 └Output field names ["a" "b" "c"]
 
 ---- 449
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate -a as "", -b as "", -c as "",
 └Output field names ["" "" ""]
 
 ---- 450
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a > a as "", a > b as "", a > c as "", b > a as "", b > b as "", b > c as "", c > a as "", c > b as "", c > c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 451
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a < a as "", a < b as "", a < c as "", b < a as "", b < b as "", b < c as "", c < a as "", c < b as "", c < c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 452
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a <= a as "", a <= b as "", a <= c as "", b <= a as "", b <= b as "", b <= c as "", c <= a as "", c <= b as "", c <= c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 453
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a >= a as "", a >= b as "", a >= c as "", b >= a as "", b >= b as "", b >= c as "", c >= a as "", c >= b as "", c >= c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 454
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a != a as "", a != b as "", a != c as "", b != a as "", b != b as "", b != c as "", c != a as "", c != b as "", c != c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 455
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate a == a as "", a == b as "", a == c as "", b == a as "", b == b as "", b == c as "", c == a as "", c == b as "", c == c as "",
 └Output field names ["" "" "" "" "" "" "" "" ""]
 
 ---- 456
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b"]
 ┌Evaluate formatTime(timeIn(a + b, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as "",
 └Output field names [""]
 
 ---- 457
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b"]
 ┌Evaluate formatTime(timeIn(b + a, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as "",
 └Output field names [""]
 
 ---- 458
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b"]
 ┌Evaluate a + a as "",
 └Output field names [""]
 
 ---- 459
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b"]
 ┌Evaluate a - b as "",
 └Output field names [""]
 
 ---- 460
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b"]
 ┌Evaluate formatTime(timeIn(a - b, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as "",
 └Output field names [""]
 
 ---- 461
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b"]
 ┌Evaluate b - a as "",
 └Output field names [""]
 
 ---- 462
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate hours(a) as "", minutes(a) as "", seconds(a) as "", nanoseconds(a) as "",
 └Output field names ["" "" "" ""]
 
 ---- 463
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate a < now() as "", a < now() as "", a >= now() as "", a >= now() as "",
 └Output field names ["" "" "" ""]
 
 ---- 464
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate formatTime(timeIn(a, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as "a",
 └Output field names ["a"]
@@ -2633,7 +2633,7 @@
 └Output field names ["a"]
 
 ---- 465
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate hour(timeIn(a, "UTC")) as "y",
 └Output field names ["y"]
@@ -2641,7 +2641,7 @@
 └Output field names ["y"]
 
 ---- 466
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate minute(a) as "y",
 └Output field names ["y"]
@@ -2649,7 +2649,7 @@
 └Output field names ["y"]
 
 ---- 467
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate second(a) as "y",
 └Output field names ["y"]
@@ -2657,7 +2657,7 @@
 └Output field names ["y"]
 
 ---- 468
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate nanosecond(a) as "y",
 └Output field names ["y"]
@@ -2665,7 +2665,7 @@
 └Output field names ["y"]
 
 ---- 469
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate year(a) as "y",
 └Output field names ["y"]
@@ -2673,7 +2673,7 @@
 └Output field names ["y"]
 
 ---- 470
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate day(a) as "y",
 └Output field names ["y"]
@@ -2681,7 +2681,7 @@
 └Output field names ["y"]
 
 ---- 471
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate month(a) as "y",
 └Output field names ["y"]
@@ -2689,7 +2689,7 @@
 └Output field names ["y"]
 
 ---- 472
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate weekday(a) as "y",
 └Output field names ["y"]
@@ -2697,7 +2697,7 @@
 └Output field names ["y"]
 
 ---- 473
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate yearDay(a) as "y",
 └Output field names ["y"]
@@ -2705,7 +2705,7 @@
 └Output field names ["y"]
 
 ---- 474
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate timeIn(a, "") as "", timeIn(a, "UTC") as "y",
 └Output field names ["" "y"]
@@ -2713,7 +2713,7 @@
 └Output field names ["" "y"]
 
 ---- 475
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a"]
 ┌Evaluate formatTime(timeIn(a, "UTC"), "Jan 2, 2006 at 3:04pm (UTC)") as "y",
 └Output field names ["y"]
@@ -2721,33 +2721,33 @@
 └Output field names ["y"]
 
 ---- 478
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "t"]
 ┌Evaluate a as "a", b as "b", formatTime(timeIn(t, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as "t",
 └Output field names ["a" "b" "t"]
 
 ---- 479
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "t"]
 ┌Evaluate a as "a", b as "b", formatTime(timeIn(t, "UTC"), "2006-01-02 15:04:05.999999999 -0700") as "t",
 └Output field names ["a" "b" "t"]
 
 ---- 480
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "d"]
 
 ---- 481
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "d"]
 
 ---- 482
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by real(c),
 └Output field names ["c"]
 
 ---- 483
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "substr"]
 ┌Evaluate id() as "i", contains(42, substr) as "",
 └Output field names ["i" ""]
@@ -2755,7 +2755,7 @@
 └Output field names ["i" ""]
 
 ---- 484
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "substr"]
 ┌Evaluate id() as "i", contains(s, true) as "",
 └Output field names ["i" ""]
@@ -2763,7 +2763,7 @@
 └Output field names ["i" ""]
 
 ---- 485
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "substr"]
 ┌Evaluate id() as "i", contains(s, substr) as "",
 └Output field names ["i" ""]
@@ -2771,7 +2771,7 @@
 └Output field names ["i" ""]
 
 ---- 486
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "prefix"]
 ┌Evaluate id() as "i", hasPrefix(42, prefix) as "",
 └Output field names ["i" ""]
@@ -2779,7 +2779,7 @@
 └Output field names ["i" ""]
 
 ---- 487
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "prefix"]
 ┌Evaluate id() as "i", hasPrefix(s, false) as "",
 └Output field names ["i" ""]
@@ -2787,7 +2787,7 @@
 └Output field names ["i" ""]
 
 ---- 488
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "prefix"]
 ┌Evaluate id() as "i", hasPrefix(s, prefix) as "",
 └Output field names ["i" ""]
@@ -2795,7 +2795,7 @@
 └Output field names ["i" ""]
 
 ---- 489
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "suffix"]
 ┌Evaluate id() as "i", hasSuffix(42, suffix) as "",
 └Output field names ["i" ""]
@@ -2803,7 +2803,7 @@
 └Output field names ["i" ""]
 
 ---- 490
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "suffix"]
 ┌Evaluate id() as "i", hasSuffix(s, true) as "",
 └Output field names ["i" ""]
@@ -2811,7 +2811,7 @@
 └Output field names ["i" ""]
 
 ---- 491
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s" "suffix"]
 ┌Evaluate id() as "i", hasSuffix(s, suffix) as "",
 └Output field names ["i" ""]
@@ -2819,203 +2819,203 @@
 └Output field names ["i" ""]
 
 ---- 493
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 495
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 496
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 
 ---- 497
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 498
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 499
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 
 ---- 500
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 501
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 502
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "s"]
 
 ---- 503
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "s"]
 
 ---- 504
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c" "s"]
 
 ---- 508
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 509
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 512
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 513
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 514
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 515
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 516
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by id(),
 └Output field names ["c"]
 
 ---- 517
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Order by c,
 └Output field names ["c"]
 
 ---- 518
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 526
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 528
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 529
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 530
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 531
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]
 
 ---- 532
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]
 
 ---- 533
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]
 
 ---- 534
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 535
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 536
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 537
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 
 ---- 538
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 539
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 
 ---- 540
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 541
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 542
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]
 
 ---- 543
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 545
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 546
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 547
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 
 ---- 548
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Order by i,
 └Output field names ["i" "s"]
 
 ---- 549
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Order by s,
 └Output field names ["i" "s"]
@@ -3089,43 +3089,43 @@
 └Output field names N/A
 
 ---- 569
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["b"]
 ┌Evaluate len(string(b)) as "n",
 └Output field names ["n"]
 
 ---- 570
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["b"]
 ┌Evaluate len(string(b)) as "n",
 └Output field names ["n"]
 
 ---- 571
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 
 ---- 572
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 
 ---- 574
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 
 ---- 575
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate u.x as "u.x",
 └Output field names ["u.x"]
 
 ---- 576
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate u.i as "u.i",
 └Output field names ["u.i"]
 
 ---- 577
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
@@ -3143,7 +3143,7 @@
 └Output field names N/A
 
 ---- 581
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i < 30
 └Output field names ["i"]
@@ -3157,7 +3157,7 @@
 └Output field names ["i"]
 
 ---- 583
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i <= 30
 └Output field names ["i"]
@@ -3167,7 +3167,7 @@
 └Output fieldNames ["i"]
 
 ---- 585
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i == 30
 └Output field names ["i"]
@@ -3181,7 +3181,7 @@
 └Output field names ["i"]
 
 ---- 587
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i >= 30
 └Output field names ["i"]
@@ -3191,7 +3191,7 @@
 └Output fieldNames ["i"]
 
 ---- 589
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i > 30
 └Output field names ["i"]
@@ -3201,7 +3201,7 @@
 └Output fieldNames ["i"]
 
 ---- 591
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Filter on !b
 └Output field names ["i" "b"]
@@ -3211,7 +3211,7 @@
 └Output field names ["i"]
 
 ---- 592
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 ┌Filter on !b
 └Output field names ["i" "b"]
@@ -3293,7 +3293,7 @@
 └Output fieldNames ["i"]
 
 ---- 608
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i < 30
 └Output field names ["i"]
@@ -3370,11 +3370,11 @@
 
 ---- 635
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "t"
+│   ┌Iterate all rows of virtual table "t"
 │   │   ┌Iterate all rows of table "__Table"
 │   │   └Output field names ["Name" "Schema"]
 │   └Output field names ["Name" "Schema"]
-│   ┌Compute virtual table "c"
+│   ┌Iterate all rows of virtual table "c"
 │   │   ┌Iterate all rows of table "__Column"
 │   │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
 │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
@@ -3387,7 +3387,7 @@
 └Output field names ["c.TableName" "c.Ordinal" "c.Name"]
 
 ---- 636
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Filter on s == "test"
 └Output field names ["i" "s"]
@@ -3424,9 +3424,9 @@
 
 ---- 642
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table t
+│   ┌Iterate all rows of table "t"
 │   └Output field names ["i" "j" "k"]
-│   ┌Iterate all rows of table u
+│   ┌Iterate all rows of table "u"
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on u.y < 60 && t.k < 7
@@ -3436,7 +3436,7 @@
 ┌Compute Cartesian product of
 │   ┌Iterate all rows from table "t" using index "xk" where the indexed value is < 7
 │   └Output fieldNames ["i" "j" "k"]
-│   ┌Iterate all rows of table u
+│   ┌Iterate all rows of table "u"
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on u.y < 60
@@ -3444,7 +3444,7 @@
 
 ---- 644
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table t
+│   ┌Iterate all rows of table "t"
 │   └Output field names ["i" "j" "k"]
 │   ┌Iterate all rows from table "u" using index "xy" where the indexed value is < 60
 │   └Output fieldNames ["x" "y" "z"]
@@ -3461,25 +3461,25 @@
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
 ---- 646
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Skip first -1 records
 └Output fieldNames ["i"]
 
 ---- 647
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Skip first 0 records
 └Output fieldNames ["i"]
 
 ---- 648
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Skip first 1 records
 └Output fieldNames ["i"]
 
 ---- 649
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3487,7 +3487,7 @@
 └Output fieldNames ["i"]
 
 ---- 650
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3495,7 +3495,7 @@
 └Output fieldNames ["i"]
 
 ---- 651
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3503,7 +3503,7 @@
 └Output fieldNames ["i"]
 
 ---- 652
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3511,7 +3511,7 @@
 └Output fieldNames ["i"]
 
 ---- 653
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3519,7 +3519,7 @@
 └Output fieldNames [i]
 
 ---- 654
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3527,7 +3527,7 @@
 └Output fieldNames [i]
 
 ---- 655
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3535,7 +3535,7 @@
 └Output fieldNames [i]
 
 ---- 656
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3543,7 +3543,7 @@
 └Output fieldNames [i]
 
 ---- 657
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3551,7 +3551,7 @@
 └Output fieldNames [i]
 
 ---- 658
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3559,7 +3559,7 @@
 └Output fieldNames [i]
 
 ---- 659
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3567,7 +3567,7 @@
 └Output fieldNames [i]
 
 ---- 660
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3575,7 +3575,7 @@
 └Output fieldNames [i]
 
 ---- 661
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3585,7 +3585,7 @@
 └Output fieldNames [i]
 
 ---- 662
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3595,7 +3595,7 @@
 └Output fieldNames [i]
 
 ---- 663
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3605,7 +3605,7 @@
 └Output fieldNames [i]
 
 ---- 664
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3615,7 +3615,7 @@
 └Output fieldNames [i]
 
 ---- 665
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3625,7 +3625,7 @@
 └Output fieldNames [i]
 
 ---- 666
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3635,7 +3635,7 @@
 └Output fieldNames [i]
 
 ---- 667
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3645,7 +3645,7 @@
 └Output fieldNames [i]
 
 ---- 668
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3655,7 +3655,7 @@
 └Output fieldNames [i]
 
 ---- 669
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3665,7 +3665,7 @@
 └Output fieldNames [i]
 
 ---- 670
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3675,7 +3675,7 @@
 └Output fieldNames [i]
 
 ---- 671
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3685,7 +3685,7 @@
 └Output fieldNames [i]
 
 ---- 672
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3695,7 +3695,7 @@
 └Output fieldNames [i]
 
 ---- 673
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3705,7 +3705,7 @@
 └Output fieldNames [i]
 
 ---- 674
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3715,7 +3715,7 @@
 └Output fieldNames [i]
 
 ---- 675
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3725,7 +3725,7 @@
 └Output fieldNames [i]
 
 ---- 676
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -3736,8 +3736,8 @@
 
 ---- 677
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "a"
-│   │   ┌Iterate all rows of table t
+│   ┌Iterate all rows of virtual table "a"
+│   │   ┌Iterate all rows of table "t"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3746,8 +3746,8 @@
 │   │   ┌Pass first 2 records
 │   │   └Output fieldNames [i]
 │   └Output field names ["i"]
-│   ┌Compute virtual table "b"
-│   │   ┌Iterate all rows of table u
+│   ┌Iterate all rows of virtual table "b"
+│   │   ┌Iterate all rows of table "u"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3758,8 +3758,8 @@
 
 ---- 678
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "a"
-│   │   ┌Iterate all rows of table t
+│   ┌Iterate all rows of virtual table "a"
+│   │   ┌Iterate all rows of table "t"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3768,8 +3768,8 @@
 │   │   ┌Pass first 2 records
 │   │   └Output fieldNames [i]
 │   └Output field names ["i"]
-│   ┌Compute virtual table "b"
-│   │   ┌Iterate all rows of table u
+│   ┌Iterate all rows of virtual table "b"
+│   │   ┌Iterate all rows of table "u"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3782,8 +3782,8 @@
 
 ---- 679
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "a"
-│   │   ┌Iterate all rows of table t
+│   ┌Iterate all rows of virtual table "a"
+│   │   ┌Iterate all rows of table "t"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3792,8 +3792,8 @@
 │   │   ┌Pass first 2 records
 │   │   └Output fieldNames [i]
 │   └Output field names ["i"]
-│   ┌Compute virtual table "b"
-│   │   ┌Iterate all rows of table u
+│   ┌Iterate all rows of virtual table "b"
+│   │   ┌Iterate all rows of table "u"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3806,8 +3806,8 @@
 
 ---- 680
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "a"
-│   │   ┌Iterate all rows of table t
+│   ┌Iterate all rows of virtual table "a"
+│   │   ┌Iterate all rows of table "t"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3816,8 +3816,8 @@
 │   │   ┌Pass first 2 records
 │   │   └Output fieldNames [i]
 │   └Output field names ["i"]
-│   ┌Compute virtual table "b"
-│   │   ┌Iterate all rows of table u
+│   ┌Iterate all rows of virtual table "b"
+│   │   ┌Iterate all rows of table "u"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3832,8 +3832,8 @@
 
 ---- 681
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "a"
-│   │   ┌Iterate all rows of table t
+│   ┌Iterate all rows of virtual table "a"
+│   │   ┌Iterate all rows of table "t"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3842,8 +3842,8 @@
 │   │   ┌Pass first 2 records
 │   │   └Output fieldNames [i]
 │   └Output field names ["i"]
-│   ┌Compute virtual table "b"
-│   │   ┌Iterate all rows of table u
+│   ┌Iterate all rows of virtual table "b"
+│   │   ┌Iterate all rows of table "u"
 │   │   └Output field names ["i"]
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
@@ -3859,7 +3859,7 @@
 └Output fieldNames [a.i b.i]
 
 ---- 682
-┌Iterate all rows of table fibonacci
+┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
@@ -3869,7 +3869,7 @@
 └Output field names ["total"]
 
 ---- 683
-┌Iterate all rows of table fibonacci
+┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
@@ -3881,19 +3881,19 @@
 └Output fieldNames [input output]
 
 ---- 684
-┌Iterate all rows of table fibonacci
+┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Order by input,
 └Output field names ["input" "output"]
 
 ---- 685
-┌Iterate all rows of table fibonacci
+┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Order by input,
 └Output field names ["input" "output"]
 
 ---- 686
-┌Iterate all rows of table fibonacci
+┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
@@ -3903,7 +3903,7 @@
 └Output field names ["total"]
 
 ---- 687
-┌Iterate all rows of table fibonacci
+┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
@@ -3913,139 +3913,139 @@
 └Output field names ["total"]
 
 ---- 688
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 689
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 690
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 691
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 692
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 693
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 694
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 695
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 696
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 697
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 698
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 699
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 700
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 701
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 702
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 703
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 704
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 705
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 706
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 707
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 708
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 709
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Order by i,
 └Output field names ["i"]
 
 ---- 711
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
@@ -4063,7 +4063,7 @@
 └Output field names N/A
 
 ---- 716
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Filter on s != "z"
 └Output field names ["i" "s"]
@@ -4077,7 +4077,7 @@
 └Output field names ["s"]
 
 ---- 718
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Filter on s < "z"
 └Output field names ["i" "s"]
@@ -4085,7 +4085,7 @@
 └Output field names ["s"]
 
 ---- 721
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Filter on s < "z"
 └Output field names ["i" "s"]
@@ -4093,61 +4093,61 @@
 └Output field names ["s"]
 
 ---- 722
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["p" "c"]
 ┌Evaluate p as "p", string(c) as "",
 └Output field names ["p" ""]
 
 ---- 723
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["p" "c"]
 ┌Evaluate p as "p", string(c) as "",
 └Output field names ["p" ""]
 
 ---- 724
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["p" "c"]
 ┌Evaluate p as "p", string(c) as "",
 └Output field names ["p" ""]
 
 ---- 725
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 726
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 727
-┌Iterate all rows of table employee
+┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 728
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["username" "departname" "created" "detail_id" "height" "avatar" "is_man"]
 
 ---- 729
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["username" "departname" "created" "detail_id" "height" "avatar" "is_man"]
 
 ---- 730
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["username" "departname" "created" "detail_id" "height" "avatar" "is_man"]
 
 ---- 731
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["username" "departname" "created" "detail_id" "height" "avatar" "is_man"]
 
 ---- 732
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["username" "departname" "created" "detail_id" "height" "avatar" "is_man"]
 ┌Evaluate id() IN (SELECT id() FROM t WHERE username == "2xiaolunwen";) as "", username == "2xiaolunwen" as "", len(string(avatar)) == 2097152 as "",
 └Output field names ["" "" ""]
 
 ---- 733
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["username" "departname" "created" "detail_id" "height" "avatar" "is_man"]
 ┌Evaluate id() IN (SELECT id() FROM t WHERE username == "xiaolunwen";) as "", username == "xiaolunwen" as "", len(string(avatar)) == 1048576 as "",
 └Output field names ["" "" ""]
@@ -4161,7 +4161,7 @@
 └Output fieldNames [user remain total]
 
 ---- 735
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on id() < 4
 └Output field names ["i"]
@@ -4188,7 +4188,7 @@
 
 ---- 741
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "t"
+│   ┌Iterate all rows of virtual table "t"
 │   │   ┌Iterate all rows from table "t" using index "x" where the indexed value is < 4
 │   │   └Output fieldNames ["i"]
 │   │   ┌Evaluate i as "i",
@@ -4199,7 +4199,7 @@
 └Output field names ["t.i" "u.i"]
 
 ---- 742
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4207,7 +4207,7 @@
 └Output field names ["T"]
 
 ---- 743
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4215,7 +4215,7 @@
 └Output field names ["T"]
 
 ---- 744
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4223,7 +4223,7 @@
 └Output field names ["T"]
 
 ---- 745
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4231,7 +4231,7 @@
 └Output field names ["T"]
 
 ---- 746
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4239,7 +4239,7 @@
 └Output field names ["T"]
 
 ---- 747
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4247,7 +4247,7 @@
 └Output field names ["T"]
 
 ---- 748
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4255,7 +4255,7 @@
 └Output field names ["T"]
 
 ---- 749
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4263,7 +4263,7 @@
 └Output field names ["T"]
 
 ---- 750
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4271,7 +4271,7 @@
 └Output field names ["T"]
 
 ---- 751
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4279,7 +4279,7 @@
 └Output field names ["T"]
 
 ---- 752
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4287,7 +4287,7 @@
 └Output field names ["T"]
 
 ---- 753
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Select distinct rows
 └Output fieldNames ["t"]
@@ -4295,19 +4295,19 @@
 └Output field names ["T"]
 
 ---- 754
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["Name" "score"]
 
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["Name" "score"]
 
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["Name" "score"]
 ┌Order by Name,
 └Output field names ["Name" "score"]
 
 ---- 755
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s LIKE "foo"
 └Output field names ["s"]
@@ -4317,7 +4317,7 @@
 └Output field names ["" "s"]
 
 ---- 756
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on !s LIKE "foo"
 └Output field names ["s"]
@@ -4327,7 +4327,7 @@
 └Output field names ["" "s"]
 
 ---- 757
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s LIKE "foo" IS NULL
 └Output field names ["s"]
@@ -4337,7 +4337,7 @@
 └Output field names ["" "s"]
 
 ---- 758
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s LIKE "foo" IS NOT NULL
 └Output field names ["s"]
@@ -4347,7 +4347,7 @@
 └Output field names ["" "s"]
 
 ---- 759
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s LIKE "bar"
 └Output field names ["s"]
@@ -4357,7 +4357,7 @@
 └Output field names ["" "s"]
 
 ---- 760
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s LIKE "^bar"
 └Output field names ["s"]
@@ -4367,7 +4367,7 @@
 └Output field names ["" "s"]
 
 ---- 761
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s LIKE "bar$"
 └Output field names ["s"]
@@ -4377,7 +4377,7 @@
 └Output field names ["" "s"]
 
 ---- 762
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s LIKE "bar$"
 └Output field names ["s"]
@@ -4387,7 +4387,7 @@
 └Output field names ["" "s"]
 
 ---- 763
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s + "qux" LIKE "qux$"
 └Output field names ["s"]
@@ -4397,7 +4397,7 @@
 └Output field names ["" "s"]
 
 ---- 764
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["s"]
 ┌Filter on s + "quxx" LIKE "qux$"
 └Output field names ["s"]
@@ -4408,13 +4408,13 @@
 
 ---- 765
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "foo"
-│   │   ┌Iterate all rows of table foo
+│   ┌Iterate all rows of virtual table "foo"
+│   │   ┌Iterate all rows of table "foo"
 │   │   └Output field names ["i"]
 │   │   ┌Evaluate id() as "ID", i as "i",
 │   │   └Output field names ["ID" "i"]
 │   └Output field names ["ID" "i"]
-│   ┌Iterate all rows of table bar
+│   ┌Iterate all rows of table "bar"
 │   └Output field names ["fooID" "s"]
 └Output field names ["foo.ID" "foo.i" "bar.fooID" "bar.s"]
 ┌Filter on bar.fooID == foo.ID
@@ -4424,9 +4424,9 @@
 
 ---- 766
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table foo
+│   ┌Iterate all rows of table "foo"
 │   └Output field names ["i"]
-│   ┌Iterate all rows of table bar
+│   ┌Iterate all rows of table "bar"
 │   └Output field names ["fooID" "s"]
 └Output field names ["foo.i" "bar.fooID" "bar.s"]
 ┌Filter on bar.fooID == id(foo)
@@ -4435,19 +4435,19 @@
 └Output field names ["foo.i" "bar.fooID" "bar.s"]
 
 ---- 767
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" && mail == "bar@example.com"
 └Output field names ["name" "mail"]
 
 ---- 768
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" && mail == "bar@example.com"
 └Output field names ["name" "mail"]
 
 ---- 769
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" || mail == "bar@example.com"
 └Output field names ["name" "mail"]
@@ -4455,7 +4455,7 @@
 └Output field names ["name" "mail"]
 
 ---- 770
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" || mail == "bar@example.com"
 └Output field names ["name" "mail"]
@@ -4463,7 +4463,7 @@
 └Output field names ["name" "mail"]
 
 ---- 771
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Filter on id() IN (SELECT idA FROM tableB;)
 └Output field names ["i"]
@@ -4473,7 +4473,7 @@
 └Output field names ["" "i"]
 
 ---- 772
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Filter on id() NOT IN (SELECT idA FROM tableB;)
 └Output field names ["i"]
@@ -4483,7 +4483,7 @@
 └Output field names ["" "i"]
 
 ---- 773
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Evaluate id() as "", i as "i",
 └Output field names ["" "i"]
@@ -4491,7 +4491,7 @@
 └Output field names ["" "i"]
 
 ---- 774
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Evaluate id() as "", i as "i",
 └Output field names ["" "i"]
@@ -4499,7 +4499,7 @@
 └Output field names ["" "i"]
 
 ---- 775
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Evaluate id() as "", i as "i",
 └Output field names ["" "i"]
@@ -4507,7 +4507,7 @@
 └Output field names ["" "i"]
 
 ---- 776
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Evaluate id() as "", i as "i",
 └Output field names ["" "i"]
@@ -4515,7 +4515,7 @@
 └Output field names ["" "i"]
 
 ---- 777
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Evaluate id() as "", i as "i",
 └Output field names ["" "i"]
@@ -4523,7 +4523,7 @@
 └Output field names ["" "i"]
 
 ---- 778
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Evaluate id() as "", i as "i",
 └Output field names ["" "i"]
@@ -4531,7 +4531,7 @@
 └Output field names ["" "i"]
 
 ---- 781
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Filter on id() IN (SELECT idA FROM tableB;)
 └Output field names ["i"]
@@ -4541,7 +4541,7 @@
 └Output field names ["i"]
 
 ---- 782
-┌Iterate all rows of table tableA
+┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Filter on id() IN (SELECT idA FROM tableB;)
 └Output field names ["i"]
@@ -4551,301 +4551,301 @@
 └Output field names ["i"]
 
 ---- 783
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 
 ---- 784
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 
 ---- 785
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 ┌Order by comment,
 └Output field names ["comment" "data"]
 
 ---- 786
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 ┌Order by comment,
 └Output field names ["comment" "data"]
 
 ---- 787
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 ┌Order by comment,
 └Output field names ["comment" "data"]
 
 ---- 788
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 ┌Order by comment,
 └Output field names ["comment" "data"]
 
 ---- 789
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 ┌Order by comment,
 └Output field names ["comment" "data"]
 
 ---- 790
-┌Iterate all rows of table testA
+┌Iterate all rows of table "testA"
 └Output field names ["comment" "data"]
 ┌Order by comment,
 └Output field names ["comment" "data"]
 
 ---- 791
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatFloat(c) as "",
 └Output field names [""]
 
 ---- 792
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatFloat(c) as "",
 └Output field names [""]
 
 ---- 793
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatFloat(c, 98) as "",
 └Output field names [""]
 
 ---- 794
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatFloat(c, 101, 5) as "",
 └Output field names [""]
 
 ---- 795
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatFloat(c, 98, 7, 32) as "",
 └Output field names [""]
 
 ---- 796
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c) as "",
 └Output field names [""]
 
 ---- 797
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c) as "",
 └Output field names [""]
 
 ---- 798
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 799
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c) as "",
 └Output field names [""]
 
 ---- 800
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c) as "",
 └Output field names [""]
 
 ---- 801
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 802
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 803
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 804
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 805
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 806
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 807
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Evaluate formatInt(c, 18) as "",
 └Output field names [""]
 
 ---- 808
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 809
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["i" "b"]
 
 ---- 815
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 816
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 817
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 818
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 819
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 822
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 823
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 824
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 825
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 830
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 ┌Order by Name,
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 831
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 ┌Order by Name,
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 832
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 ┌Order by Name,
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 833
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 ┌Order by Name,
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 834
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 ┌Order by Name,
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 835
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 ┌Order by Name,
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 836
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 837
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 839
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 842
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 844
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 846
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 847
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 850
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 854
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentName"]
 
 ---- 855
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentName"]
 
 ---- 857
-┌Iterate all rows of table department
+┌Iterate all rows of table "department"
 └Output field names ["DepartmentName"]
 
 ---- 858
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["TimeStamp"]
 ┌Evaluate TimeStamp IS NOT NULL as "",
 └Output field names [""]
 
 ---- 861
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["TimeStamp"]
 ┌Evaluate TimeStamp IS NOT NULL as "",
 └Output field names [""]
 
 ---- 862
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["TimeStamp"]
 ┌Evaluate TimeStamp IS NOT NULL as "",
 └Output field names [""]
 
 ---- 864
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["Event"]
 ┌Evaluate Event as "Event",
 └Output field names ["Event"]
 
 ---- 865
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate b as "b",
 └Output field names ["b"]
@@ -4853,7 +4853,7 @@
 └Output field names ["b"]
 
 ---- 866
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate b as "b",
 └Output field names ["b"]
@@ -4861,7 +4861,7 @@
 └Output field names ["b"]
 
 ---- 868
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate b as "b",
 └Output field names ["b"]
@@ -4869,7 +4869,7 @@
 └Output field names ["b"]
 
 ---- 870
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 ┌Evaluate b as "b",
 └Output field names ["b"]
@@ -4878,9 +4878,9 @@
 
 ---- 871
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -4889,9 +4889,9 @@
 
 ---- 872
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -4900,9 +4900,9 @@
 
 ---- 873
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -4911,9 +4911,9 @@
 
 ---- 874
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -4922,9 +4922,9 @@
 
 ---- 875
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == none
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == none
@@ -4932,9 +4932,9 @@
 
 ---- 876
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == none
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == none
@@ -4942,18 +4942,18 @@
 
 ---- 877
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table t1
+│   ┌Iterate all rows of table "t1"
 │   └Output field names ["s1"]
-│   ┌Iterate all rows of table t2
+│   ┌Iterate all rows of table "t2"
 │   └Output field names ["s1"]
 │   Extend the product with all NULL rows from t2 when no match for t1.s1 == t2.s1
 └Output field names ["t1.s1" "t2.s1"]
 
 ---- 878
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
-│   ┌Iterate all rows of table b
+│   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
 │   Extend the product with all NULL rows from b when no match for a.i == b.i
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
@@ -4962,9 +4962,9 @@
 
 ---- 879
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
-│   ┌Iterate all rows of table b
+│   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
 │   Extend the product with all NULL rows from all but b when no match for a.i == b.i
 └Output field names ["a.i" "a.s" "b.i" "b.s"]
@@ -4973,9 +4973,9 @@
 
 ---- 880
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table b
+│   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
 │   Extend the product with all NULL rows from a when no match for a.i == b.i
 └Output field names ["b.i" "b.s" "a.i" "a.s"]
@@ -4984,9 +4984,9 @@
 
 ---- 881
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table b
+│   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
 │   Extend the product with all NULL rows from all but a when no match for a.i == b.i
 └Output field names ["b.i" "b.s" "a.i" "a.s"]
@@ -4995,9 +4995,9 @@
 
 ---- 882
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
-│   ┌Iterate all rows of table b
+│   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
 │   Extend the product with all NULL rows from b when no match for a.i == b.i
 │   Extend the product with all NULL rows from all but b when no match for a.i == b.i
@@ -5007,9 +5007,9 @@
 
 ---- 883
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table a
+│   ┌Iterate all rows of table "a"
 │   └Output field names ["i" "s"]
-│   ┌Iterate all rows of table b
+│   ┌Iterate all rows of table "b"
 │   └Output field names ["i" "s"]
 │   Extend the product with all NULL rows from b when no match for a.i == b.i
 │   Extend the product with all NULL rows from all but b when no match for a.i == b.i
@@ -5019,9 +5019,9 @@
 
 ---- 884
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
@@ -5031,9 +5031,9 @@
 
 ---- 885
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
@@ -5043,11 +5043,11 @@
 
 ---- 886
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table t
+│   ┌Iterate all rows of table "t"
 │   └Output field names ["s"]
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5056,11 +5056,11 @@
 
 ---- 887
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table t
+│   ┌Iterate all rows of table "t"
 │   └Output field names ["s"]
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
 └Output field names ["t.s" "employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
@@ -5069,11 +5069,11 @@
 
 ---- 888
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table t
+│   ┌Iterate all rows of table "t"
 │   └Output field names ["s"]
-│   ┌Iterate all rows of table employee
+│   ┌Iterate all rows of table "employee"
 │   └Output field names ["LastName" "DepartmentID"]
-│   ┌Iterate all rows of table department
+│   ┌Iterate all rows of table "department"
 │   └Output field names ["DepartmentID" "DepartmentName"]
 │   Extend the product with all NULL rows from department when no match for employee.DepartmentID == department.DepartmentID
 │   Extend the product with all NULL rows from all but department when no match for employee.DepartmentID == department.DepartmentID
@@ -5090,18 +5090,18 @@
 └Output field names ["Name" "Schema"]
 
 ---- 890
-┌Iterate all rows of table __Column2
+┌Iterate all rows of table "__Column2"
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 ┌Order by TableName, Name,
 └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 
 ---- 891
 ┌Compute Cartesian product of
-│   ┌Compute virtual table "__Column"
+│   ┌Iterate all rows of virtual table "__Column"
 │   │   ┌Iterate all rows of table "__Column"
 │   │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
 │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
-│   ┌Iterate all rows of table __Column2
+│   ┌Iterate all rows of table "__Column2"
 │   └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]
 │   Extend the product with all NULL rows from __Column2 when no match for __Column.TableName == __Column2.TableName && __Column.Name == __Column2.Name
 └Output field names ["__Column.TableName" "__Column.Ordinal" "__Column.Name" "__Column.Type" "__Column2.TableName" "__Column2.Name" "__Column2.NotNull" "__Column2.ConstraintExpr" "__Column2.DefaultExpr"]
@@ -5113,7 +5113,7 @@
 └Output field names ["__Column.TableName" "__Column.Ordinal" "__Column.Name" "__Column.Type" "__Column2.NotNull" "__Column2.ConstraintExpr" "__Column2.DefaultExpr"]
 
 ---- 902
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5121,7 +5121,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 903
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5129,7 +5129,7 @@
 └Output field names ["Expr"]
 
 ---- 904
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5137,7 +5137,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 905
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5145,7 +5145,7 @@
 └Output field names ["Expr"]
 
 ---- 906
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5155,7 +5155,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 907
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5165,7 +5165,7 @@
 └Output field names ["Expr"]
 
 ---- 908
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5175,7 +5175,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 909
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5185,7 +5185,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 910
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5195,7 +5195,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 911
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5205,7 +5205,7 @@
 └Output field names ["Expr"]
 
 ---- 912
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5215,7 +5215,7 @@
 └Output field names ["Expr"]
 
 ---- 913
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5225,7 +5225,7 @@
 └Output field names ["Expr"]
 
 ---- 914
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5235,7 +5235,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 915
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5245,7 +5245,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 916
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5255,7 +5255,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 917
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5265,7 +5265,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 918
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5275,7 +5275,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 919
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5285,7 +5285,7 @@
 └Output field names ["Expr"]
 
 ---- 920
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5295,7 +5295,7 @@
 └Output field names ["Expr"]
 
 ---- 921
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5305,7 +5305,7 @@
 └Output field names ["Expr"]
 
 ---- 922
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5315,7 +5315,7 @@
 └Output field names ["Expr"]
 
 ---- 923
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5325,7 +5325,7 @@
 └Output field names ["Expr"]
 
 ---- 924
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5335,7 +5335,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 925
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5345,7 +5345,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 926
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5355,7 +5355,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 927
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5365,7 +5365,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 928
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5375,7 +5375,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 929
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5385,7 +5385,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 930
-┌Iterate all rows of table __Index2
+┌Iterate all rows of table "__Index2"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Filter on !hasPrefix(TableName, "__")
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
@@ -5395,7 +5395,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 931
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5405,7 +5405,7 @@
 └Output field names ["Expr"]
 
 ---- 932
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5415,7 +5415,7 @@
 └Output field names ["Expr"]
 
 ---- 933
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5425,7 +5425,7 @@
 └Output field names ["Expr"]
 
 ---- 934
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5435,7 +5435,7 @@
 └Output field names ["Expr"]
 
 ---- 935
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5445,7 +5445,7 @@
 └Output field names ["Expr"]
 
 ---- 936
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5455,7 +5455,7 @@
 └Output field names ["Expr"]
 
 ---- 937
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x" || IndexName == "y";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5471,7 +5471,7 @@
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
 ---- 939
-┌Iterate all rows of table __Index2_Expr
+┌Iterate all rows of table "__Index2_Expr"
 └Output field names ["Index2_ID" "Expr"]
 ┌Filter on Index2_ID IN (SELECT id() FROM __Index2 WHERE IndexName == "x";)
 └Output field names ["Index2_ID" "Expr"]
@@ -5481,7 +5481,7 @@
 └Output field names ["Expr"]
 
 ---- 940
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 941
@@ -5489,7 +5489,7 @@
 └Output field names N/A
 
 ---- 942
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
 
 ---- 943
@@ -5529,11 +5529,11 @@
 └Output field names N/A
 
 ---- 963
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 964
-┌Iterate all rows of table t
+┌Iterate all rows of table "t"
 └Output field names ["c"]
 
 ---- 966
