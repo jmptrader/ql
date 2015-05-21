@@ -255,7 +255,7 @@ func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 	//TODO }
 
 	//TODO if p2 != nil {
-	//TODO 	panic("")
+	//TODO 	panic("TODO")
 	//TODO }
 
 	return nil, nil
