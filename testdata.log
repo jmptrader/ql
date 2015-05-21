@@ -1576,15 +1576,6 @@ SELECT avg(DepartmentID) FROM employee;
 ┌Evaluate avg(DepartmentID) as "",
 └Output field names [""]
 
----- 271
-SELECT DepartmentID FROM employee GROUP BY none;
-┌Iterate all rows of table "employee"
-└Output field names ["LastName" "DepartmentID"]
-┌Group by none,
-└Output fieldNames ["LastName" "DepartmentID"]
-┌Evaluate DepartmentID as "DepartmentID",
-└Output field names ["DepartmentID"]
-
 ---- 272
 SELECT DepartmentID, sum(DepartmentID) AS s FROM employee GROUP BY DepartmentID ORDER BY s DESC;
 ┌Iterate all rows of table "employee"

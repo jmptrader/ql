@@ -855,7 +855,7 @@ func Example_recordsetFields() {
 		SELECT DISTINCT s as S, sum(i) as I FROM (
 			SELECT t.s+u.s as s, t.i+u.i, 3 as i FROM t, u;
 		)
-		GROUP BY S
+		GROUP BY s
 		ORDER BY I;
 		
 		SELECT DISTINCT * FROM (
