@@ -491,7 +491,22 @@ func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 		return r.src, nil
 	}
 
-	//TODO detect sel fields == src fields (#582), return r.src
+	f0 := r.src.fieldNames()
+	if len(f0) == len(flds2) {
+		match := true
+		for i, v := range flds2 {
+			if x, ok := v.expr.(*ident); ok && x.s == f0[i] && v.name == f0[i] {
+				continue
+			}
+
+			match = false
+			break
+		}
+
+		if match {
+			return r.src, nil
+		}
+	}
 
 	p := &selectFieldsDefaultPlan{flds: flds2, src: r.src}
 	for _, v := range r.flds {

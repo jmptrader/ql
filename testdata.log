@@ -2901,8 +2901,6 @@ SELECT ^a, ^b, ^c FROM t;
 SELECT a, b, c FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
-┌Evaluate a as "a", b as "b", c as "c",
-└Output field names ["a" "b" "c"]
 
 ---- 449
 SELECT -a, -b, -c FROM t;
@@ -3605,8 +3603,6 @@ SELECT u.i FROM t AS u;
 SELECT i FROM t AS u;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 578
 SELECT i FROM t WHERE b ORDER BY i;
@@ -3628,15 +3624,11 @@ SELECT i FROM t WHERE i < 30;
 └Output field names ["i"]
 ┌Filter on i < 30
 └Output field names ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 582
 SELECT i FROM t WHERE i < 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 583
 SELECT * FROM t WHERE i <= 30;
@@ -3656,15 +3648,11 @@ SELECT i FROM t WHERE i == 30;
 └Output field names ["i"]
 ┌Filter on i == 30
 └Output field names ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 586
 SELECT i FROM t WHERE i == 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 587
 SELECT * FROM t WHERE i >= 30;
@@ -3716,8 +3704,6 @@ SELECT i FROM t WHERE !b ORDER BY i;
 SELECT i FROM t WHERE i < $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 594
 SELECT * FROM t WHERE i <= $1;
@@ -3728,8 +3714,6 @@ SELECT * FROM t WHERE i <= $1;
 SELECT i FROM t WHERE i == $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 596
 SELECT * FROM t WHERE i >= $1;
@@ -3745,8 +3729,6 @@ SELECT * FROM t WHERE i > $1;
 SELECT i FROM t WHERE i < $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 599
 SELECT * FROM t WHERE i <= $1;
@@ -3757,8 +3739,6 @@ SELECT * FROM t WHERE i <= $1;
 SELECT i FROM t WHERE i == $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 601
 SELECT * FROM t WHERE i >= $1;
@@ -3774,8 +3754,6 @@ SELECT * FROM t WHERE i > $1;
 SELECT i FROM t WHERE i < 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 604
 SELECT * FROM t WHERE i <= 30;
@@ -3786,8 +3764,6 @@ SELECT * FROM t WHERE i <= 30;
 SELECT i FROM t WHERE i == 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is 30
 └Output fieldNames ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 
 ---- 606
 SELECT * FROM t WHERE i >= 30;
@@ -4771,8 +4747,6 @@ SELECT id() IN (SELECT id() FROM t WHERE username == "xiaolunwen";), username ==
 SELECT user, remain, total FROM no_id_user WHERE user == "xlw" LIMIT 1;
 ┌Iterate all rows of table "no_id_user" using index "UQE_no_id_user_user" where the indexed value is xlw
 └Output fieldNames ["user" "remain" "total"]
-┌Evaluate user as "user", remain as "remain", total as "total",
-└Output field names ["user" "remain" "total"]
 ┌Pass first 1 records
 └Output fieldNames [user remain total]
 
@@ -4811,12 +4785,8 @@ SELECT * FROM t WHERE i > 4;
 ---- 741
 SELECT * FROM (SELECT i FROM t WHERE i < 4;) AS t, (SELECT * FROM u WHERE i < 40;) AS u;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of virtual table "t"
-│   │   ┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
-│   │   └Output fieldNames ["i"]
-│   │   ┌Evaluate i as "i",
-│   │   └Output field names ["i"]
-│   └Output field names ["i"]
+│   ┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
+│   └Output fieldNames ["i"]
 │   ┌Iterate all rows of table "u" using index "y" where the indexed value is < 40
 │   └Output fieldNames ["i"]
 └Output field names ["t.i" "u.i"]
@@ -5198,8 +5168,6 @@ SELECT i FROM tableA WHERE id() IN (SELECT idA FROM tableB;) ORDER BY id();
 └Output field names ["i"]
 ┌Filter on id() IN (SELECT idA FROM tableB;)
 └Output field names ["i"]
-┌Evaluate i as "i",
-└Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
 
@@ -5208,8 +5176,6 @@ SELECT i FROM tableA WHERE id() IN (SELECT idA FROM tableB;) ORDER BY id();
 ┌Iterate all rows of table "tableA"
 └Output field names ["i"]
 ┌Filter on id() IN (SELECT idA FROM tableB;)
-└Output field names ["i"]
-┌Evaluate i as "i",
 └Output field names ["i"]
 ┌Order by id(),
 └Output field names ["i"]
@@ -5561,8 +5527,6 @@ SELECT TimeStamp IS NOT NULL FROM t;
 ---- 864
 SELECT Event FROM t;
 ┌Iterate all rows of table "t"
-└Output field names ["Event"]
-┌Evaluate Event as "Event",
 └Output field names ["Event"]
 
 ---- 865
