@@ -29,6 +29,7 @@ var (
 	_ plan = (*orderByDefaultPlan)(nil)
 	_ plan = (*rightJoinDefaultPlan)(nil)
 	_ plan = (*selectFieldsDefaultPlan)(nil)
+	_ plan = (*selectFieldsGroupPlan)(nil)
 	_ plan = (*selectIndexDefaultPlan)(nil)
 	_ plan = (*sysColumnDefaultPlan)(nil)
 	_ plan = (*sysIndexDefaultPlan)(nil)
@@ -208,7 +209,7 @@ type distinctDefaultPlan struct {
 
 func (r *distinctDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
-	w.Format("┌Select distinct rows\n└Output field names %v\n", r.fields)
+	w.Format("┌Compute distinct rows\n└Output field names %v\n", r.fields)
 }
 
 func (r *distinctDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -263,7 +264,7 @@ func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
 	switch {
 	case len(r.colNames) == 0:
-		w.Format("┌Select distinct rows")
+		w.Format("┌Compute distinct rows")
 	default:
 		w.Format("┌Group by")
 		for _, v := range r.colNames {
@@ -644,11 +645,7 @@ func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, error
 	return nil, nil
 }
 
-func (r *selectFieldsDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-	if _, ok := r.src.(*groupByDefaultPlan); ok { //TODO different plan, also possible conflict with optimizer
-		return r.doGroup(ctx, f)
-	}
-
+func (r *selectFieldsDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	fields := r.src.fieldNames()
 	m := map[interface{}]interface{}{}
 	return r.src.do(ctx, func(rid interface{}, in []interface{}) (bool, error) {
@@ -660,6 +657,7 @@ func (r *selectFieldsDefaultPlan) do(ctx *execCtx, f func(id interface{}, data [
 		m["$id"] = rid
 		out := make([]interface{}, len(r.flds))
 		for i, fld := range r.flds {
+			var err error
 			if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
 				return false, err
 			}
@@ -668,7 +666,31 @@ func (r *selectFieldsDefaultPlan) do(ctx *execCtx, f func(id interface{}, data [
 	})
 }
 
-func (r *selectFieldsDefaultPlan) doGroup(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
+func (r *selectFieldsDefaultPlan) fieldNames() []string { return r.fields }
+
+type selectFieldsGroupPlan struct {
+	flds   []*fld
+	src    *groupByDefaultPlan
+	fields []string
+}
+
+func (r *selectFieldsGroupPlan) explain(w strutil.Formatter) { //TODO optimize #582
+	//TODO check for non existing fields
+	r.src.explain(w)
+	w.Format("┌Evaluate")
+	for _, v := range r.flds {
+		w.Format(" %s as %s,", v.expr, fmt.Sprintf("%q", v.name))
+	}
+	w.Format("\n└Output field names %v\n", qnames(r.fields))
+}
+
+func (r *selectFieldsGroupPlan) fieldNames() []string { return r.fields }
+
+func (r *selectFieldsGroupPlan) filterUsingIndex(expr expression) (plan, error) {
+	return nil, nil
+}
+
+func (r *selectFieldsGroupPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
 	var t temp
 	var cols []*col
 	var err error
@@ -739,8 +761,6 @@ func (r *selectFieldsDefaultPlan) doGroup(ctx *execCtx, f func(id interface{}, d
 
 	return err
 }
-
-func (r *selectFieldsDefaultPlan) fieldNames() []string { return r.fields }
 
 type sysColumnDefaultPlan struct{}
 
