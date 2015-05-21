@@ -2790,7 +2790,7 @@ func selector(s string) string {
 func mustSelector(s string) string {
 	q := selector(s)
 	if q == s {
-		panic("internal error 069")
+		panic("internal error 053")
 	}
 
 	return q

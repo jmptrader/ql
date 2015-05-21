@@ -2025,7 +2025,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 42, c, 24;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 42, c, 24,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 326
@@ -2041,7 +2041,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 42, c, 24;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 42, c, 24,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 328
@@ -2089,7 +2089,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 335
@@ -2105,7 +2105,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 338
@@ -2121,7 +2121,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 340
@@ -2137,7 +2137,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 342
@@ -2153,7 +2153,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 344
@@ -2169,7 +2169,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 346
@@ -2185,7 +2185,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 348
@@ -2201,7 +2201,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 350
@@ -2217,7 +2217,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 352
@@ -2233,7 +2233,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 354
@@ -2249,7 +2249,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 356
@@ -2265,7 +2265,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 358
@@ -2281,7 +2281,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 360
@@ -2297,7 +2297,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 362
@@ -2313,7 +2313,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 364
@@ -2329,7 +2329,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 366
@@ -2405,7 +2405,7 @@ SELECT * FROM t;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 380
@@ -2574,7 +2574,7 @@ SELECT * FROM t WHERE -c == -79856;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 401
@@ -2590,14 +2590,14 @@ SELECT c, sum(i) FROM t GROUP BY c;
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 403
 SELECT * FROM t ORDER BY 15, c, 16;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Order by 15, c, 16,
+┌Order by c,
 └Output field names ["c"]
 
 ---- 404
