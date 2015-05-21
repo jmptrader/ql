@@ -171,6 +171,7 @@ type groupByRset struct {
 }
 
 func (r *groupByRset) plan(ctx *execCtx) (plan, error) {
+	//TODO detect non existing columns early (#271)
 	return &groupByDefaultPlan{colNames: r.colNames, src: r.src, fields: r.src.fieldNames()}, nil
 }
 

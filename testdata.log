@@ -1488,7 +1488,7 @@ SELECT * FROM t;
 SELECT count() FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1497,7 +1497,7 @@ SELECT count() FROM employee;
 SELECT count() AS y FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate count() as "y",
 └Output field names ["y"]
@@ -1506,7 +1506,7 @@ SELECT count() AS y FROM employee;
 SELECT 3 * count() AS y FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate 3 * count() as "y",
 └Output field names ["y"]
@@ -1515,7 +1515,7 @@ SELECT 3 * count() AS y FROM employee;
 SELECT count(LastName) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate count(LastName) as "",
 └Output field names [""]
@@ -1524,7 +1524,7 @@ SELECT count(LastName) FROM employee;
 SELECT count(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate count(DepartmentID) as "",
 └Output field names [""]
@@ -1533,7 +1533,7 @@ SELECT count(DepartmentID) FROM employee;
 SELECT count() - count(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate count() - count(DepartmentID) as "",
 └Output field names [""]
@@ -1542,7 +1542,7 @@ SELECT count() - count(DepartmentID) FROM employee;
 SELECT min(LastName), min(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate min(LastName) as "", min(DepartmentID) as "",
 └Output field names ["" ""]
@@ -1551,7 +1551,7 @@ SELECT min(LastName), min(DepartmentID) FROM employee;
 SELECT max(LastName), max(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate max(LastName) as "", max(DepartmentID) as "",
 └Output field names ["" ""]
@@ -1560,7 +1560,7 @@ SELECT max(LastName), max(DepartmentID) FROM employee;
 SELECT sum(LastName), sum(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate sum(LastName) as "", sum(DepartmentID) as "",
 └Output field names ["" ""]
@@ -1569,7 +1569,7 @@ SELECT sum(LastName), sum(DepartmentID) FROM employee;
 SELECT sum(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate sum(DepartmentID) as "",
 └Output field names [""]
@@ -1578,7 +1578,7 @@ SELECT sum(DepartmentID) FROM employee;
 SELECT avg(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate avg(DepartmentID) as "",
 └Output field names [""]
@@ -1629,7 +1629,7 @@ SELECT DepartmentID, sum(2 * DepartmentID) AS s FROM employee GROUP BY Departmen
 SELECT min(2 * DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate min(2 * DepartmentID) as "",
 └Output field names [""]
@@ -1638,7 +1638,7 @@ SELECT min(2 * DepartmentID) FROM employee;
 SELECT max(2 * DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate max(2 * DepartmentID) as "",
 └Output field names [""]
@@ -1647,7 +1647,7 @@ SELECT max(2 * DepartmentID) FROM employee;
 SELECT avg(2 * DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["LastName" "DepartmentID"]
 ┌Evaluate avg(2 * DepartmentID) as "",
 └Output field names [""]
@@ -1703,7 +1703,7 @@ SELECT * FROM t;
 SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1712,7 +1712,7 @@ SELECT count() FROM t;
 SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1723,7 +1723,7 @@ SELECT count() FROM t WHERE n < 2;
 └Output field names ["n"]
 ┌Filter on n < 2
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1734,7 +1734,7 @@ SELECT count() FROM t WHERE n < 1;
 └Output field names ["n"]
 ┌Filter on n < 1
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1745,7 +1745,7 @@ SELECT count() FROM t WHERE n < 0;
 └Output field names ["n"]
 ┌Filter on n < 0
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1756,7 +1756,7 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 2;);
 └Output field names ["n"]
 ┌Filter on n < 2
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
@@ -1769,7 +1769,7 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 1;);
 └Output field names ["n"]
 ┌Filter on n < 1
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
@@ -1782,7 +1782,7 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 0;);
 └Output field names ["n"]
 ┌Filter on n < 0
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
@@ -1795,7 +1795,7 @@ SELECT sum(n) AS s FROM t WHERE n < 2;
 └Output field names ["n"]
 ┌Filter on n < 2
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
@@ -1806,7 +1806,7 @@ SELECT sum(n) AS s FROM t WHERE n < 1;
 └Output field names ["n"]
 ┌Filter on n < 1
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
@@ -1817,7 +1817,7 @@ SELECT sum(n) AS s FROM t WHERE n < 0;
 └Output field names ["n"]
 ┌Filter on n < 0
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
@@ -1826,7 +1826,7 @@ SELECT sum(n) AS s FROM t WHERE n < 0;
 SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1835,7 +1835,7 @@ SELECT count() FROM t;
 SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1844,7 +1844,7 @@ SELECT count() FROM t;
 SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1853,7 +1853,7 @@ SELECT count() FROM t;
 SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["S"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["S"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -1862,7 +1862,7 @@ SELECT count() FROM t;
 SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["S"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["S"]
 ┌Evaluate count() as "",
 └Output field names [""]
@@ -4431,7 +4431,7 @@ SELECT count(1) AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input 
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["input" "output"]
 ┌Evaluate count(1) as "total",
 └Output field names ["total"]
@@ -4469,7 +4469,7 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["input" "output"]
 ┌Evaluate count() as "total",
 └Output field names ["total"]
@@ -4480,7 +4480,7 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["input" "output"]
 ┌Evaluate count() as "total",
 └Output field names ["total"]
@@ -4825,7 +4825,7 @@ SELECT * FROM (SELECT i FROM t WHERE i < 4;) AS t, (SELECT * FROM u WHERE i < 40
 SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
@@ -4834,7 +4834,7 @@ SELECT max(t) AS T FROM t;
 SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
@@ -4843,7 +4843,7 @@ SELECT max(t) AS T FROM t;
 SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
@@ -4852,7 +4852,7 @@ SELECT max(t) AS T FROM t;
 SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
@@ -4861,7 +4861,7 @@ SELECT max(t) AS T FROM t;
 SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
@@ -4870,7 +4870,7 @@ SELECT max(t) AS T FROM t;
 SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
@@ -4879,7 +4879,7 @@ SELECT max(t) AS T FROM t;
 SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
@@ -4888,7 +4888,7 @@ SELECT min(t) AS T FROM t;
 SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
@@ -4897,7 +4897,7 @@ SELECT min(t) AS T FROM t;
 SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
@@ -4906,7 +4906,7 @@ SELECT min(t) AS T FROM t;
 SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
@@ -4915,7 +4915,7 @@ SELECT min(t) AS T FROM t;
 SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
@@ -4924,7 +4924,7 @@ SELECT min(t) AS T FROM t;
 SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
-┌Compute distinct rows
+┌Group by distinct rows
 └Output fieldNames ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
