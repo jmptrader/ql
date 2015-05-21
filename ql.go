@@ -284,6 +284,18 @@ func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
 	fields := r.src.fieldNames()
 	for _, e := range r.by {
 		cols := mentionedColumns(e)
+		for k := range cols {
+			found := false
+			for _, v := range fields {
+				if k == v {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return nil, fmt.Errorf("unknown column %s", k)
+			}
+		}
 		if len(cols) == 0 {
 			v, err := e.eval(ctx, nil, ctx.arg)
 			if err != nil {
@@ -298,7 +310,6 @@ func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
 
 		by = append(by, e)
 	}
-	//TODO detect missing fields early (#34)
 	return &orderByDefaultPlan{asc: r.asc, by: by, src: r.src, fields: fields}, nil
 }
 

@@ -73,13 +73,6 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Filter on c1 == 1
 └Output field names ["c1" "c2"]
 
----- 34
-SELECT * FROM t ORDER BY c3;
-┌Iterate all rows of table "t"
-└Output field names ["c1" "c2"]
-┌Order by c3,
-└Output field names ["c1" "c2"]
-
 ---- 35
 SELECT * FROM t ORDER BY c1;
 ┌Iterate all rows of table "t"
