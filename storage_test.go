@@ -392,6 +392,7 @@ func test(t *testing.T, s testDB) (panicked error) {
 							fmt.Fprintf(log, "---- %v\n", itest)
 							hdr = true
 						}
+						fmt.Fprintf(log, "%s\n", v)
 						fmt.Fprintf(log, "%s\n\n", strings.Join(a, "\n"))
 					}
 				}
