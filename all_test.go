@@ -850,17 +850,14 @@ func Example_recordsetFields() {
 			;
 		COMMIT;
 		
-		// [0]: Both Fields and Do are okay.
 		SELECT t.s+u.s as a, t.i+u.i as b, "noName", "name" as Named FROM t, u;
 		
-		// [1]: Filds are computable even when Do will fail (uknown column a).
 		SELECT DISTINCT s as S, sum(i) as I FROM (
 			SELECT t.s+u.s as s, t.i+u.i, 3 as i FROM t, u;
 		)
-		GROUP BY a
-		ORDER BY d;
+		GROUP BY S
+		ORDER BY I;
 		
-		// [2]: Fields are computable even when Do will fail on missing $1.
 		SELECT DISTINCT * FROM (
 			SELECT t.s+u.s as S, t.i+u.i, 3 as I FROM t, u;
 		)
