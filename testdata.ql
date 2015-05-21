@@ -11819,15 +11819,3 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM x;
 ||blob-like
-
--- S 981
-BEGIN TRANSACTION;
-	CREATE INDEX x ON employee(DepartmentID);
-COMMIT;
-SELECT DISTINCT DepartmentID
-FROM employee
-WHERE DepartmentID < 35; //TODO order -> index is used
-|"DepartmentID"
-[31]
-[33]
-[34]
