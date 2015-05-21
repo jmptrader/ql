@@ -131,7 +131,7 @@ func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
 	for _, v := range r.rsets {
 		v.explain(w)
 	}
-	w.Format("%uOutput field names %v\n", qnames(r.fields))
+	w.Format("Output field names %v%u\n", qnames(r.fields))
 }
 
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
