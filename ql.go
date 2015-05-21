@@ -281,6 +281,8 @@ func (r *orderByRset) String() string {
 }
 
 func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
+	//TODO detect missing fields early (#34)
+	//TODO optimize out constant expressions (#347)
 	return &orderByDefaultPlan{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}, nil
 }
 
@@ -452,7 +454,7 @@ type selectRset struct {
 }
 
 func (r *selectRset) plan(ctx *execCtx) (plan, error) {
-	if len(r.flds) == 0 {
+	if len(r.flds) == 0 { //TODO fix group by, return r.src
 		if _, ok := r.src.(*groupByDefaultPlan); !ok {
 			return r.src, nil
 		}
@@ -463,6 +465,8 @@ func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 			r.flds[i] = &fld{&ident{v}, v}
 		}
 	}
+
+	//TODO detect sel fields == src fields (#582), return r.src
 
 	m := map[string]struct{}{}
 	for _, v := range r.flds {
