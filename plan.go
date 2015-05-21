@@ -622,7 +622,7 @@ type selectFieldsDefaultPlan struct {
 	fields []string
 }
 
-func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) { //TODO optimize #582
+func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) {
 	//TODO check for non existing fields
 	r.src.explain(w)
 	w.Format("┌Evaluate")
@@ -674,7 +674,7 @@ type selectFieldsGroupPlan struct {
 	fields []string
 }
 
-func (r *selectFieldsGroupPlan) explain(w strutil.Formatter) { //TODO optimize #582
+func (r *selectFieldsGroupPlan) explain(w strutil.Formatter) {
 	//TODO check for non existing fields
 	r.src.explain(w)
 	w.Format("┌Evaluate")
