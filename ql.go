@@ -453,7 +453,15 @@ type selectRset struct {
 
 func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 	if len(r.flds) == 0 {
-		return r.src, nil
+		if _, ok := r.src.(*groupByDefaultPlan); !ok {
+			return r.src, nil
+		}
+
+		fields := r.src.fieldNames()
+		r.flds = make([]*fld, len(fields))
+		for i, v := range fields {
+			r.flds[i] = &fld{&ident{v}, v}
+		}
 	}
 
 	m := map[string]struct{}{}

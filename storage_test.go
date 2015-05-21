@@ -291,7 +291,6 @@ func test(t *testing.T, s testDB) (panicked error) {
 			continue
 		}
 
-		dbg("****")
 		if !func() (ok bool) {
 			tnl0 := db.tnl
 			defer func() {
