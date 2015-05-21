@@ -149,7 +149,7 @@ func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
 	for i, v := range r.rsets {
 		sel := !isTableOrIndex(v)
 		if sel {
-			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+			w.Format("┌Iterate all rows of virtual table %q%i\n", r.names[i])
 		}
 		v.explain(w)
 		if sel {
@@ -863,7 +863,7 @@ type tableDefaultPlan struct {
 }
 
 func (r *tableDefaultPlan) explain(w strutil.Formatter) {
-	w.Format("┌Iterate all rows of table %s\n└Output field names %v\n", r.t.name, qnames(r.fields))
+	w.Format("┌Iterate all rows of table %q\n└Output field names %v\n", r.t.name, qnames(r.fields))
 }
 
 func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1390,7 +1390,7 @@ func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
 	for i, v := range r.rsets {
 		sel := !isTableOrIndex(v)
 		if sel {
-			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+			w.Format("┌Iterate all rows of virtual table %q%i\n", r.names[i])
 		}
 		v.explain(w)
 		if sel {
@@ -1414,7 +1414,7 @@ func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
 	for i, v := range r.rsets {
 		sel := !isTableOrIndex(v)
 		if sel {
-			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+			w.Format("┌Iterate all rows of virtual table %q%i\n", r.names[i])
 		}
 		v.explain(w)
 		if sel {
@@ -1438,7 +1438,7 @@ func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
 	for i, v := range r.rsets {
 		sel := !isTableOrIndex(v)
 		if sel {
-			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+			w.Format("┌Iterate all rows of virtual table %q%i\n", r.names[i])
 		}
 		v.explain(w)
 		if sel {
