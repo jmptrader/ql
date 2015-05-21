@@ -3867,13 +3867,9 @@ SELECT * FROM __Index WHERE !hasPrefix(TableName, "__") ORDER BY TableName, Colu
 ---- 635
 SELECT c.TableName, c.Ordinal, c.Name FROM __Table AS t, __Column AS c WHERE t.Name == "u" && t.Name == c.TableName ORDER BY c.Ordinal;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of virtual table "t"
-│   │   ┌Iterate all rows of table "__Table"
-│   │   └Output field names ["Name" "Schema"]
+│   ┌Iterate all rows of table "__Table"
 │   └Output field names ["Name" "Schema"]
-│   ┌Iterate all rows of virtual table "c"
-│   │   ┌Iterate all rows of table "__Column"
-│   │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
+│   ┌Iterate all rows of table "__Column"
 │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
 └Output field names ["t.Name" "t.Schema" "c.TableName" "c.Ordinal" "c.Name" "c.Type"]
 ┌Filter on t.Name == "u" && t.Name == c.TableName
@@ -5807,9 +5803,7 @@ SELECT * FROM __Column2 ORDER BY TableName, Name;
 ---- 891
 SELECT __Column.TableName, __Column.Ordinal, __Column.Name, __Column.Type, __Column2.NotNull, __Column2.ConstraintExpr, __Column2.DefaultExpr FROM __Column LEFT OUTER JOIN __Column2 ON __Column.TableName == __Column2.TableName && __Column.Name == __Column2.Name WHERE !hasPrefix(__Column.TableName, "__") ORDER BY __Column.TableName, __Column.Ordinal;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of virtual table "__Column"
-│   │   ┌Iterate all rows of table "__Column"
-│   │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
+│   ┌Iterate all rows of table "__Column"
 │   └Output field names ["TableName" "Ordinal" "Name" "Type"]
 │   ┌Iterate all rows of table "__Column2"
 │   └Output field names ["TableName" "Name" "NotNull" "ConstraintExpr" "DefaultExpr"]

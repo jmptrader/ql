@@ -59,7 +59,10 @@ func isTableOrIndex(p plan) bool {
 		*indexLePlan,
 		*indexGePlan,
 		*indexGtPlan,
-		*indexBoolPlan:
+		*indexBoolPlan,
+		*sysTableDefaultPlan,
+		*sysColumnDefaultPlan,
+		*sysIndexDefaultPlan:
 		return true
 	default:
 		return false
