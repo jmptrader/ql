@@ -556,7 +556,7 @@ func builtinID(arg []interface{}, ctx map[interface{}]interface{}) (v interface{
 	case int64:
 		return x, nil
 	default:
-		panic("internal error 053")
+		return nil, nil
 	}
 }
 

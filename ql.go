@@ -280,9 +280,26 @@ func (r *orderByRset) String() string {
 }
 
 func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
+	var by []expression
+	fields := r.src.fieldNames()
+	for _, e := range r.by {
+		cols := mentionedColumns(e)
+		if len(cols) == 0 {
+			v, err := e.eval(ctx, nil, ctx.arg)
+			if err != nil {
+				by = append(by, e)
+				continue
+			}
+
+			if isConst(v) {
+				continue
+			}
+		}
+
+		by = append(by, e)
+	}
 	//TODO detect missing fields early (#34)
-	//TODO optimize out constant expressions (#347)
-	return &orderByDefaultPlan{asc: r.asc, by: r.by, src: r.src, fields: r.src.fieldNames()}, nil
+	return &orderByDefaultPlan{asc: r.asc, by: by, src: r.src, fields: fields}, nil
 }
 
 type whereRset struct {
