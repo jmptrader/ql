@@ -3279,6 +3279,10 @@ func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 		break
 	}
 
+	if op == '+' {
+		return x.(expression), nil
+	}
+
 	if op == '!' {
 		b, ok := l.(*binaryOperation)
 		if ok {

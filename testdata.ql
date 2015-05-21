@@ -1791,7 +1791,7 @@ ORDER BY DepartmentID;
 
 -- S 164
 SELECT +DepartmentID FROM employee;
-|""
+|"DepartmentID"
 [<nil>]
 [34]
 [34]
@@ -2240,7 +2240,7 @@ ORDER BY id();
 [9 Smith]
 [10 Williams]
 
--- S 205
+-- S 205 //TODO investigate plan, add variant w/ DESC, check plan.
 BEGIN TRANSACTION;
 	DELETE FROM employee
 	WHERE LastName == "Jones";
@@ -4483,7 +4483,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT +c, -d FROM t;
-|"", ""
+|"c", ""
 [2/3 -5/7]
 
 -- 425
@@ -4783,7 +4783,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT +a, +b, +c FROM t;
-|"", "", ""
+|"a", "b", "c"
 [1ns 3ns 5ns]
 
 -- 449
