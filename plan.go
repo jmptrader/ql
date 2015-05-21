@@ -49,6 +49,22 @@ type plan interface {
 	filterUsingIndex(expr expression) (plan, error)
 }
 
+func isTableOrIndex(p plan) bool {
+	switch p.(type) {
+	case
+		*tableDefaultPlan,
+		*indexEqPlan,
+		*indexLtPlan,
+		*indexLePlan,
+		*indexGePlan,
+		*indexGtPlan,
+		*indexBoolPlan:
+		return true
+	default:
+		return false
+	}
+}
+
 type explainDefaultPlan struct {
 	s stmt
 }
@@ -130,8 +146,15 @@ type crossJoinDefaultPlan struct {
 
 func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
-	for _, v := range r.rsets {
+	for i, v := range r.rsets {
+		sel := !isTableOrIndex(v)
+		if sel {
+			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+		}
 		v.explain(w)
+		if sel {
+			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
+		}
 	}
 	w.Format("%u└Output field names %v\n", qnames(r.fields))
 }
@@ -1364,8 +1387,15 @@ type leftJoinDefaultPlan struct {
 
 func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
-	for _, v := range r.rsets {
+	for i, v := range r.rsets {
+		sel := !isTableOrIndex(v)
+		if sel {
+			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+		}
 		v.explain(w)
+		if sel {
+			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
+		}
 	}
 	w.Format("Extend the product with all NULL rows from %s when no match for %v%u\n", r.names[len(r.names)-1], r.on)
 	w.Format("└Output field names %v\n", qnames(r.fields))
@@ -1381,8 +1411,15 @@ type rightJoinDefaultPlan struct {
 
 func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
-	for _, v := range r.rsets {
+	for i, v := range r.rsets {
+		sel := !isTableOrIndex(v)
+		if sel {
+			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+		}
 		v.explain(w)
+		if sel {
+			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
+		}
 	}
 	w.Format("Extend the product with all NULL rows from all but %s when no match for %v%n\n", r.names[len(r.names)-1], r.on)
 	w.Format("└Output field names %v\n", qnames(r.fields))
@@ -1398,8 +1435,15 @@ type fullJoinDefaultPlan struct {
 
 func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
-	for _, v := range r.rsets {
+	for i, v := range r.rsets {
+		sel := !isTableOrIndex(v)
+		if sel {
+			w.Format("┌Compute virtual table %q%i\n", r.names[i])
+		}
 		v.explain(w)
+		if sel {
+			w.Format("%u└Output field names %v\n", qnames(v.fieldNames()))
+		}
 	}
 	w.Format("Extend the product with all NULL rows from %s when no match for %v\n", r.names[len(r.names)-1], r.on)
 	w.Format("Extend the product with all NULL rows from all but %s when no match for %v%u\n", r.names[len(r.names)-1], r.on)
