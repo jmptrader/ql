@@ -624,7 +624,7 @@ type selectFieldsDefaultPlan struct {
 func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) { //TODO optimize #582
 	//TODO check for non existing fields
 	r.src.explain(w)
-	w.Format("┌Compute")
+	w.Format("┌Evaluate")
 	for _, v := range r.flds {
 		w.Format(" %s as %s,", v.expr, fmt.Sprintf("%q", v.name))
 	}

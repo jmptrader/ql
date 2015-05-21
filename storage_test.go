@@ -5,11 +5,14 @@
 package ql
 
 import (
+	"bufio"
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"regexp"
 	"runtime/debug"
 	"strings"
@@ -233,6 +236,68 @@ func test(t *testing.T, s testDB) (panicked error) {
 		return true
 	}
 
+	var logf *os.File
+	hasLogf := false
+	noErrors := true
+	if _, ok := s.(*memTestDB); ok {
+		if logf, err = ioutil.TempFile("", "ql-test-log-"); err != nil {
+			t.Error(err)
+			return nil
+		}
+
+		hasLogf = true
+	} else {
+		if logf, err = os.Create(os.DevNull); err != nil {
+			t.Error(err)
+			return nil
+		}
+	}
+
+	defer func() {
+		if hasLogf && noErrors {
+			func() {
+				if _, err := logf.Seek(0, 0); err != nil {
+					t.Error(err)
+					return
+				}
+
+				dst, err := os.Create("testdata.log")
+				if err != nil {
+					t.Error(err)
+					return
+				}
+
+				if _, err := io.Copy(dst, logf); err != nil {
+					t.Error(err)
+					return
+				}
+
+				if err := dst.Close(); err != nil {
+					t.Error(err)
+				}
+			}()
+		}
+
+		nm := logf.Name()
+		if err := logf.Close(); err != nil {
+			t.Error(err)
+		}
+
+		if hasLogf {
+			if err := os.Remove(nm); err != nil {
+				t.Error(err)
+			}
+		}
+	}()
+
+	log := bufio.NewWriter(logf)
+
+	defer func() {
+		if err := log.Flush(); err != nil {
+			t.Error(err)
+		}
+	}()
+
 	max := len(testdata)
 	if n := *oM; n != 0 && n < max {
 		max = n
@@ -294,6 +359,43 @@ func test(t *testing.T, s testDB) (panicked error) {
 		if !func() (ok bool) {
 			tnl0 := db.tnl
 			defer func() {
+				if !ok {
+					noErrors = false
+					dbg("noErrors = false")
+				}
+
+				if noErrors {
+					hdr := false
+					for _, v := range list.l {
+						src := "EXPLAIN " + v.String()
+						rs, _, err := db.Run(tctx, src, int64(30))
+						if err != nil {
+							t.Errorf("(%d) %s: %v", itest, src, err)
+							return
+						}
+
+						rows, err := rs[0].Rows(-1, 0)
+						if err != nil {
+							t.Errorf("%s: %v", src, err)
+							return
+						}
+
+						if !strings.HasPrefix(rows[0][0].(string), "┌") {
+							continue
+						}
+
+						var a []string
+						for _, v := range rows {
+							a = append(a, v[0].(string))
+						}
+						if !hdr {
+							fmt.Fprintf(log, "---- %v\n", itest)
+							hdr = true
+						}
+						fmt.Fprintf(log, "%s\n\n", strings.Join(a, "\n"))
+					}
+				}
+
 				tnl := db.tnl
 				if tnl != tnl0 {
 					panic(fmt.Errorf("internal error 057: tnl0 %v, tnl %v", tnl0, tnl))
@@ -340,28 +442,6 @@ func test(t *testing.T, s testDB) (panicked error) {
 			rs, _, err := db.Execute(tctx, list, int64(30))
 			if err != nil {
 				return chk(itest, err, expErr, re)
-			}
-
-			for _, v := range list.l {
-				src := "EXPLAIN " + v.String()
-				//dbg("", src)
-				rs, _, err := db.Run(tctx, src, int64(30))
-				if err != nil {
-					t.Errorf("(%d) %s: %v", itest, src, err)
-					return
-				}
-
-				rows, err := rs[0].Rows(-1, 0)
-				if err != nil {
-					t.Errorf("%s: %v", src, err)
-					return
-				}
-
-				var a []string
-				for _, v := range rows {
-					a = append(a, v[0].(string))
-				}
-				//dbg("\n----\n%s\n----\n", strings.Join(a, "\n"))
 			}
 
 			if rs == nil {
