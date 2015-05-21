@@ -361,7 +361,6 @@ func test(t *testing.T, s testDB) (panicked error) {
 			defer func() {
 				if !ok {
 					noErrors = false
-					dbg("noErrors = false")
 				}
 
 				if noErrors {

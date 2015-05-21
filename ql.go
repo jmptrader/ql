@@ -453,32 +453,46 @@ type selectRset struct {
 }
 
 func (r *selectRset) plan(ctx *execCtx) (plan, error) {
-	if len(r.flds) == 0 { //TODO fix group by, return r.src
-		if _, ok := r.src.(*groupByDefaultPlan); !ok {
-			return r.src, nil
+	var flds2 []*fld
+	if len(r.flds) != 0 {
+		m := map[string]struct{}{}
+		for _, v := range r.flds {
+			mentionedColumns0(v.expr, m)
+		}
+		for _, v := range r.src.fieldNames() {
+			delete(m, v)
+		}
+		for k := range m {
+			return nil, fmt.Errorf("unknown column %s", k)
 		}
 
-		fields := r.src.fieldNames()
-		r.flds = make([]*fld, len(fields))
-		for i, v := range fields {
-			r.flds[i] = &fld{&ident{v}, v}
+		flds2 = append(flds2, r.flds...)
+	}
+
+	if x, ok := r.src.(*groupByDefaultPlan); ok {
+		if len(r.flds) == 0 {
+			fields := x.fieldNames()
+			flds := make([]*fld, len(fields))
+			for i, v := range fields {
+				flds[i] = &fld{&ident{v}, v}
+			}
+			return &selectFieldsGroupPlan{flds: flds, src: x, fields: fields}, nil
 		}
+
+		p := &selectFieldsGroupPlan{flds: flds2, src: x}
+		for _, v := range r.flds {
+			p.fields = append(p.fields, v.name)
+		}
+		return p, nil
+	}
+
+	if len(r.flds) == 0 {
+		return r.src, nil
 	}
 
 	//TODO detect sel fields == src fields (#582), return r.src
 
-	m := map[string]struct{}{}
-	for _, v := range r.flds {
-		mentionedColumns0(v.expr, m)
-	}
-	for _, v := range r.src.fieldNames() {
-		delete(m, v)
-	}
-	for k := range m {
-		return nil, fmt.Errorf("unknown column %s", k)
-	}
-
-	p := &selectFieldsDefaultPlan{flds: append([]*fld(nil), r.flds...), src: r.src}
+	p := &selectFieldsDefaultPlan{flds: flds2, src: r.src}
 	for _, v := range r.flds {
 		p.fields = append(p.fields, v.name)
 	}
