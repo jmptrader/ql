@@ -1021,7 +1021,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 				rval,
 			}, nil
 		default:
-			return nil, nil //TODO
+			panic("internal error 069")
 		}
 	case *ident:
 		cn := x.s
