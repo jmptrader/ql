@@ -315,7 +315,7 @@ func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
 				continue
 			}
 
-			if isConst(v) {
+			if isConstValue(v) {
 				continue
 			}
 		}
@@ -335,6 +335,25 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	f = func(p plan, expr expression) (plan, expression, error) {
 		switch x := expr.(type) {
 		case *binaryOperation:
+			ok, cn, rval, err := x.isIdentRelOpVal()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if ok && cn == "id()" {
+				if rval, err = typeCheck1(rval, &col{typ: qInt64}); err != nil {
+					return nil, nil, err
+				}
+
+				rv := rval.(int64)
+				switch x.op {
+				case eq:
+					if rv < 1 {
+						return &nullPlan{fields: r.src.fieldNames()}, nil, nil
+					}
+				}
+			}
+
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
 				return nil, nil, err
@@ -549,7 +568,7 @@ func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 	if x, ok := src.(*tableDefaultPlan); ok {
 		isconst := true
 		for _, v := range flds2 {
-			if !isConst(v.expr) {
+			if !isConstValue(v.expr) {
 				isconst = false
 				break
 			}

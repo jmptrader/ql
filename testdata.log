@@ -1473,7 +1473,7 @@ SELECT count() FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1482,7 +1482,7 @@ SELECT count() AS y FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate count() as "y",
 └Output field names ["y"]
 
@@ -1491,7 +1491,7 @@ SELECT 3 * count() AS y FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate 3 * count() as "y",
 └Output field names ["y"]
 
@@ -1500,7 +1500,7 @@ SELECT count(LastName) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate count(LastName) as "",
 └Output field names [""]
 
@@ -1509,7 +1509,7 @@ SELECT count(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate count(DepartmentID) as "",
 └Output field names [""]
 
@@ -1518,7 +1518,7 @@ SELECT count() - count(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate count() - count(DepartmentID) as "",
 └Output field names [""]
 
@@ -1527,7 +1527,7 @@ SELECT min(LastName), min(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate min(LastName) as "", min(DepartmentID) as "",
 └Output field names ["" ""]
 
@@ -1536,7 +1536,7 @@ SELECT max(LastName), max(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate max(LastName) as "", max(DepartmentID) as "",
 └Output field names ["" ""]
 
@@ -1545,7 +1545,7 @@ SELECT sum(LastName), sum(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate sum(LastName) as "", sum(DepartmentID) as "",
 └Output field names ["" ""]
 
@@ -1554,7 +1554,7 @@ SELECT sum(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate sum(DepartmentID) as "",
 └Output field names [""]
 
@@ -1563,7 +1563,7 @@ SELECT avg(DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate avg(DepartmentID) as "",
 └Output field names [""]
 
@@ -1572,7 +1572,7 @@ SELECT DepartmentID, sum(DepartmentID) AS s FROM employee GROUP BY DepartmentID 
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "DepartmentID", sum(DepartmentID) as "s",
 └Output field names ["DepartmentID" "s"]
 ┌Order descending by s,
@@ -1583,7 +1583,7 @@ SELECT DepartmentID, count(LastName + string(DepartmentID)) AS y FROM employee G
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "DepartmentID", count(LastName + string(DepartmentID)) as "y",
 └Output field names ["DepartmentID" "y"]
 ┌Order descending by y,
@@ -1594,7 +1594,7 @@ SELECT DepartmentID, sum(2 * DepartmentID) AS s FROM employee GROUP BY Departmen
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "DepartmentID", sum(2 * DepartmentID) as "s",
 └Output field names ["DepartmentID" "s"]
 ┌Order descending by s,
@@ -1605,7 +1605,7 @@ SELECT min(2 * DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate min(2 * DepartmentID) as "",
 └Output field names [""]
 
@@ -1614,7 +1614,7 @@ SELECT max(2 * DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate max(2 * DepartmentID) as "",
 └Output field names [""]
 
@@ -1623,7 +1623,7 @@ SELECT avg(2 * DepartmentID) FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by distinct rows
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate avg(2 * DepartmentID) as "",
 └Output field names [""]
 
@@ -1632,7 +1632,7 @@ SELECT * FROM employee GROUP BY DepartmentID;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "LastName", DepartmentID as "DepartmentID",
 └Output field names ["LastName" "DepartmentID"]
 
@@ -1641,7 +1641,7 @@ SELECT * FROM employee GROUP BY DepartmentID ORDER BY LastName DESC;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID,
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "LastName", DepartmentID as "DepartmentID",
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
@@ -1652,7 +1652,7 @@ SELECT * FROM employee GROUP BY DepartmentID, LastName ORDER BY LastName DESC;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by DepartmentID, LastName,
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "LastName", DepartmentID as "DepartmentID",
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
@@ -1663,7 +1663,7 @@ SELECT * FROM employee GROUP BY LastName, DepartmentID ORDER BY LastName DESC;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Group by LastName, DepartmentID,
-└Output fieldNames ["LastName" "DepartmentID"]
+└Output field names ["LastName" "DepartmentID"]
 ┌Evaluate LastName as "LastName", DepartmentID as "DepartmentID",
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
@@ -1679,7 +1679,7 @@ SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1688,7 +1688,7 @@ SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1699,7 +1699,7 @@ SELECT count() FROM t WHERE n < 2;
 ┌Filter on n < 2
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1710,7 +1710,7 @@ SELECT count() FROM t WHERE n < 1;
 ┌Filter on n < 1
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1721,7 +1721,7 @@ SELECT count() FROM t WHERE n < 0;
 ┌Filter on n < 0
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1732,7 +1732,7 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 2;);
 ┌Filter on n < 2
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
 ┌Evaluate s + 10 as "",
@@ -1745,7 +1745,7 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 1;);
 ┌Filter on n < 1
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
 ┌Evaluate s + 10 as "",
@@ -1758,7 +1758,7 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 0;);
 ┌Filter on n < 0
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
 ┌Evaluate s + 10 as "",
@@ -1771,7 +1771,7 @@ SELECT sum(n) AS s FROM t WHERE n < 2;
 ┌Filter on n < 2
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
 
@@ -1782,7 +1782,7 @@ SELECT sum(n) AS s FROM t WHERE n < 1;
 ┌Filter on n < 1
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
 
@@ -1793,7 +1793,7 @@ SELECT sum(n) AS s FROM t WHERE n < 0;
 ┌Filter on n < 0
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate sum(n) as "s",
 └Output field names ["s"]
 
@@ -1802,7 +1802,7 @@ SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1811,7 +1811,7 @@ SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1820,7 +1820,7 @@ SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Group by distinct rows
-└Output fieldNames ["n"]
+└Output field names ["n"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1829,7 +1829,7 @@ SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["S"]
 ┌Group by distinct rows
-└Output fieldNames ["S"]
+└Output field names ["S"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1838,7 +1838,7 @@ SELECT count() FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["S"]
 ┌Group by distinct rows
-└Output fieldNames ["S"]
+└Output field names ["S"]
 ┌Evaluate count() as "",
 └Output field names [""]
 
@@ -1992,7 +1992,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2008,7 +2008,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2024,7 +2024,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2033,7 +2033,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2047,7 +2047,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2056,7 +2056,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2072,7 +2072,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2088,7 +2088,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2104,7 +2104,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2120,7 +2120,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2136,7 +2136,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2152,7 +2152,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2168,7 +2168,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2184,7 +2184,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2200,7 +2200,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2216,7 +2216,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2232,7 +2232,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2248,7 +2248,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2264,7 +2264,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2280,7 +2280,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2296,7 +2296,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2312,7 +2312,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2388,7 +2388,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -2557,7 +2557,7 @@ SELECT c, sum(i) FROM t GROUP BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "i"]
 ┌Group by c,
-└Output fieldNames ["c" "i"]
+└Output field names ["c" "i"]
 ┌Evaluate c as "c", sum(i) as "",
 └Output field names ["c" ""]
 
@@ -3568,7 +3568,7 @@ SELECT i FROM t AS u;
 ---- 578
 SELECT i FROM t WHERE b ORDER BY i;
 ┌Iterate all rows of table "t" using index "x" where the indexed value == true
-└Output fieldNames ["i" "b"]
+└Output field names ["i" "b"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 ┌Order by i,
@@ -3589,7 +3589,7 @@ SELECT i FROM t WHERE i < 30;
 ---- 582
 SELECT i FROM t WHERE i < 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 583
 SELECT * FROM t WHERE i <= 30;
@@ -3601,7 +3601,7 @@ SELECT * FROM t WHERE i <= 30;
 ---- 584
 SELECT * FROM t WHERE i <= 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 585
 SELECT i FROM t WHERE i == 30;
@@ -3613,7 +3613,7 @@ SELECT i FROM t WHERE i == 30;
 ---- 586
 SELECT i FROM t WHERE i == 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value == 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 587
 SELECT * FROM t WHERE i >= 30;
@@ -3625,7 +3625,7 @@ SELECT * FROM t WHERE i >= 30;
 ---- 588
 SELECT * FROM t WHERE i >= 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 589
 SELECT * FROM t WHERE i > 30;
@@ -3637,7 +3637,7 @@ SELECT * FROM t WHERE i > 30;
 ---- 590
 SELECT * FROM t WHERE i > 30;
 ┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 591
 SELECT i FROM t WHERE !b ORDER BY i;
@@ -3664,77 +3664,77 @@ SELECT i FROM t WHERE !b ORDER BY i;
 ---- 593
 SELECT i FROM t WHERE i < $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 594
 SELECT * FROM t WHERE i <= $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 595
 SELECT i FROM t WHERE i == $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value == 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 596
 SELECT * FROM t WHERE i >= $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 597
 SELECT * FROM t WHERE i > $1;
 ┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 598
 SELECT i FROM t WHERE i < $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 599
 SELECT * FROM t WHERE i <= $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 600
 SELECT i FROM t WHERE i == $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value == 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 601
 SELECT * FROM t WHERE i >= $1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 602
 SELECT * FROM t WHERE i > $1;
 ┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 603
 SELECT i FROM t WHERE i < 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 604
 SELECT * FROM t WHERE i <= 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 605
 SELECT i FROM t WHERE i == 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value == 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 606
 SELECT * FROM t WHERE i >= 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is >= 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 607
 SELECT * FROM t WHERE i > 30;
 ┌Iterate all rows on table "t" using index "x" where the indexed value is > 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 608
 SELECT * FROM t WHERE i < 30;
@@ -3746,7 +3746,7 @@ SELECT * FROM t WHERE i < 30;
 ---- 609
 SELECT * FROM t WHERE i < 30;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 624
 SELECT * FROM __Table;
@@ -3850,7 +3850,7 @@ SELECT * FROM t WHERE s == "test";
 ---- 637
 SELECT * FROM t WHERE s == "test";
 ┌Iterate all rows of table "t" using index "idx_s" where the indexed value == "test"
-└Output fieldNames ["i" "s"]
+└Output field names ["i" "s"]
 
 ---- 638
 SELECT * FROM __Table ORDER BY Name;
@@ -3897,7 +3897,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
 │   ┌Iterate all rows of table "t" using index "xk" where the indexed value is < 7
-│   └Output fieldNames ["i" "j" "k"]
+│   └Output field names ["i" "j" "k"]
 │   ┌Iterate all rows of table "u"
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
@@ -3910,7 +3910,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   ┌Iterate all rows of table "t"
 │   └Output field names ["i" "j" "k"]
 │   ┌Iterate all rows of table "u" using index "xy" where the indexed value is < 60
-│   └Output fieldNames ["x" "y" "z"]
+│   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on t.k < 7
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
@@ -3919,9 +3919,9 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
 │   ┌Iterate all rows of table "t" using index "xk" where the indexed value is < 7
-│   └Output fieldNames ["i" "j" "k"]
+│   └Output field names ["i" "j" "k"]
 │   ┌Iterate all rows of table "u" using index "xy" where the indexed value is < 60
-│   └Output fieldNames ["x" "y" "z"]
+│   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
 ---- 646
@@ -3929,21 +3929,21 @@ SELECT * FROM t OFFSET -1;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Skip first -1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 647
 SELECT * FROM t OFFSET 0;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Skip first 0 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 648
 SELECT * FROM t OFFSET 1;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Skip first 1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 649
 SELECT * FROM t ORDER BY id() OFFSET -1;
@@ -3952,7 +3952,7 @@ SELECT * FROM t ORDER BY id() OFFSET -1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first -1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 650
 SELECT * FROM t ORDER BY id() OFFSET 0;
@@ -3961,7 +3961,7 @@ SELECT * FROM t ORDER BY id() OFFSET 0;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 0 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 651
 SELECT * FROM t ORDER BY id() OFFSET 1;
@@ -3970,7 +3970,7 @@ SELECT * FROM t ORDER BY id() OFFSET 1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 652
 SELECT * FROM t ORDER BY id() OFFSET 2;
@@ -3979,7 +3979,7 @@ SELECT * FROM t ORDER BY id() OFFSET 2;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 2 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 653
 SELECT * FROM t ORDER BY id() LIMIT -1;
@@ -3988,7 +3988,7 @@ SELECT * FROM t ORDER BY id() LIMIT -1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first -1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 654
 SELECT * FROM t ORDER BY id() LIMIT 0;
@@ -3997,7 +3997,7 @@ SELECT * FROM t ORDER BY id() LIMIT 0;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first 0 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 655
 SELECT * FROM t ORDER BY id() LIMIT 1;
@@ -4006,7 +4006,7 @@ SELECT * FROM t ORDER BY id() LIMIT 1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first 1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 656
 SELECT * FROM t ORDER BY id() LIMIT -1;
@@ -4015,7 +4015,7 @@ SELECT * FROM t ORDER BY id() LIMIT -1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first -1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 657
 SELECT * FROM t ORDER BY id() LIMIT 0;
@@ -4024,7 +4024,7 @@ SELECT * FROM t ORDER BY id() LIMIT 0;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first 0 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 658
 SELECT * FROM t ORDER BY id() LIMIT 1;
@@ -4033,7 +4033,7 @@ SELECT * FROM t ORDER BY id() LIMIT 1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first 1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 659
 SELECT * FROM t ORDER BY id() LIMIT 2;
@@ -4042,7 +4042,7 @@ SELECT * FROM t ORDER BY id() LIMIT 2;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first 2 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 660
 SELECT * FROM t ORDER BY id() LIMIT 3;
@@ -4051,7 +4051,7 @@ SELECT * FROM t ORDER BY id() LIMIT 3;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Pass first 3 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 661
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 0;
@@ -4060,9 +4060,9 @@ SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 0;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 0 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 0 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 662
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 1;
@@ -4071,9 +4071,9 @@ SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 0 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 663
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 2;
@@ -4082,9 +4082,9 @@ SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 2;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 2 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 0 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 664
 SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 3;
@@ -4093,9 +4093,9 @@ SELECT * FROM t ORDER BY id() LIMIT 0 OFFSET 3;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 3 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 0 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 665
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 0;
@@ -4104,9 +4104,9 @@ SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 0;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 0 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 666
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 1;
@@ -4115,9 +4115,9 @@ SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 667
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 2;
@@ -4126,9 +4126,9 @@ SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 2;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 2 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 668
 SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 3;
@@ -4137,9 +4137,9 @@ SELECT * FROM t ORDER BY id() LIMIT 1 OFFSET 3;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 3 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 1 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 669
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 0;
@@ -4148,9 +4148,9 @@ SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 0;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 0 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 2 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 670
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 1;
@@ -4159,9 +4159,9 @@ SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 2 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 671
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 2;
@@ -4170,9 +4170,9 @@ SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 2;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 2 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 2 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 672
 SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 3;
@@ -4181,9 +4181,9 @@ SELECT * FROM t ORDER BY id() LIMIT 2 OFFSET 3;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 3 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 2 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 673
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 0;
@@ -4192,9 +4192,9 @@ SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 0;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 0 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 3 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 674
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 1;
@@ -4203,9 +4203,9 @@ SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 1;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 1 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 3 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 675
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 2;
@@ -4214,9 +4214,9 @@ SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 2;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 2 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 3 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 676
 SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 3;
@@ -4225,9 +4225,9 @@ SELECT * FROM t ORDER BY id() LIMIT 3 OFFSET 3;
 ┌Order by id(),
 └Output field names ["i"]
 ┌Skip first 3 records
-└Output fieldNames ["i"]
+└Output field names ["i"]
 ┌Pass first 3 records
-└Output fieldNames [i]
+└Output field names [i]
 
 ---- 677
 SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FROM u ORDER BY i;) AS b ORDER BY a.i, b.i;
@@ -4238,9 +4238,9 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   │   ┌Pass first 2 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 │   ┌Iterate all rows of virtual table "b"
 │   │   ┌Iterate all rows of table "u"
@@ -4261,9 +4261,9 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   │   ┌Pass first 2 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 │   ┌Iterate all rows of virtual table "b"
 │   │   ┌Iterate all rows of table "u"
@@ -4271,7 +4271,7 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   └Output field names ["i"]
 └Output field names ["a.i" "b.i"]
 ┌Order by a.i, b.i,
@@ -4286,9 +4286,9 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   │   ┌Pass first 2 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 │   ┌Iterate all rows of virtual table "b"
 │   │   ┌Iterate all rows of table "u"
@@ -4296,7 +4296,7 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Pass first 1 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 └Output field names ["a.i" "b.i"]
 ┌Order by a.i, b.i,
@@ -4311,9 +4311,9 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   │   ┌Pass first 2 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 │   ┌Iterate all rows of virtual table "b"
 │   │   ┌Iterate all rows of table "u"
@@ -4321,9 +4321,9 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   │   ┌Pass first 1 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 └Output field names ["a.i" "b.i"]
 ┌Order by a.i, b.i,
@@ -4338,9 +4338,9 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   │   ┌Pass first 2 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 │   ┌Iterate all rows of virtual table "b"
 │   │   ┌Iterate all rows of table "u"
@@ -4348,15 +4348,15 @@ SELECT * FROM (SELECT * FROM t ORDER BY i LIMIT 2 OFFSET 1;) AS a, (SELECT * FRO
 │   │   ┌Order by i,
 │   │   └Output field names ["i"]
 │   │   ┌Skip first 1 records
-│   │   └Output fieldNames ["i"]
+│   │   └Output field names ["i"]
 │   │   ┌Pass first 1 records
-│   │   └Output fieldNames [i]
+│   │   └Output field names [i]
 │   └Output field names ["i"]
 └Output field names ["a.i" "b.i"]
 ┌Order by a.i, b.i,
 └Output field names ["a.i" "b.i"]
 ┌Pass first 1 records
-└Output fieldNames [a.i b.i]
+└Output field names [a.i b.i]
 
 ---- 682
 SELECT count(1) AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input == 3;
@@ -4365,7 +4365,7 @@ SELECT count(1) AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input 
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
 ┌Group by distinct rows
-└Output fieldNames ["input" "output"]
+└Output field names ["input" "output"]
 ┌Evaluate count(1) as "total",
 └Output field names ["total"]
 
@@ -4378,9 +4378,9 @@ SELECT * FROM fibonacci WHERE input >= 5 && input <= 7 || input == 3 ORDER BY in
 ┌Order descending by input,
 └Output field names ["input" "output"]
 ┌Skip first 1 records
-└Output fieldNames ["input" "output"]
+└Output field names ["input" "output"]
 ┌Pass first 2 records
-└Output fieldNames [input output]
+└Output field names [input output]
 
 ---- 684
 SELECT * FROM fibonacci ORDER BY input;
@@ -4403,7 +4403,7 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
 ┌Group by distinct rows
-└Output fieldNames ["input" "output"]
+└Output field names ["input" "output"]
 ┌Evaluate count() as "total",
 └Output field names ["total"]
 
@@ -4414,7 +4414,7 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 ┌Filter on input >= 5 && input <= 7 || input == 3
 └Output field names ["input" "output"]
 ┌Group by distinct rows
-└Output fieldNames ["input" "output"]
+└Output field names ["input" "output"]
 ┌Evaluate count() as "total",
 └Output field names ["total"]
 
@@ -4597,14 +4597,14 @@ SELECT * FROM x;
 ---- 716
 SELECT s FROM t WHERE s != "z";
 ┌Iterate all rows of table "t" using index "x" where the indexed value != "z"
-└Output fieldNames ["i" "s"]
+└Output field names ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
 
 ---- 717
 SELECT s FROM t WHERE s < "z";
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < "z"
-└Output fieldNames ["i" "s"]
+└Output field names ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
 
@@ -4701,9 +4701,9 @@ SELECT id() IN (SELECT id() FROM t WHERE username == "xiaolunwen";), username ==
 ---- 734
 SELECT user, remain, total FROM no_id_user WHERE user == "xlw" LIMIT 1;
 ┌Iterate all rows of table "no_id_user" using index "UQE_no_id_user_user" where the indexed value == "xlw"
-└Output fieldNames ["user" "remain" "total"]
+└Output field names ["user" "remain" "total"]
 ┌Pass first 1 records
-└Output fieldNames [user remain total]
+└Output field names [user remain total]
 
 ---- 735
 SELECT * FROM t WHERE id() < 4;
@@ -4715,35 +4715,35 @@ SELECT * FROM t WHERE id() < 4;
 ---- 736
 SELECT * FROM t WHERE i < 4;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 737
 SELECT * FROM t WHERE i <= 4;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is <= 4
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 738
 SELECT * FROM t WHERE i == 4;
 ┌Iterate all rows of table "t" using index "x" where the indexed value == 4
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 739
 SELECT * FROM t WHERE i >= 4;
 ┌Iterate all rows of table "t" using index "x" where the indexed value is >= 4
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 740
 SELECT * FROM t WHERE i > 4;
 ┌Iterate all rows on table "t" using index "x" where the indexed value is > 4
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 741
 SELECT * FROM (SELECT i FROM t WHERE i < 4;) AS t, (SELECT * FROM u WHERE i < 40;) AS u;
 ┌Compute Cartesian product of
 │   ┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
-│   └Output fieldNames ["i"]
+│   └Output field names ["i"]
 │   ┌Iterate all rows of table "u" using index "y" where the indexed value is < 40
-│   └Output fieldNames ["i"]
+│   └Output field names ["i"]
 └Output field names ["t.i" "u.i"]
 
 ---- 742
@@ -4751,7 +4751,7 @@ SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
 
@@ -4760,7 +4760,7 @@ SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
 
@@ -4769,7 +4769,7 @@ SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
 
@@ -4778,7 +4778,7 @@ SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
 
@@ -4787,7 +4787,7 @@ SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
 
@@ -4796,7 +4796,7 @@ SELECT max(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate max(t) as "T",
 └Output field names ["T"]
 
@@ -4805,7 +4805,7 @@ SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
 
@@ -4814,7 +4814,7 @@ SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
 
@@ -4823,7 +4823,7 @@ SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
 
@@ -4832,7 +4832,7 @@ SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
 
@@ -4841,7 +4841,7 @@ SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
 
@@ -4850,7 +4850,7 @@ SELECT min(t) AS T FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["t"]
 ┌Group by distinct rows
-└Output fieldNames ["t"]
+└Output field names ["t"]
 ┌Evaluate min(t) as "T",
 └Output field names ["T"]
 
@@ -6166,7 +6166,7 @@ SELECT Expr FROM __Index2_Expr WHERE Index2_ID IN (SELECT id() FROM __Index2 WHE
 ---- 938
 SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 || Root == -1 FROM __Index2 WHERE TableName == "t";
 ┌Iterate all rows of table "__Index2" using index "__xIndex2_TableName" where the indexed value == "t"
-└Output fieldNames ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
+└Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Evaluate TableName as "TableName", IndexName as "IndexName", IsUnique as "IsUnique", IsSimple as "IsSimple", Root > 0 || Root == -1 as "",
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
 
@@ -6311,12 +6311,12 @@ SELECT * FROM t WHERE i != 42;
 ---- 984
 SELECT * FROM t WHERE i != 42;
 ┌Iterate all rows of table "t" using index "x" where the indexed value != 42
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 985
 SELECT * FROM t WHERE i != 42;
 ┌Iterate all rows of table "t" using index "x" where the indexed value != 42
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 986
 SELECT * FROM t WHERE id() > 0;
@@ -6328,7 +6328,7 @@ SELECT * FROM t WHERE id() > 0;
 ---- 987
 SELECT * FROM t WHERE id() > 0;
 ┌Iterate all rows on table "t" using index "x" where the indexed value is > 0
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 988
 SELECT * FROM t WHERE i IS NULL;
@@ -6340,7 +6340,7 @@ SELECT * FROM t WHERE i IS NULL;
 ---- 989
 SELECT * FROM t WHERE i IS NULL;
 ┌Iterate all rows of table "t" using index "x" where the indexed value IS NULL
-└Output fieldNames ["i" "j"]
+└Output field names ["i" "j"]
 
 ---- 990
 SELECT * FROM t WHERE i IS NOT NULL;
@@ -6352,7 +6352,7 @@ SELECT * FROM t WHERE i IS NOT NULL;
 ---- 991
 SELECT * FROM t WHERE i IS NOT NULL;
 ┌Iterate all rows of table "t" using index "x" where the indexed value IS NOT NULL
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 992
 SELECT * FROM t WHERE id() IS NULL;
@@ -6371,10 +6371,10 @@ SELECT * FROM t WHERE id() IS NOT NULL;
 ---- 994
 SELECT * FROM t WHERE id() == 1;
 ┌Iterate all rows of table "t" using index "x" where the indexed value == 1
-└Output fieldNames ["i"]
+└Output field names ["i"]
 
 ---- 995
 SELECT * FROM t WHERE id() == 0;
-┌Iterate all rows of table "t" using index "x" where the indexed value == 0
-└Output fieldNames ["i"]
+┌Produce no rows
+└Output field names ["i"]
 
