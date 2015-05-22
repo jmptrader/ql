@@ -91,15 +91,15 @@ func (r *explainDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 }
 
 func (r *explainDefaultPlan) explain(w strutil.Formatter) {
-	panic("TODO")
+	return
 }
 
 func (r *explainDefaultPlan) fieldNames() []string {
-	panic("TODO")
+	return []string{""}
 }
 
 func (r *explainDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	panic("TODO")
+	return nil, nil
 }
 
 type filterDefaultPlan struct {

@@ -131,7 +131,15 @@ type explainStmt struct {
 }
 
 func (s *explainStmt) explain(ctx *execCtx, w strutil.Formatter) {
-	panic("TODO")
+	for {
+		x, ok := s.s.(*explainStmt)
+		if !ok {
+			s.s.explain(ctx, w)
+			return
+		}
+
+		s = x
+	}
 }
 
 func (e *explainStmt) String() string {

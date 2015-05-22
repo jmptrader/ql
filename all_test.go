@@ -2782,6 +2782,7 @@ func testMentionedColumns(s stmt) (err error) {
 		commitStmt,
 		*dropIndexStmt,
 		*dropTableStmt,
+		*explainStmt,
 		rollbackStmt,
 		*truncateTableStmt:
 		// nop

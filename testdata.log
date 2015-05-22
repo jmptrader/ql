@@ -6316,3 +6316,13 @@ SELECT * FROM x;
 ┌Iterate all values of index "x"
 └Output field names N/A
 
+---- 981
+EXPLAIN SELECT * FROM t;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+
+---- 982
+EXPLAIN EXPLAIN SELECT * FROM t;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+
