@@ -406,10 +406,20 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 
 			if cn == "id()" {
 				switch {
-				case x.not: // IS NOT NULL
-					return r.src, nil, nil
-				default: // IS NULL
-					return &nullPlan{r.src.fieldNames()}, nil, nil
+				case r.src.hasID():
+					switch {
+					case x.not: // IS NOT NULL
+						return r.src, nil, nil
+					default: // IS NULL
+						return &nullPlan{r.src.fieldNames()}, nil, nil
+					}
+				default:
+					switch {
+					case x.not: // IS NOT NULL
+						return &nullPlan{r.src.fieldNames()}, nil, nil
+					default: // IS NULL
+						return r.src, nil, nil
+					}
 				}
 			}
 
