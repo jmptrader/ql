@@ -92,7 +92,7 @@ func (x *index2) eval(ctx *execCtx, cols []*col, id int64, r []interface{}) ([]i
 		m[col.name] = v
 	}
 	for i, e := range x.exprList {
-		v, err := e.eval(ctx, m, nil)
+		v, err := e.eval(ctx, m)
 		if err != nil {
 			return nil, err
 		}

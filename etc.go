@@ -483,16 +483,16 @@ func ideal(v interface{}) interface{} {
 	}
 }
 
-func eval(v expression, execCtx *execCtx, ctx map[interface{}]interface{}, arg []interface{}) (y interface{}) {
-	y, err := expand1(v.eval(execCtx, ctx, arg))
+func eval(v expression, execCtx *execCtx, ctx map[interface{}]interface{}) (y interface{}) {
+	y, err := expand1(v.eval(execCtx, ctx))
 	if err != nil {
 		panic(err) // panic ok here
 	}
 	return
 }
 
-func eval2(a, b expression, execCtx *execCtx, ctx map[interface{}]interface{}, arg []interface{}) (x, y interface{}) {
-	return eval(a, execCtx, ctx, arg), eval(b, execCtx, ctx, arg)
+func eval2(a, b expression, execCtx *execCtx, ctx map[interface{}]interface{}) (x, y interface{}) {
+	return eval(a, execCtx, ctx), eval(b, execCtx, ctx)
 }
 
 func invOp2(x, y interface{}, o int) (interface{}, error) {

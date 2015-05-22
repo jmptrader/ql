@@ -120,7 +120,7 @@ func (r *filterDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inter
 			m[v] = data[i]
 		}
 		m["$id"] = rid
-		val, err := r.expr.eval(ctx, m, ctx.arg)
+		val, err := r.expr.eval(ctx, m)
 		if err != nil {
 			return false, err
 		}
@@ -448,7 +448,7 @@ func (r *limitDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 				}
 			}
 			m["$id"] = rid
-			val, err := r.expr.eval(ctx, m, ctx.arg)
+			val, err := r.expr.eval(ctx, m)
 			if err != nil {
 				return false, err
 			}
@@ -502,7 +502,7 @@ func (r *offsetDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inter
 				}
 			}
 			m["$id"] = rid
-			val, err := r.expr.eval(ctx, m, ctx.arg)
+			val, err := r.expr.eval(ctx, m)
 			if err != nil {
 				return false, err
 			}
@@ -573,7 +573,7 @@ func (r *orderByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 		}
 		m["$id"] = rid
 		for i, expr := range r.by {
-			val, err := expr.eval(ctx, m, ctx.arg)
+			val, err := expr.eval(ctx, m)
 			if err != nil {
 				return false, err
 			}
@@ -661,7 +661,7 @@ func (r *selectFieldsDefaultPlan) do(ctx *execCtx, f func(id interface{}, data [
 		out := make([]interface{}, len(r.flds))
 		for i, fld := range r.flds {
 			var err error
-			if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+			if out[i], err = fld.expr.eval(ctx, m); err != nil {
 				return false, err
 			}
 		}
@@ -718,7 +718,7 @@ func (r *selectFieldsGroupPlan) do(ctx *execCtx, f func(id interface{}, data []i
 				}
 				m["$id"] = rid
 				for _, fld := range r.flds {
-					if _, err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+					if _, err = fld.expr.eval(ctx, m); err != nil {
 						return false, err
 					}
 				}
@@ -727,7 +727,7 @@ func (r *selectFieldsGroupPlan) do(ctx *execCtx, f func(id interface{}, data []i
 			}
 			m["$agg"] = true
 			for i, fld := range r.flds {
-				if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+				if out[i], err = fld.expr.eval(ctx, m); err != nil {
 					return false, err
 				}
 			}
@@ -756,7 +756,7 @@ func (r *selectFieldsGroupPlan) do(ctx *execCtx, f func(id interface{}, data []i
 
 	m := map[interface{}]interface{}{"$agg0": true} // aggregate empty record set
 	for i, fld := range r.flds {
-		if out[i], err = fld.expr.eval(ctx, m, ctx.arg); err != nil {
+		if out[i], err = fld.expr.eval(ctx, m); err != nil {
 			return err
 		}
 	}
@@ -1239,7 +1239,7 @@ func (r *indexLePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		}
 
 		cmp.l = value{val: k[0]}
-		v, err := cmp.eval(ctx, nil, nil)
+		v, err := cmp.eval(ctx, nil)
 		if err != nil {
 			return err
 		}
@@ -1301,7 +1301,7 @@ func (r *indexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		}
 
 		cmp.l = value{val: k[0]}
-		v, err := cmp.eval(ctx, nil, nil)
+		v, err := cmp.eval(ctx, nil)
 		if err != nil {
 			return err
 		}
@@ -1376,7 +1376,7 @@ func (r *indexLtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 		}
 
 		cmp.l = value{val: k[0]}
-		v, err := cmp.eval(ctx, nil, nil)
+		v, err := cmp.eval(ctx, nil)
 		if err != nil {
 			return err
 		}
@@ -1510,7 +1510,7 @@ func (r *leftJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 				}
 			}
 
-			val, err := r.on.eval(ctx, m, ctx.arg)
+			val, err := r.on.eval(ctx, m)
 			if err != nil {
 				return false, err
 			}
@@ -1575,7 +1575,7 @@ func (r *rightJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []in
 				}
 			}
 
-			val, err := r.on.eval(ctx, m, ctx.arg)
+			val, err := r.on.eval(ctx, m)
 			if err != nil {
 				return false, err
 			}
@@ -1655,7 +1655,7 @@ func (r *fullJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 				}
 			}
 
-			val, err := r.on.eval(ctx, m, ctx.arg)
+			val, err := r.on.eval(ctx, m)
 			if err != nil {
 				return false, err
 			}

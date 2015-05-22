@@ -309,7 +309,7 @@ func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
 			}
 		}
 		if len(cols) == 0 {
-			v, err := e.eval(ctx, nil, ctx.arg)
+			v, err := e.eval(ctx, nil)
 			if err != nil {
 				by = append(by, e)
 				continue
