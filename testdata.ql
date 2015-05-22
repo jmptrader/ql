@@ -11837,3 +11837,28 @@ EXPLAIN EXPLAIN SELECT * FROM t;
 |""
 [┌Iterate all rows of table "t"]
 [└Output field names ["i"]]
+
+-- 983
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (-1), (NULL), (42), (0), (278);
+COMMIT;
+SELECT * FROM t WHERE i != 42;
+|"i"
+[278]
+[0]
+[-1]
+[314]
+
+-- 984
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (314), (-1), (NULL), (42), (0), (278);
+COMMIT;
+SELECT * FROM t WHERE i != 42;
+|"i"
+[278]
+[0]
+[-1]
+[314]
