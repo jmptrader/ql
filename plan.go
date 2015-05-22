@@ -35,6 +35,7 @@ var (
 	_ plan = (*sysIndexDefaultPlan)(nil)
 	_ plan = (*sysTableDefaultPlan)(nil)
 	_ plan = (*tableDefaultPlan)(nil)
+	_ plan = (*tableNilPlan)(nil)
 	_ plan = (*indexEqPlan)(nil)
 	_ plan = (*indexLtPlan)(nil)
 	_ plan = (*indexLePlan)(nil)
@@ -858,6 +859,39 @@ func (r *sysTableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 		if more, err := f(id, rec); !more || err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+type tableNilPlan struct {
+	t *table
+}
+
+func (r *tableNilPlan) explain(w strutil.Formatter) {
+	w.Format("┌Iterate all rows of table %q\n└Output field names %v\n", r.t.name, qnames(r.fieldNames()))
+}
+
+func (r *tableNilPlan) fieldNames() []string { return []string{} }
+
+func (r *tableNilPlan) filterUsingIndex(expr expression) (plan, error) {
+	return nil, nil
+}
+
+func (r *tableNilPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	t := r.t
+	h := t.head
+	cols := t.cols
+	for h > 0 {
+		rec, err := t.store.Read(nil, h, cols...) // 0:next, 1:id, 2...: data
+		if err != nil {
+			return err
+		}
+
+		if m, err := f(nil, nil); !m || err != nil {
+			return err
+		}
+
+		h = rec[0].(int64) // next
 	}
 	return nil
 }

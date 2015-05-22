@@ -498,13 +498,13 @@ func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 	if len(r.flds) != 0 {
 		m := map[string]struct{}{}
 		for _, v := range r.flds {
-			mentionedColumns0(v.expr, m)
+			mentionedColumns0(v.expr, true, true, m)
 		}
 		for _, v := range r.src.fieldNames() {
 			delete(m, v)
 		}
 		for k := range m {
-			return nil, fmt.Errorf("unknown column %s", k)
+			return nil, fmt.Errorf("unknown field %s", k)
 		}
 
 		flds2 = append(flds2, r.flds...)
