@@ -6342,3 +6342,17 @@ SELECT * FROM t WHERE i IS NULL;
 ┌Iterate all rows of table "t" using index "x" where the indexed value IS NULL
 └Output fieldNames ["i" "j"]
 
+---- 990
+SELECT * FROM t WHERE i IS NOT NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on i IS NOT NULL
+└Output field names ["i"]
+
+---- 991
+SELECT * FROM t WHERE i IS NOT NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on i IS NOT NULL
+└Output field names ["i"]
+
