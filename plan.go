@@ -268,7 +268,7 @@ type groupByDefaultPlan struct {
 func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
 	switch {
-	case len(r.colNames) == 0:
+	case len(r.colNames) == 0: //TODO this case should not exist for this plan, should become tableDefaultPlan
 		w.Format("┌Group by distinct rows")
 	default:
 		w.Format("┌Group by")
@@ -309,7 +309,7 @@ func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 
 		gcols = append(gcols, &col{name: c, index: i})
 	}
-	k := make([]interface{}, len(r.colNames)) //TODO optimize when len(r.cols) == 0
+	k := make([]interface{}, len(r.colNames)) //TODO optimize when len(r.cols) == 0, should become tableDefaultPlan
 	if err = r.src.do(ctx, func(rid interface{}, in []interface{}) (more bool, err error) {
 		infer(in, &cols)
 		for i, c := range gcols {
