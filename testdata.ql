@@ -11934,7 +11934,7 @@ SELECT * FROM t WHERE i IS NOT NULL
 [0]
 [314]
 
--- 991
+-- 991 // order -> index is used
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
@@ -11942,7 +11942,7 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE i IS NOT NULL
 |"i"
-[278]
-[-1]
-[0]
 [314]
+[278]
+[0]
+[-1]
