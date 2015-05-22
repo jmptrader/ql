@@ -6378,3 +6378,15 @@ SELECT * FROM t WHERE id() == 0;
 ┌Produce no rows
 └Output field names ["i"]
 
+---- 996
+SELECT * FROM t WHERE id() == 0;
+┌Produce no rows
+└Output field names ["i"]
+
+---- 997
+SELECT * FROM t WHERE id() < 1;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on id() < 1
+└Output field names ["i"]
+
