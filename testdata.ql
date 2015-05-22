@@ -12011,3 +12011,16 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE id() <= 0;
 |"i"
+
+-- 999
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() > 0;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]

@@ -335,33 +335,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	f = func(p plan, expr expression) (plan, expression, error) {
 		switch x := expr.(type) {
 		case *binaryOperation:
-			ok, cn, rval, err := x.isIdentRelOpVal()
-			if err != nil {
-				return nil, nil, err
-			}
-
-			if ok && cn == "id()" {
-				if rval, err = typeCheck1(rval, &col{typ: qInt64}); err != nil {
-					return nil, nil, err
-				}
-
-				rv := rval.(int64)
-				switch x.op {
-				case eq:
-					if rv < 1 {
-						return &nullPlan{fields: r.src.fieldNames()}, nil, nil
-					}
-				case '<':
-					if rv <= 1 {
-						return &nullPlan{fields: r.src.fieldNames()}, nil, nil
-					}
-				case le:
-					if rv <= 0 {
-						return &nullPlan{fields: r.src.fieldNames()}, nil, nil
-					}
-				}
-			}
-
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
 				return nil, nil, err
