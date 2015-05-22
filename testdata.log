@@ -1072,15 +1072,6 @@ SELECT LastName, LastName[:], LastName[:2], LastName[2:], LastName[1:3] FROM emp
 ┌Order by LastName,
 └Output field names ["LastName" "" "" "" ""]
 
----- 191
-SELECT LastName FROM employee WHERE department IS NULL;
-┌Iterate all rows of table "employee"
-└Output field names ["LastName" "DepartmentID"]
-┌Filter on department IS NULL
-└Output field names ["LastName" "DepartmentID"]
-┌Evaluate LastName as "LastName",
-└Output field names ["LastName"]
-
 ---- 192
 SELECT DepartmentID, LastName, LastName[:4], LastName[:0 * DepartmentID], LastName[0 * DepartmentID:0], LastName[0 * DepartmentID:0 * DepartmentID] FROM employee ORDER BY LastName DESC;
 ┌Iterate all rows of table "employee"
@@ -6348,8 +6339,6 @@ SELECT * FROM t WHERE i IS NULL;
 
 ---- 989
 SELECT * FROM t WHERE i IS NULL;
-┌Iterate all rows of table "t"
-└Output field names ["i" "j"]
-┌Filter on i IS NULL
-└Output field names ["i" "j"]
+┌Iterate all rows of table "t" using index "x" where the indexed value IS NULL
+└Output fieldNames ["i" "j"]
 
