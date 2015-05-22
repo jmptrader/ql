@@ -174,6 +174,28 @@ func (t *table) clone() *table {
 	return r
 }
 
+func (t *table) findIndexByColName(name string) (*col, *indexedCol) {
+	for i, v := range t.indices {
+		if v == nil {
+			continue
+		}
+
+		if i == 0 {
+			if name == "id()" {
+				return &col{name: name, typ: qInt64}, v
+			}
+
+			continue
+		}
+
+		if c := t.cols[i-1]; c.name == name {
+			return c, v
+		}
+	}
+
+	return nil, nil
+}
+
 func (t *table) findIndexByName(name string) interface{} {
 	for _, v := range t.indices {
 		if v != nil && v.name == name {
