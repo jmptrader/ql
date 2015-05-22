@@ -6336,8 +6336,6 @@ SELECT * FROM t WHERE id() > 0;
 
 ---- 987
 SELECT * FROM t WHERE id() > 0;
-┌Iterate all rows of table "t"
-└Output field names ["i"]
-┌Filter on id() > 0
-└Output field names ["i"]
+┌Iterate all rows on table "t" using index "x" where the indexed value is > 0
+└Output fieldNames ["i"]
 
