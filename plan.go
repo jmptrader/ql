@@ -34,6 +34,7 @@ var (
 	_ plan = (*indexNullPlan)(nil)
 	_ plan = (*leftJoinDefaultPlan)(nil)
 	_ plan = (*limitDefaultPlan)(nil)
+	_ plan = (*nullPlan)(nil)
 	_ plan = (*offsetDefaultPlan)(nil)
 	_ plan = (*orderByDefaultPlan)(nil)
 	_ plan = (*rightJoinDefaultPlan)(nil)
@@ -278,7 +279,7 @@ func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 			w.Format(" %s,", v)
 		}
 	}
-	w.Format("\n└Output fieldNames %v\n", qnames(r.fields))
+	w.Format("\n└Output field names %v\n", qnames(r.fields))
 }
 
 func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -422,7 +423,7 @@ type limitDefaultPlan struct { //TODO optimize for expr < 1
 
 func (r *limitDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
-	w.Format("┌Pass first %v records\n└Output fieldNames %v\n", r.expr, r.fields)
+	w.Format("┌Pass first %v records\n└Output field names %v\n", r.expr, r.fields)
 }
 
 func (r *limitDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -476,7 +477,7 @@ type offsetDefaultPlan struct { //TODO optimize for expr < 1
 
 func (r *offsetDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
-	w.Format("┌Skip first %v records\n└Output fieldNames %v\n", r.expr, qnames(r.fields))
+	w.Format("┌Skip first %v records\n└Output field names %v\n", r.expr, qnames(r.fields))
 }
 
 func (r *offsetDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
@@ -1102,7 +1103,7 @@ type indexNotNullPlan struct { // column IS NULL
 
 func (r *indexNotNullPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value IS NOT NULL\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value IS NOT NULL\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, qnames(r.fieldNames()),
 	)
 }
@@ -1138,6 +1139,24 @@ func (r *indexNotNullPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 	}
 }
 
+type nullPlan struct {
+	fields []string
+}
+
+func (r *nullPlan) fieldNames() []string { return r.fields }
+
+func (r *nullPlan) explain(w strutil.Formatter) {
+	w.Format("┌Produce no rows\n└Output field names %v\n", qnames(r.fields))
+}
+
+func (r *nullPlan) do(*execCtx, func(interface{}, []interface{}) (bool, error)) error {
+	return nil
+}
+
+func (r *nullPlan) filterUsingIndex(expr expression) (plan, error) {
+	return r, nil
+}
+
 type indexNullPlan struct { // column IS NULL
 	tableDefaultPlan
 	xn string
@@ -1146,7 +1165,7 @@ type indexNullPlan struct { // column IS NULL
 
 func (r *indexNullPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value IS NULL\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value IS NULL\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, qnames(r.fieldNames()),
 	)
 }
@@ -1191,7 +1210,7 @@ type indexNePlan struct { // column != val
 
 func (r *indexNePlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value != %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value != %v\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 	)
 }
@@ -1270,7 +1289,7 @@ type indexEqPlan struct { // column == val
 
 func (r *indexEqPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value == %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value == %v\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 	)
 }
@@ -1315,7 +1334,7 @@ type indexBoolPlan struct { // column (of type bool)
 
 func (r *indexBoolPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value == true\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value == true\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, qnames(r.fields),
 	)
 }
@@ -1361,7 +1380,7 @@ type indexGePlan struct { // column <= val
 
 func (r *indexGePlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value is >= %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is >= %v\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 	)
 }
@@ -1407,7 +1426,7 @@ type indexLePlan struct { // column <= val
 
 func (r *indexLePlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value is <= %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is <= %v\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 	)
 }
@@ -1469,7 +1488,7 @@ type indexGtPlan struct { // column > val
 
 func (r *indexGtPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows on table %q using index %q where the indexed value is > %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows on table %q using index %q where the indexed value is > %v\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 	)
 }
@@ -1531,7 +1550,7 @@ type indexLtPlan struct { // column < val
 
 func (r *indexLtPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value is < %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is < %v\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 	)
 }
