@@ -398,7 +398,32 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				}
 			}
 
-		case *ident, *isNull:
+		case *isNull:
+			ok, cn := isColumnExpression(x.expr)
+			if !ok {
+				return nil, nil, nil
+			}
+
+			if cn == "id()" {
+				switch {
+				case x.not: // IS NOT NULL
+					return r.src, nil, nil
+				default: // IS NULL
+					return &nullPlan{r.src.fieldNames()}, nil, nil
+				}
+			}
+
+			p2, err := p.filterUsingIndex(expr)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if p2 != nil {
+				return p2, nil, nil
+			}
+
+			return nil, nil, nil
+		case *ident:
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
 				return nil, nil, err
