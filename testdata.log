@@ -6385,8 +6385,6 @@ SELECT * FROM t WHERE id() == 0;
 
 ---- 997
 SELECT * FROM t WHERE id() < 1;
-┌Iterate all rows of table "t"
-└Output field names ["i"]
-┌Filter on id() < 1
+┌Produce no rows
 └Output field names ["i"]
 
