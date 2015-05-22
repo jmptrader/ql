@@ -11863,7 +11863,7 @@ SELECT * FROM t WHERE i != 42;
 [0]
 [-1]
 
--- 985
+-- 985 // order -> index is used
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int);
 	CREATE INDEX x ON t(i);
