@@ -1180,7 +1180,7 @@ func (r *nullPlan) hasID() bool { return false }
 func (r *nullPlan) fieldNames() []string { return r.fields }
 
 func (r *nullPlan) explain(w strutil.Formatter) {
-	w.Format("┌Produce no rows\n└Output field names %v\n", qnames(r.fields))
+	w.Format("┌Iterate no rows\n└Output field names %v\n", qnames(r.fields))
 }
 
 func (r *nullPlan) do(*execCtx, func(interface{}, []interface{}) (bool, error)) error {

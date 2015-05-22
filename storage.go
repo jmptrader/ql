@@ -339,7 +339,7 @@ func (t *table) findIndexByColName(name string) (*col, *indexedCol) {
 
 		if i == 0 {
 			if name == "id()" {
-				return &col{name: name, typ: qInt64}, v
+				return idCol, v
 			}
 
 			continue
