@@ -481,7 +481,17 @@ func (o *binaryOperation) isIdentRelOpVal() (bool, string, interface{}, error) {
 	}
 
 	if v, ok := o.r.(value); ok {
-		return true, sid, v.val, nil
+		switch o.op {
+		case '<',
+			le,
+			'>',
+			ge,
+			eq,
+			neq:
+			return true, sid, v.val, nil
+		default:
+			return false, "", nil, nil
+		}
 	}
 
 	return false, "", nil, nil
