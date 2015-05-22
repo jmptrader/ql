@@ -11953,7 +11953,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t(id());
 	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
 COMMIT;
-SELECT * FROM t WHERE id() IS NULL; // Must not use index
+SELECT * FROM t WHERE id() IS NULL;
 |"i"
 
 -- 993
@@ -11962,7 +11962,28 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t(id());
 	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
 COMMIT;
-SELECT * FROM t WHERE id() IS NOT NULL; // Must not use index
+SELECT * FROM t WHERE id() IS NOT NULL;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
+
+-- 994
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() IS NULL;
+|"i"
+
+-- 995
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() IS NOT NULL;
 |"i"
 [278]
 [-1]

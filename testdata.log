@@ -6364,3 +6364,17 @@ SELECT * FROM t WHERE id() IS NOT NULL;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 
+---- 994
+SELECT * FROM t WHERE id() IS NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on id() IS NULL
+└Output field names ["i"]
+
+---- 995
+SELECT * FROM t WHERE id() IS NOT NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on id() IS NOT NULL
+└Output field names ["i"]
+
