@@ -77,7 +77,7 @@ type explainDefaultPlan struct {
 	s stmt
 }
 
-func (r *explainDefaultPlan) hasID() bool { return false }
+func (r *explainDefaultPlan) hasID() bool {return false }
 
 func (r *explainDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
 	var buf bytes.Buffer
@@ -113,7 +113,7 @@ type filterDefaultPlan struct {
 	expr expression
 }
 
-func (r *filterDefaultPlan) hasID() bool { return r.plan.hasID() }
+func (r *filterDefaultPlan) hasID() bool {return r.plan.hasID() }
 
 func (r *filterDefaultPlan) explain(w strutil.Formatter) {
 	r.plan.explain(w)
@@ -156,7 +156,7 @@ type crossJoinDefaultPlan struct {
 	fields []string
 }
 
-func (r *crossJoinDefaultPlan) hasID() bool { return false }
+func (r *crossJoinDefaultPlan) hasID() bool {return false }
 
 func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
@@ -220,7 +220,7 @@ type distinctDefaultPlan struct {
 	fields []string
 }
 
-func (r *distinctDefaultPlan) hasID() bool { return false }
+func (r *distinctDefaultPlan) hasID() bool {return false }
 
 func (r *distinctDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
@@ -275,7 +275,7 @@ type groupByDefaultPlan struct {
 	fields   []string
 }
 
-func (r *groupByDefaultPlan) hasID() bool { return false }
+func (r *groupByDefaultPlan) hasID() bool {return false }
 
 func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
@@ -1064,8 +1064,17 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 		}
 	case *isNull:
 		ok, cn := isColumnExpression(x.expr)
-		if !ok || cn == "id()" {
+		if !ok {
 			return nil, nil
+		}
+
+		if cn == "id()" {
+			switch {
+			case x.not: // IS NOT NULL
+				return r, nil
+			default: // IS NULL
+				return &nullPlan{r.fieldNames()}, nil
+			}
 		}
 
 		_, ix := t.findIndexByColName(cn)
@@ -1727,7 +1736,7 @@ type fullJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
 
-func (r *fullJoinDefaultPlan) hasID() bool { return false }
+func (r *fullJoinDefaultPlan) hasID() bool {return false }
 
 func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")

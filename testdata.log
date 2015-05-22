@@ -6356,15 +6356,11 @@ SELECT * FROM t WHERE i IS NOT NULL;
 
 ---- 992
 SELECT * FROM t WHERE id() IS NULL;
-┌Iterate all rows of table "t"
-└Output field names ["i"]
-┌Filter on id() IS NULL
+┌Produce no rows
 └Output field names ["i"]
 
 ---- 993
 SELECT * FROM t WHERE id() IS NOT NULL;
 ┌Iterate all rows of table "t"
-└Output field names ["i"]
-┌Filter on id() IS NOT NULL
 └Output field names ["i"]
 
