@@ -214,7 +214,7 @@ Start:
 	StatementList
 |	parseExpression Expression
 	{
-		yylex.(*lexer).expr = $2.(expression)
+		yylex.(*lexer).expr = expr($2)
 	}
 
 AlterTableStmt:
@@ -230,7 +230,7 @@ AlterTableStmt:
 Assignment:
 	ColumnName '=' Expression
 	{
-		$$ = assignment{colName: $1.(string), expr: $3.(expression)}
+		$$ = assignment{colName: $1.(string), expr: expr($3)}
 	}
 
 AssignmentList:
@@ -273,7 +273,7 @@ ColumnDef:
 	{
 		x := &col{name: $1.(string), typ: $2.(int), constraint: $3.(*constraint)}
 		if $4 != nil {
-			x.dflt = $4.(expression)
+			x.dflt = expr($4)
 		}
 		$$ = x
 	}
@@ -310,7 +310,7 @@ Constraint:
 	}
 |	Expression
 	{
-		$$ = &constraint{$1.(expression)}
+		$$ = &constraint{expr($1)}
 	}
 
 ConstraintOpt:
@@ -322,7 +322,7 @@ ConstraintOpt:
 Conversion:
 	Type '(' Expression ')'
 	{
-		$$ = &conversion{typ: $1.(int), val: $3.(expression)}
+		$$ = &conversion{typ: $1.(int), val: expr($3)}
 	}
 
 CreateIndexStmt:
@@ -545,7 +545,7 @@ logOr:
 ExpressionList:
 	Expression ExpressionList1 CommaOpt
 	{
-		$$ = append([]expression{$1.(expression)}, $2.([]expression)...)
+		$$ = append([]expression{expr($1)}, $2.([]expression)...)
 	}
 
 ExpressionList1:
@@ -555,7 +555,7 @@ ExpressionList1:
 	}
 |	ExpressionList1 ',' Expression
 	{
-		$$ = append($1.([]expression), $3.(expression))
+		$$ = append($1.([]expression), expr($3))
 	}
 
 Factor:
@@ -659,7 +659,7 @@ Factor1:
 Field:
 	Expression Field1
 	{
-		expr, name := $1.(expression), $2.(string)
+		expr, name := expr($1), $2.(string)
 		if name == "" {
 			s, ok := expr.(*ident)
 			if ok {
@@ -779,7 +779,7 @@ Operand:
 	}
 |	'(' Expression ')'
 	{
-		$$ = &pexpr{expr: $2.(expression)}
+		$$ = &pexpr{expr: expr($2)}
 	}
 
 OrderBy:
@@ -808,7 +808,7 @@ PrimaryExpression:
 |	PrimaryExpression Index
 	{
 		var err error
-		if $$, err = newIndex($1.(expression), $2.(expression)); err != nil {
+		if $$, err = newIndex($1.(expression), expr($2)); err != nil {
 			yylex.(*lexer).err("%v", err)
 			return 1
 		}
@@ -1060,7 +1060,7 @@ SelectStmtLimit:
 	}
 |	"LIMIT" Expression
 	{
-		$$ = &limitRset{expr: $2.(expression)}
+		$$ = &limitRset{expr: expr($2)}
 	}
 
 SelectStmtOffset:
@@ -1069,7 +1069,7 @@ SelectStmtOffset:
 	}
 |	"OFFSET" Expression
 	{
-		$$ = &offsetRset{expr: $2.(expression)}
+		$$ = &offsetRset{expr: expr($2)}
 	}
 
 SelectStmtDistinct:
@@ -1124,18 +1124,18 @@ Slice:
 	}
 |	'[' ':' Expression ']'
 	{
-		hi := $3.(expression)
+		hi := expr($3)
 		$$ = [2]*expression{nil, &hi}
 	}
 |	'[' Expression ':' ']'
 	{
-		lo := $2.(expression)
+		lo := expr($2)
 		$$ = [2]*expression{&lo, nil}
 	}
 |	'[' Expression ':' Expression ']'
 	{
-		lo := $2.(expression)
-		hi := $4.(expression)
+		lo := expr($2)
+		hi := expr($4)
 		$$ = [2]*expression{&lo, &hi}
 	}
 
@@ -1292,7 +1292,7 @@ UnaryExpr:
 WhereClause:
 	"WHERE" Expression
 	{
-		$$ = &whereRset{expr: $2.(expression)}
+		$$ = &whereRset{expr: expr($2)}
 	}
 
 
@@ -1309,3 +1309,16 @@ CommaOpt:
 |	','
 	{
 	}
+
+%%
+
+func expr(v interface{}) expression {
+	e := v.(expression)
+	for {
+		x, ok := e.(*pexpr)
+		if !ok {
+			return e
+		}
+		e = x.expr
+	}
+}

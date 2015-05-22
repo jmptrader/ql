@@ -3836,8 +3836,8 @@ type slice struct {
 	lo, hi *expression
 }
 
-func newSlice(expr expression, lo, hi *expression) (v expression, err error) {
-	y := slice{expr, lo, hi}
+func newSlice(e expression, lo, hi *expression) (v expression, err error) {
+	y := slice{e, lo, hi}
 	var val interface{}
 	if e := y.expr; e.isStatic() {
 		if val, err = e.eval(nil, nil); err != nil {
@@ -3852,7 +3852,7 @@ func newSlice(expr expression, lo, hi *expression) (v expression, err error) {
 	}
 
 	if p := y.lo; p != nil {
-		if e := *p; e.isStatic() {
+		if e := expr(*p); e.isStatic() {
 			if val, err = e.eval(nil, nil); err != nil {
 				return nil, err
 			}
@@ -3867,7 +3867,7 @@ func newSlice(expr expression, lo, hi *expression) (v expression, err error) {
 	}
 
 	if p := y.hi; p != nil {
-		if e := *p; e.isStatic() {
+		if e := expr(*p); e.isStatic() {
 			if val, err = e.eval(nil, nil); err != nil {
 				return nil, err
 			}
