@@ -6354,3 +6354,27 @@ SELECT * FROM t WHERE i IS NOT NULL;
 ┌Iterate all rows of table "t" using index "x" where the indexed value IS NOT NULL
 └Output fieldNames ["i"]
 
+---- 992
+SELECT * FROM t WHERE id() IS NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on id() IS NULL
+└Output field names ["i"]
+
+---- 993
+SELECT * FROM t WHERE id() IS NOT NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on id() IS NOT NULL
+└Output field names ["i"]
+
+---- 994
+SELECT * FROM t WHERE id() == 1;
+┌Iterate all rows of table "t" using index "x" where the indexed value == 1
+└Output fieldNames ["i"]
+
+---- 995
+SELECT * FROM t WHERE id() == 0;
+┌Iterate all rows of table "t" using index "x" where the indexed value == 0
+└Output fieldNames ["i"]
+
