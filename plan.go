@@ -23,6 +23,15 @@ var (
 	_ plan = (*filterDefaultPlan)(nil)
 	_ plan = (*fullJoinDefaultPlan)(nil)
 	_ plan = (*groupByDefaultPlan)(nil)
+	_ plan = (*indexBoolPlan)(nil)
+	_ plan = (*indexEqPlan)(nil)
+	_ plan = (*indexGePlan)(nil)
+	_ plan = (*indexGtPlan)(nil)
+	_ plan = (*indexLePlan)(nil)
+	_ plan = (*indexLtPlan)(nil)
+	_ plan = (*indexNePlan)(nil)
+	_ plan = (*indexNotNullPlan)(nil)
+	_ plan = (*indexNullPlan)(nil)
 	_ plan = (*leftJoinDefaultPlan)(nil)
 	_ plan = (*limitDefaultPlan)(nil)
 	_ plan = (*offsetDefaultPlan)(nil)
@@ -36,14 +45,6 @@ var (
 	_ plan = (*sysTableDefaultPlan)(nil)
 	_ plan = (*tableDefaultPlan)(nil)
 	_ plan = (*tableNilPlan)(nil)
-	_ plan = (*indexEqPlan)(nil)
-	_ plan = (*indexGePlan)(nil)
-	_ plan = (*indexGtPlan)(nil)
-	_ plan = (*indexLePlan)(nil)
-	_ plan = (*indexLtPlan)(nil)
-	_ plan = (*indexNePlan)(nil)
-	_ plan = (*indexNullPlan)(nil)
-	_ plan = (*indexBoolPlan)(nil)
 )
 
 type plan interface {
@@ -1042,7 +1043,11 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 
 		switch {
 		case x.not:
-			return nil, nil //panic("TODO")
+			return &indexNotNullPlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+			}, nil
 		default:
 			return &indexNullPlan{
 				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1089,6 +1094,50 @@ func (r *tableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 
 func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
 
+type indexNotNullPlan struct { // column IS NULL
+	tableDefaultPlan
+	xn string
+	x  btreeIndex
+}
+
+func (r *indexNotNullPlan) explain(w strutil.Formatter) {
+	w.Format(
+		"┌Iterate all rows of table %q using index %q where the indexed value IS NOT NULL\n└Output fieldNames %v\n",
+		r.tableDefaultPlan.t.name, r.xn, qnames(r.fieldNames()),
+	)
+}
+
+func (r *indexNotNullPlan) filterUsingIndex(expr expression) (plan, error) {
+	return nil, nil //TODO
+}
+
+func (r *indexNotNullPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	t := r.t
+	it, err := r.x.SeekLast()
+	if err != nil {
+		return noEOF(err)
+	}
+	for {
+		k, h, err := it.Prev()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if k[0] == nil {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 type indexNullPlan struct { // column IS NULL
 	tableDefaultPlan
 	xn string
@@ -1110,7 +1159,7 @@ func (r *indexNullPlan) do(ctx *execCtx, f func(id interface{}, data []interface
 	t := r.t
 	it, err := r.x.SeekFirst()
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 	for {
 		k, h, err := it.Next()
@@ -1155,7 +1204,7 @@ func (r *indexNePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	t := r.t
 	it, err := r.x.SeekLast()
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 	for {
 		k, h, err := it.Prev()
@@ -1182,7 +1231,7 @@ func (r *indexNePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	}
 
 	if it, _, err = r.x.Seek([]interface{}{r.val}); err != nil {
-		return err
+		return noEOF(err)
 	}
 
 	if _, _, err := it.Prev(); err != nil { // discard equal value
@@ -1234,7 +1283,7 @@ func (r *indexEqPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	t := r.t
 	it, _, err := r.x.Seek([]interface{}{r.val})
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 
 	for {
@@ -1279,7 +1328,7 @@ func (r *indexBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interface
 	t := r.t
 	it, _, err := r.x.Seek([]interface{}{true})
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 
 	for {
@@ -1329,7 +1378,7 @@ func (r *indexGePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	t := r.t
 	it, _, err := r.x.Seek([]interface{}{r.val})
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 
 	for {
@@ -1377,7 +1426,7 @@ func (r *indexLePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	t := r.t
 	it, err := r.x.SeekFirst()
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 
 	for {
@@ -1439,7 +1488,7 @@ func (r *indexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	t := r.t
 	it, err := r.x.SeekLast()
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 
 	for {
@@ -1510,7 +1559,7 @@ func (r *indexLtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}
 	t := r.t
 	it, err := r.x.SeekFirst()
 	if err != nil {
-		return err
+		return noEOF(err)
 	}
 
 	for {
