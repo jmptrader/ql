@@ -60,51 +60,54 @@ func isConst(v interface{}) bool {
 	}
 }
 
-func mentionedColumns0(e expression, m map[string]struct{}) {
+func mentionedColumns0(e expression, q, nq bool, m map[string]struct{}) {
 	switch x := e.(type) {
 	case parameter,
 		value:
 		// nop
 	case *binaryOperation:
-		mentionedColumns0(x.l, m)
-		mentionedColumns0(x.r, m)
+		mentionedColumns0(x.l, q, nq, m)
+		mentionedColumns0(x.r, q, nq, m)
 	case *call:
 		if x.f != "id" {
 			for _, e := range x.arg {
-				mentionedColumns0(e, m)
+				mentionedColumns0(e, q, nq, m)
 			}
 		}
 	case *conversion:
-		mentionedColumns0(x.val, m)
+		mentionedColumns0(x.val, q, nq, m)
 	case *ident:
-		if !x.isQualified() {
+		if q && x.isQualified() {
+			m[x.s] = struct{}{}
+		}
+		if nq && !x.isQualified() {
 			m[x.s] = struct{}{}
 		}
 	case *indexOp:
-		mentionedColumns0(x.expr, m)
-		mentionedColumns0(x.x, m)
+		mentionedColumns0(x.expr, q, nq, m)
+		mentionedColumns0(x.x, q, nq, m)
 	case *isNull:
-		mentionedColumns0(x.expr, m)
+		mentionedColumns0(x.expr, q, nq, m)
 	case *pexpr:
-		mentionedColumns0(x.expr, m)
+		mentionedColumns0(x.expr, q, nq, m)
 	case *pIn:
-		mentionedColumns0(x.expr, m)
+		mentionedColumns0(x.expr, q, nq, m)
 		for _, e := range x.list {
-			mentionedColumns0(e, m)
+			mentionedColumns0(e, q, nq, m)
 		}
 	case *pLike:
-		mentionedColumns0(x.expr, m)
-		mentionedColumns0(x.pattern, m)
+		mentionedColumns0(x.expr, q, nq, m)
+		mentionedColumns0(x.pattern, q, nq, m)
 	case *slice:
-		mentionedColumns0(x.expr, m)
+		mentionedColumns0(x.expr, q, nq, m)
 		if y := x.lo; y != nil {
-			mentionedColumns0(*y, m)
+			mentionedColumns0(*y, q, nq, m)
 		}
 		if y := x.hi; y != nil {
-			mentionedColumns0(*y, m)
+			mentionedColumns0(*y, q, nq, m)
 		}
 	case *unaryOperation:
-		mentionedColumns0(x.v, m)
+		mentionedColumns0(x.v, q, nq, m)
 	default:
 		panic("internal error 052")
 	}
@@ -112,7 +115,13 @@ func mentionedColumns0(e expression, m map[string]struct{}) {
 
 func mentionedColumns(e expression) map[string]struct{} {
 	m := map[string]struct{}{}
-	mentionedColumns0(e, m)
+	mentionedColumns0(e, false, true, m)
+	return m
+}
+
+func mentionedQColumns(e expression) map[string]struct{} {
+	m := map[string]struct{}{}
+	mentionedColumns0(e, true, false, m)
 	return m
 }
 

@@ -3569,20 +3569,6 @@ SELECT * FROM t AS u;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 
----- 575
-SELECT u.x FROM t AS u;
-┌Iterate all rows of table "t"
-└Output field names ["i"]
-┌Evaluate u.x as "u.x",
-└Output field names ["u.x"]
-
----- 576
-SELECT u.i FROM t AS u;
-┌Iterate all rows of table "t"
-└Output field names ["i"]
-┌Evaluate u.i as "u.i",
-└Output field names ["u.i"]
-
 ---- 577
 SELECT i FROM t AS u;
 ┌Iterate all rows of table "t"
