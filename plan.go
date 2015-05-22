@@ -37,10 +37,11 @@ var (
 	_ plan = (*tableDefaultPlan)(nil)
 	_ plan = (*tableNilPlan)(nil)
 	_ plan = (*indexEqPlan)(nil)
-	_ plan = (*indexLtPlan)(nil)
-	_ plan = (*indexLePlan)(nil)
 	_ plan = (*indexGePlan)(nil)
 	_ plan = (*indexGtPlan)(nil)
+	_ plan = (*indexLePlan)(nil)
+	_ plan = (*indexLtPlan)(nil)
+	_ plan = (*indexNePlan)(nil)
 	_ plan = (*indexBoolPlan)(nil)
 )
 
@@ -1003,7 +1004,12 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 							rval,
 						}, nil
 					case neq:
-						return nil, nil //TODO
+						return &indexNePlan{
+							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+							ix.name,
+							ix.x,
+							rval,
+						}, nil
 					default:
 						return nil, nil //TODO
 					}
@@ -1080,6 +1086,85 @@ func (r *tableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 
 func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
 
+type indexNePlan struct { // column != val
+	tableDefaultPlan
+	xn  string
+	x   btreeIndex
+	val interface{}
+}
+
+func (r *indexNePlan) explain(w strutil.Formatter) {
+	w.Format(
+		"┌Iterate all rows of table %q using index %q where the indexed value != %v\n└Output fieldNames %v\n",
+		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
+	)
+}
+
+func (r *indexNePlan) filterUsingIndex(expr expression) (plan, error) {
+	return nil, nil //TODO
+}
+
+func (r *indexNePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	t := r.t
+	it, err := r.x.SeekLast()
+	if err != nil {
+		return err
+	}
+	for {
+		k, h, err := it.Prev()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if k[0] == nil {
+			return nil
+		}
+
+		if k[0] == r.val {
+			break
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+
+	if it, _, err = r.x.Seek([]interface{}{r.val}); err != nil {
+		return err
+	}
+
+	if _, _, err := it.Prev(); err != nil { // discard equal value
+		return noEOF(err)
+	}
+
+	for {
+		k, h, err := it.Prev()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if k[0] == nil {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+
+	return nil
+}
+
 type indexEqPlan struct { // column == val
 	tableDefaultPlan
 	xn  string
@@ -1089,7 +1174,7 @@ type indexEqPlan struct { // column == val
 
 func (r *indexEqPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value is %v\n└Output fieldNames %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value == %v\n└Output fieldNames %v\n",
 		r.tableDefaultPlan.t.name, r.xn, r.val, qnames(r.fields),
 	)
 }
