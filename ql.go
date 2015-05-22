@@ -398,7 +398,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				}
 			}
 
-		case *ident:
+		case *ident, *isNull:
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
 				return nil, nil, err
@@ -409,17 +409,6 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			}
 
 			return nil, nil, nil
-		//case *isNull:
-		//	p2, err := p.filterUsingIndex(expr)
-		//	if err != nil {
-		//		return nil, nil, err
-		//	}
-
-		//	if p2 != nil {
-		//		return p2, nil, nil
-		//	}
-
-		//	return nil, nil, nil
 		case *pIn:
 			//TODO optimize
 			//TODO show plan
