@@ -11875,3 +11875,30 @@ SELECT * FROM t WHERE i != 42;
 [278]
 [0]
 [-1]
+
+-- 986
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() > 0;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
+
+-- 987
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(id());
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() > 0;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
