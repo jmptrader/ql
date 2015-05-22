@@ -942,84 +942,87 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 			return nil, err
 		}
 
-		if ok {
-			switch cn {
-			case "id()":
-				return nil, nil //TODO
-			default:
-				for _, v := range t.cols {
-					if v.name != cn {
-						continue
-					}
+		if !ok {
+			return nil, nil
+		}
 
-					rval, err := typeCheck1(rval, v)
-					if err != nil {
-						return nil, err
-					}
+		xi := -1
+		switch cn {
+		case "id()":
+			if rval, err = typeCheck1(rval, &col{typ: qInt64}); err != nil {
+				return nil, err
+			}
 
-					xi := v.index + 1 // 0: id()
-					if xi >= len(t.indices) {
-						return nil, nil
-					}
-
-					ix := t.indices[xi]
-					if ix == nil { // Column cn has no index.
-						return nil, nil
-					}
-
-					switch x.op {
-					case eq:
-						return &indexEqPlan{
-							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-							ix.name,
-							ix.x,
-							rval,
-						}, nil
-					case '<':
-						return &indexLtPlan{
-							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-							ix.name,
-							ix.x,
-							rval,
-						}, nil
-					case le:
-						return &indexLePlan{
-							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-							ix.name,
-							ix.x,
-							rval,
-						}, nil
-					case ge:
-						return &indexGePlan{
-							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-							ix.name,
-							ix.x,
-							rval,
-						}, nil
-					case '>':
-						return &indexGtPlan{
-							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-							ix.name,
-							ix.x,
-							rval,
-						}, nil
-					case neq:
-						return &indexNePlan{
-							tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-							ix.name,
-							ix.x,
-							rval,
-						}, nil
-					default:
-						return nil, nil //TODO
-					}
+			xi = 0 // 0: id()
+		default:
+			for _, v := range t.cols {
+				if v.name != cn {
+					continue
 				}
 
-				return nil, nil
+				if rval, err = typeCheck1(rval, v); err != nil {
+					return nil, err
+				}
+
+				xi = v.index + 1 // 0: id()
 			}
 		}
 
-		return nil, nil
+		if xi < 0 || xi >= len(t.indices) {
+			return nil, nil
+		}
+
+		ix := t.indices[xi]
+		if ix == nil { // Column cn has no index.
+			return nil, nil
+		}
+
+		switch x.op {
+		case eq:
+			return &indexEqPlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+				rval,
+			}, nil
+		case '<':
+			return &indexLtPlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+				rval,
+			}, nil
+		case le:
+			return &indexLePlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+				rval,
+			}, nil
+		case ge:
+			return &indexGePlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+				rval,
+			}, nil
+		case '>':
+			return &indexGtPlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+				rval,
+			}, nil
+		case neq:
+			return &indexNePlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+				rval,
+			}, nil
+		default:
+			return nil, nil //TODO
+		}
 	case *ident:
 		cn := x.s
 		for _, v := range t.cols {
