@@ -1753,7 +1753,7 @@ yynewstate:
 	switch r {
 	case 2:
 		{
-			yylex.(*lexer).expr = yyS[yypt-0].item.(expression)
+			yylex.(*lexer).expr = expr(yyS[yypt-0].item)
 		}
 	case 3:
 		{
@@ -1765,7 +1765,7 @@ yynewstate:
 		}
 	case 5:
 		{
-			yyVAL.item = assignment{colName: yyS[yypt-2].item.(string), expr: yyS[yypt-0].item.(expression)}
+			yyVAL.item = assignment{colName: yyS[yypt-2].item.(string), expr: expr(yyS[yypt-0].item)}
 		}
 	case 6:
 		{
@@ -1795,7 +1795,7 @@ yynewstate:
 		{
 			x := &col{name: yyS[yypt-3].item.(string), typ: yyS[yypt-2].item.(int), constraint: yyS[yypt-1].item.(*constraint)}
 			if yyS[yypt-0].item != nil {
-				x.dflt = yyS[yypt-0].item.(expression)
+				x.dflt = expr(yyS[yypt-0].item)
 			}
 			yyVAL.item = x
 		}
@@ -1821,7 +1821,7 @@ yynewstate:
 		}
 	case 20:
 		{
-			yyVAL.item = &constraint{yyS[yypt-0].item.(expression)}
+			yyVAL.item = &constraint{expr(yyS[yypt-0].item)}
 		}
 	case 21:
 		{
@@ -1829,7 +1829,7 @@ yynewstate:
 		}
 	case 23:
 		{
-			yyVAL.item = &conversion{typ: yyS[yypt-3].item.(int), val: yyS[yypt-1].item.(expression)}
+			yyVAL.item = &conversion{typ: yyS[yypt-3].item.(int), val: expr(yyS[yypt-1].item)}
 		}
 	case 24:
 		{
@@ -2016,7 +2016,7 @@ yynewstate:
 		}
 	case 49:
 		{
-			yyVAL.item = append([]expression{yyS[yypt-2].item.(expression)}, yyS[yypt-1].item.([]expression)...)
+			yyVAL.item = append([]expression{expr(yyS[yypt-2].item)}, yyS[yypt-1].item.([]expression)...)
 		}
 	case 50:
 		{
@@ -2024,7 +2024,7 @@ yynewstate:
 		}
 	case 51:
 		{
-			yyVAL.item = append(yyS[yypt-2].item.([]expression), yyS[yypt-0].item.(expression))
+			yyVAL.item = append(yyS[yypt-2].item.([]expression), expr(yyS[yypt-0].item))
 		}
 	case 53:
 		{
@@ -2120,7 +2120,7 @@ yynewstate:
 		}
 	case 69:
 		{
-			expr, name := yyS[yypt-1].item.(expression), yyS[yypt-0].item.(string)
+			expr, name := expr(yyS[yypt-1].item), yyS[yypt-0].item.(string)
 			if name == "" {
 				s, ok := expr.(*ident)
 				if ok {
@@ -2215,7 +2215,7 @@ yynewstate:
 		}
 	case 92:
 		{
-			yyVAL.item = &pexpr{expr: yyS[yypt-1].item.(expression)}
+			yyVAL.item = &pexpr{expr: expr(yyS[yypt-1].item)}
 		}
 	case 93:
 		{
@@ -2236,7 +2236,7 @@ yynewstate:
 	case 99:
 		{
 			var err error
-			if yyVAL.item, err = newIndex(yyS[yypt-1].item.(expression), yyS[yypt-0].item.(expression)); err != nil {
+			if yyVAL.item, err = newIndex(yyS[yypt-1].item.(expression), expr(yyS[yypt-0].item)); err != nil {
 				yylex.(*lexer).err("%v", err)
 				return 1
 			}
@@ -2451,7 +2451,7 @@ yynewstate:
 		}
 	case 137:
 		{
-			yyVAL.item = &limitRset{expr: yyS[yypt-0].item.(expression)}
+			yyVAL.item = &limitRset{expr: expr(yyS[yypt-0].item)}
 		}
 	case 138:
 		{
@@ -2459,7 +2459,7 @@ yynewstate:
 		}
 	case 139:
 		{
-			yyVAL.item = &offsetRset{expr: yyS[yypt-0].item.(expression)}
+			yyVAL.item = &offsetRset{expr: expr(yyS[yypt-0].item)}
 		}
 	case 140:
 		{
@@ -2499,18 +2499,18 @@ yynewstate:
 		}
 	case 152:
 		{
-			hi := yyS[yypt-1].item.(expression)
+			hi := expr(yyS[yypt-1].item)
 			yyVAL.item = [2]*expression{nil, &hi}
 		}
 	case 153:
 		{
-			lo := yyS[yypt-2].item.(expression)
+			lo := expr(yyS[yypt-2].item)
 			yyVAL.item = [2]*expression{&lo, nil}
 		}
 	case 154:
 		{
-			lo := yyS[yypt-3].item.(expression)
-			hi := yyS[yypt-1].item.(expression)
+			lo := expr(yyS[yypt-3].item)
+			hi := expr(yyS[yypt-1].item)
 			yyVAL.item = [2]*expression{&lo, &hi}
 		}
 	case 170:
@@ -2596,7 +2596,7 @@ yynewstate:
 		}
 	case 210:
 		{
-			yyVAL.item = &whereRset{expr: yyS[yypt-0].item.(expression)}
+			yyVAL.item = &whereRset{expr: expr(yyS[yypt-0].item)}
 		}
 
 	}
@@ -2605,4 +2605,15 @@ yynewstate:
 		return -1
 	}
 	goto yystack /* stack new state and value */
+}
+
+func expr(v interface{}) expression {
+	e := v.(expression)
+	for {
+		x, ok := e.(*pexpr)
+		if !ok {
+			return e
+		}
+		e = x.expr
+	}
 }

@@ -2456,37 +2456,37 @@ SELECT * FROM t WHERE c == 110 ORDER BY c;
 └Output field names ["c"]
 
 ---- 387
-SELECT (c + 1000) AS s FROM t ORDER BY s;
+SELECT c + 1000 AS s FROM t ORDER BY s;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Evaluate (c + 1000) as "s",
+┌Evaluate c + 1000 as "s",
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]
 
 ---- 388
-SELECT (1000 - c) AS s FROM t ORDER BY s;
+SELECT 1000 - c AS s FROM t ORDER BY s;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Evaluate (1000 - c) as "s",
+┌Evaluate 1000 - c as "s",
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]
 
 ---- 389
-SELECT (c >> 1) AS s FROM t ORDER BY s;
+SELECT c >> 1 AS s FROM t ORDER BY s;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Evaluate (c >> 1) as "s",
+┌Evaluate c >> 1 as "s",
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]
 
 ---- 390
-SELECT (c << 1) AS s FROM t ORDER BY s;
+SELECT c << 1 AS s FROM t ORDER BY s;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Evaluate (c << 1) as "s",
+┌Evaluate c << 1 as "s",
 └Output field names ["s"]
 ┌Order by s,
 └Output field names ["s"]

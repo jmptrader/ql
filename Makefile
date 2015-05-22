@@ -50,7 +50,7 @@ parser.go: parser.y
 	a=$(shell tempfile) ; \
 	  goyacc -o /dev/null -xegen $$a $< ; \
 	  goyacc -o $@ -xe $$a $< ; \
-	  rm -f $a
+	  rm -f $$a
 	sed -i -e 's|//line.*||' -e 's/yyEofCode/yyEOFCode/' $@
 
 ql.test: all
