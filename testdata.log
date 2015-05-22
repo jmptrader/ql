@@ -3576,7 +3576,7 @@ SELECT i FROM t AS u;
 
 ---- 578
 SELECT i FROM t WHERE b ORDER BY i;
-┌Iterate all rows of table "t" using index "x" where the indexed value is true
+┌Iterate all rows of table "t" using index "x" where the indexed value == true
 └Output fieldNames ["i" "b"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
@@ -3858,7 +3858,7 @@ SELECT * FROM t WHERE s == "test";
 
 ---- 637
 SELECT * FROM t WHERE s == "test";
-┌Iterate all rows of table "t" using index "idx_s" where the indexed value == test
+┌Iterate all rows of table "t" using index "idx_s" where the indexed value == "test"
 └Output fieldNames ["i" "s"]
 
 ---- 638
@@ -4605,14 +4605,14 @@ SELECT * FROM x;
 
 ---- 716
 SELECT s FROM t WHERE s != "z";
-┌Iterate all rows of table "t" using index "x" where the indexed value != z
+┌Iterate all rows of table "t" using index "x" where the indexed value != "z"
 └Output fieldNames ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
 
 ---- 717
 SELECT s FROM t WHERE s < "z";
-┌Iterate all rows of table "t" using index "x" where the indexed value is < z
+┌Iterate all rows of table "t" using index "x" where the indexed value is < "z"
 └Output fieldNames ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
@@ -4709,7 +4709,7 @@ SELECT id() IN (SELECT id() FROM t WHERE username == "xiaolunwen";), username ==
 
 ---- 734
 SELECT user, remain, total FROM no_id_user WHERE user == "xlw" LIMIT 1;
-┌Iterate all rows of table "no_id_user" using index "UQE_no_id_user_user" where the indexed value == xlw
+┌Iterate all rows of table "no_id_user" using index "UQE_no_id_user_user" where the indexed value == "xlw"
 └Output fieldNames ["user" "remain" "total"]
 ┌Pass first 1 records
 └Output fieldNames [user remain total]
@@ -6174,7 +6174,7 @@ SELECT Expr FROM __Index2_Expr WHERE Index2_ID IN (SELECT id() FROM __Index2 WHE
 
 ---- 938
 SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 || Root == -1 FROM __Index2 WHERE TableName == "t";
-┌Iterate all rows of table "__Index2" using index "__xIndex2_TableName" where the indexed value == t
+┌Iterate all rows of table "__Index2" using index "__xIndex2_TableName" where the indexed value == "t"
 └Output fieldNames ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Evaluate TableName as "TableName", IndexName as "IndexName", IsUnique as "IsUnique", IsSimple as "IsSimple", Root > 0 || Root == -1 as "",
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
