@@ -11819,3 +11819,21 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM x;
 ||blob-like
+
+-- 981
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+COMMIT;
+EXPLAIN SELECT * FROM t;
+|""
+[┌Iterate all rows of table "t"]
+[└Output field names ["i"]]
+
+-- 982
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+COMMIT;
+EXPLAIN EXPLAIN SELECT * FROM t;
+|""
+[┌Iterate all rows of table "t"]
+[└Output field names ["i"]]
