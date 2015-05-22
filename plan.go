@@ -1,5 +1,3 @@
-//┌└
-
 // Copyright 2015 The ql Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -53,6 +51,7 @@ type plan interface {
 	explain(w strutil.Formatter)
 	fieldNames() []string
 	filterUsingIndex(expr expression) (plan, error)
+	hasID() bool
 }
 
 func isTableOrIndex(p plan) bool {
@@ -77,6 +76,8 @@ func isTableOrIndex(p plan) bool {
 type explainDefaultPlan struct {
 	s stmt
 }
+
+func (r *explainDefaultPlan) hasID() bool { return false }
 
 func (r *explainDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error {
 	var buf bytes.Buffer
@@ -111,6 +112,8 @@ type filterDefaultPlan struct {
 	plan
 	expr expression
 }
+
+func (r *filterDefaultPlan) hasID() bool { return r.plan.hasID() }
 
 func (r *filterDefaultPlan) explain(w strutil.Formatter) {
 	r.plan.explain(w)
@@ -152,6 +155,8 @@ type crossJoinDefaultPlan struct {
 	names  []string
 	fields []string
 }
+
+func (r *crossJoinDefaultPlan) hasID() bool { return false }
 
 func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
@@ -215,6 +220,8 @@ type distinctDefaultPlan struct {
 	fields []string
 }
 
+func (r *distinctDefaultPlan) hasID() bool { return false }
+
 func (r *distinctDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
 	w.Format("┌Compute distinct rows\n└Output field names %v\n", r.fields)
@@ -267,6 +274,8 @@ type groupByDefaultPlan struct {
 	src      plan
 	fields   []string
 }
+
+func (r *groupByDefaultPlan) hasID() bool { return false }
 
 func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
@@ -373,6 +382,8 @@ type selectIndexDefaultPlan struct {
 	x  interface{}
 }
 
+func (r *selectIndexDefaultPlan) hasID() bool { return false }
+
 func (r *selectIndexDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all values of index %q\n└Output field names N/A\n", r.nm)
 }
@@ -420,6 +431,8 @@ type limitDefaultPlan struct { //TODO optimize for expr < 1
 	src    plan
 	fields []string
 }
+
+func (r *limitDefaultPlan) hasID() bool { return r.src.hasID() }
 
 func (r *limitDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
@@ -475,6 +488,8 @@ type offsetDefaultPlan struct { //TODO optimize for expr < 1
 	fields []string
 }
 
+func (r *offsetDefaultPlan) hasID() bool { return r.src.hasID() }
+
 func (r *offsetDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
 	w.Format("┌Skip first %v records\n└Output field names %v\n", r.expr, qnames(r.fields))
@@ -528,6 +543,8 @@ type orderByDefaultPlan struct {
 	src    plan
 	fields []string
 }
+
+func (r *orderByDefaultPlan) hasID() bool { return r.src.hasID() }
 
 func (r *orderByDefaultPlan) explain(w strutil.Formatter) {
 	r.src.explain(w)
@@ -621,6 +638,8 @@ type selectFieldsDefaultPlan struct {
 	fields []string
 }
 
+func (r *selectFieldsDefaultPlan) hasID() bool { return r.src.hasID() }
+
 func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) {
 	//TODO check for non existing fields
 	r.src.explain(w)
@@ -663,6 +682,8 @@ type selectFieldsGroupPlan struct {
 	src    *groupByDefaultPlan
 	fields []string
 }
+
+func (r *selectFieldsGroupPlan) hasID() bool { return false }
 
 func (r *selectFieldsGroupPlan) explain(w strutil.Formatter) {
 	//TODO check for non existing fields
@@ -754,6 +775,8 @@ func (r *selectFieldsGroupPlan) do(ctx *execCtx, f func(id interface{}, data []i
 
 type sysColumnDefaultPlan struct{}
 
+func (r *sysColumnDefaultPlan) hasID() bool { return false }
+
 func (r *sysColumnDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table \"__Column\"\n└Output field names %v\n", qnames(r.fieldNames()))
 }
@@ -791,6 +814,8 @@ func (r *sysColumnDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []in
 
 type sysIndexDefaultPlan struct{}
 
+func (r *sysIndexDefaultPlan) hasID() bool { return false }
+
 func (r *sysIndexDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table \"__Index\"\n└Output field names %v\n", qnames(r.fieldNames()))
 }
@@ -825,6 +850,8 @@ func (r *sysIndexDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []int
 }
 
 type sysTableDefaultPlan struct{}
+
+func (r *sysTableDefaultPlan) hasID() bool { return false }
 
 func (r *sysTableDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table \"__Table\"\n└Output field names %v\n", qnames(r.fieldNames()))
@@ -871,6 +898,8 @@ type tableNilPlan struct {
 	t *table
 }
 
+func (r *tableNilPlan) hasID() bool { return true }
+
 func (r *tableNilPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table %q\n└Output field names %v\n", r.t.name, qnames(r.fieldNames()))
 }
@@ -891,7 +920,7 @@ func (r *tableNilPlan) do(ctx *execCtx, f func(id interface{}, data []interface{
 			return err
 		}
 
-		if m, err := f(nil, nil); !m || err != nil {
+		if m, err := f(rec[1], nil); !m || err != nil {
 			return err
 		}
 
@@ -904,6 +933,8 @@ type tableDefaultPlan struct {
 	t      *table
 	fields []string
 }
+
+func (r *tableDefaultPlan) hasID() bool { return true }
 
 func (r *tableDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table %q\n└Output field names %v\n", r.t.name, qnames(r.fields))
@@ -1101,6 +1132,8 @@ type indexNotNullPlan struct { // column IS NULL
 	x  btreeIndex
 }
 
+func (r *indexNotNullPlan) hasID() bool { return true }
+
 func (r *indexNotNullPlan) explain(w strutil.Formatter) {
 	w.Format(
 		"┌Iterate all rows of table %q using index %q where the indexed value IS NOT NULL\n└Output field names %v\n",
@@ -1143,6 +1176,8 @@ type nullPlan struct {
 	fields []string
 }
 
+func (r *nullPlan) hasID() bool { return false }
+
 func (r *nullPlan) fieldNames() []string { return r.fields }
 
 func (r *nullPlan) explain(w strutil.Formatter) {
@@ -1162,6 +1197,8 @@ type indexNullPlan struct { // column IS NULL
 	xn string
 	x  btreeIndex
 }
+
+func (r *indexNullPlan) hasID() bool { return true }
 
 func (r *indexNullPlan) explain(w strutil.Formatter) {
 	w.Format(
@@ -1207,6 +1244,8 @@ type indexNePlan struct { // column != val
 	x   btreeIndex
 	val interface{}
 }
+
+func (r *indexNePlan) hasID() bool { return true }
 
 func (r *indexNePlan) explain(w strutil.Formatter) {
 	w.Format(
@@ -1287,6 +1326,8 @@ type indexEqPlan struct { // column == val
 	val interface{}
 }
 
+func (r *indexEqPlan) hasID() bool { return true }
+
 func (r *indexEqPlan) explain(w strutil.Formatter) {
 	w.Format(
 		"┌Iterate all rows of table %q using index %q where the indexed value == %v\n└Output field names %v\n",
@@ -1331,6 +1372,8 @@ type indexBoolPlan struct { // column (of type bool)
 	xn string
 	x  btreeIndex
 }
+
+func (r *indexBoolPlan) hasID() bool { return true }
 
 func (r *indexBoolPlan) explain(w strutil.Formatter) {
 	w.Format(
@@ -1378,6 +1421,8 @@ type indexGePlan struct { // column <= val
 	val interface{}
 }
 
+func (r *indexGePlan) hasID() bool { return true }
+
 func (r *indexGePlan) explain(w strutil.Formatter) {
 	w.Format(
 		"┌Iterate all rows of table %q using index %q where the indexed value is >= %v\n└Output field names %v\n",
@@ -1423,6 +1468,8 @@ type indexLePlan struct { // column <= val
 	x   btreeIndex
 	val interface{}
 }
+
+func (r *indexLePlan) hasID() bool { return true }
 
 func (r *indexLePlan) explain(w strutil.Formatter) {
 	w.Format(
@@ -1486,6 +1533,8 @@ type indexGtPlan struct { // column > val
 	val interface{}
 }
 
+func (r *indexGtPlan) hasID() bool { return true }
+
 func (r *indexGtPlan) explain(w strutil.Formatter) {
 	w.Format(
 		"┌Iterate all rows on table %q using index %q where the indexed value is > %v\n└Output field names %v\n",
@@ -1547,6 +1596,8 @@ type indexLtPlan struct { // column < val
 	x   btreeIndex
 	val interface{}
 }
+
+func (r *indexLtPlan) hasID() bool { return true }
 
 func (r *indexLtPlan) explain(w strutil.Formatter) {
 	w.Format(
@@ -1624,6 +1675,8 @@ type leftJoinDefaultPlan struct {
 	fields []string
 }
 
+func (r *leftJoinDefaultPlan) hasID() bool { return false }
+
 func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
 	for i, v := range r.rsets {
@@ -1648,6 +1701,8 @@ type rightJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
 
+func (r *rightJoinDefaultPlan) hasID() bool { return false }
+
 func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
 	for i, v := range r.rsets {
@@ -1671,6 +1726,8 @@ func (r *rightJoinDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 type fullJoinDefaultPlan struct {
 	leftJoinDefaultPlan
 }
+
+func (r *fullJoinDefaultPlan) hasID() bool { return false }
 
 func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute Cartesian product of%i\n")
