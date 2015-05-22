@@ -548,7 +548,21 @@ func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 		}
 	}
 
-	p := &selectFieldsDefaultPlan{flds: flds2, src: r.src}
+	src := r.src
+	if x, ok := src.(*tableDefaultPlan); ok {
+		isconst := true
+		for _, v := range flds2 {
+			if !isConst(v.expr) {
+				isconst = false
+				break
+			}
+		}
+		if isconst { // #250
+			src = &tableNilPlan{x.t}
+		}
+	}
+
+	p := &selectFieldsDefaultPlan{flds: flds2, src: src}
 	for _, v := range r.flds {
 		p.fields = append(p.fields, v.name)
 	}
