@@ -351,6 +351,10 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 					if rv < 1 {
 						return &nullPlan{fields: r.src.fieldNames()}, nil, nil
 					}
+				case '<':
+					if rv <= 1 {
+						return &nullPlan{fields: r.src.fieldNames()}, nil, nil
+					}
 				}
 			}
 
