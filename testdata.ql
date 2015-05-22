@@ -11990,3 +11990,129 @@ SELECT * FROM t WHERE id() IS NOT NULL;
 [<nil>]
 [0]
 [314]
+
+-- 996
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() == 0;
+|"i"
+
+-- 997
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() ==  0;
+|"i"
+
+-- 998
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() < 1;
+|"i"
+
+-- 999
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() < 1;
+|"i"
+
+-- 1000
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() <= 0;
+|"i"
+
+-- 1001
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() <= 0;
+|"i"
+
+-- 1002
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() > 0;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
+
+-- 1003
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() > 0;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
+
+-- 1004
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() >= 1;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
+
+-- 1005
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() >= 1;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
+
+-- 1006
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() != 0;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]
+
+-- 1007
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE id() != 0;
+|"i"
+[278]
+[-1]
+[<nil>]
+[0]
+[314]

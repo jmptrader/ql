@@ -315,7 +315,7 @@ func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
 				continue
 			}
 
-			if isConstValue(v) {
+			if isConstValue(v) != nil {
 				continue
 			}
 		}
@@ -335,6 +335,52 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	f = func(p plan, expr expression) (plan, expression, error) {
 		switch x := expr.(type) {
 		case *binaryOperation:
+			ok, cn := isColumnExpression(x.l)
+			if ok && cn == "id()" {
+				if v := isConstValue(x.r); v != nil {
+					v, err := typeCheck1(v, idCol)
+					if err != nil {
+						return nil, nil, err
+					}
+
+					rv := v.(int64)
+					switch {
+					case p.hasID():
+						switch x.op {
+						case '<':
+							if rv <= 1 {
+								return &nullPlan{p.fieldNames()}, nil, nil
+							}
+						case '>':
+							if rv <= 0 {
+								return p, nil, nil
+							}
+						case ge:
+							if rv >= 1 {
+								return p, nil, nil
+							}
+						case neq:
+							if rv <= 0 {
+								return p, nil, nil
+							}
+						case eq:
+							if rv <= 0 {
+								return &nullPlan{p.fieldNames()}, nil, nil
+							}
+						case le:
+							if rv <= 0 {
+								return &nullPlan{p.fieldNames()}, nil, nil
+							}
+						default:
+							//dbg("", yySymName(x.op))
+							//panic("TODO")
+						}
+					default:
+						//panic("TODO")
+					}
+				}
+			}
+
 			p2, err := p.filterUsingIndex(expr)
 			if err != nil {
 				return nil, nil, err
@@ -584,7 +630,7 @@ func (r *selectRset) plan(ctx *execCtx) (plan, error) {
 	if x, ok := src.(*tableDefaultPlan); ok {
 		isconst := true
 		for _, v := range flds2 {
-			if !isConstValue(v.expr) {
+			if isConstValue(v.expr) == nil {
 				isconst = false
 				break
 			}
@@ -658,6 +704,8 @@ type col struct {
 	constraint *constraint
 	dflt       expression
 }
+
+var idCol = &col{name: "id()", typ: qInt64}
 
 func findCol(cols []*col, name string) (c *col) {
 	for _, c = range cols {

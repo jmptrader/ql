@@ -46,17 +46,19 @@ func cloneExpressionList(arg []interface{}, list []expression, unqualify ...stri
 	return r, nil
 }
 
-func isConstValue(v interface{}) bool {
-	switch v.(type) {
-	case value,
+func isConstValue(v interface{}) interface{} {
+	switch x := v.(type) {
+	case value:
+		return x.val
+	case
 		idealComplex,
 		idealFloat,
 		idealInt,
 		idealRune,
 		idealUint:
-		return true
+		return v
 	default:
-		return false
+		return nil
 	}
 }
 
