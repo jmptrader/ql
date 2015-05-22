@@ -6339,3 +6339,17 @@ SELECT * FROM t WHERE id() > 0;
 ┌Iterate all rows on table "t" using index "x" where the indexed value is > 0
 └Output fieldNames ["i"]
 
+---- 988
+SELECT * FROM t WHERE i IS NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i" "j"]
+┌Filter on i IS NULL
+└Output field names ["i" "j"]
+
+---- 989
+SELECT * FROM t WHERE i IS NULL;
+┌Iterate all rows of table "t"
+└Output field names ["i" "j"]
+┌Filter on i IS NULL
+└Output field names ["i" "j"]
+

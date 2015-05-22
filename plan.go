@@ -42,6 +42,7 @@ var (
 	_ plan = (*indexLePlan)(nil)
 	_ plan = (*indexLtPlan)(nil)
 	_ plan = (*indexNePlan)(nil)
+	_ plan = (*indexNullPlan)(nil)
 	_ plan = (*indexBoolPlan)(nil)
 )
 
@@ -304,7 +305,7 @@ func (r *groupByDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []inte
 	for _, c := range r.colNames {
 		i, ok := m[c]
 		if !ok {
-			return fmt.Errorf("unknown column %s", c)
+			return fmt.Errorf("unknown field %s", c)
 		}
 
 		gcols = append(gcols, &col{name: c, index: i})
@@ -913,7 +914,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 		delete(cols, v)
 	}
 	for k := range cols {
-		return nil, fmt.Errorf("unknown column %s", k)
+		return nil, fmt.Errorf("unknown field %s", k)
 	}
 
 	if !t.hasIndices() {
@@ -946,35 +947,13 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 			return nil, nil
 		}
 
-		xi := -1
-		switch cn {
-		case "id()":
-			if rval, err = typeCheck1(rval, &col{typ: qInt64}); err != nil {
-				return nil, err
-			}
-
-			xi = 0 // 0: id()
-		default:
-			for _, v := range t.cols {
-				if v.name != cn {
-					continue
-				}
-
-				if rval, err = typeCheck1(rval, v); err != nil {
-					return nil, err
-				}
-
-				xi = v.index + 1 // 0: id()
-			}
-		}
-
-		if xi < 0 || xi >= len(t.indices) {
-			return nil, nil
-		}
-
-		ix := t.indices[xi]
+		c, ix := t.findIndexByColName(cn)
 		if ix == nil { // Column cn has no index.
 			return nil, nil
+		}
+
+		if rval, err = typeCheck1(rval, c); err != nil {
+			return nil, err
 		}
 
 		switch x.op {
@@ -1050,6 +1029,27 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
 				ix.x,
 			}, nil
 		}
+	case *isNull:
+		ok, cn := isColumnExpression(x.expr)
+		if !ok || cn == "id()" {
+			return nil, nil
+		}
+
+		_, ix := t.findIndexByColName(cn)
+		if ix == nil { // Column cn has no index.
+			return nil, nil
+		}
+
+		switch {
+		case x.not:
+			return nil, nil //panic("TODO")
+		default:
+			return &indexNullPlan{
+				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+				ix.name,
+				ix.x,
+			}, nil
+		}
 	default:
 		return nil, nil //TODO
 	}
@@ -1088,6 +1088,50 @@ func (r *tableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interf
 }
 
 func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
+
+type indexNullPlan struct { // column IS NULL
+	tableDefaultPlan
+	xn string
+	x  btreeIndex
+}
+
+func (r *indexNullPlan) explain(w strutil.Formatter) {
+	w.Format(
+		"┌Iterate all rows of table %q using index %q where the indexed value IS NULL\n└Output fieldNames %v\n",
+		r.tableDefaultPlan.t.name, r.xn, qnames(r.fieldNames()),
+	)
+}
+
+func (r *indexNullPlan) filterUsingIndex(expr expression) (plan, error) {
+	return nil, nil //TODO
+}
+
+func (r *indexNullPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+	t := r.t
+	it, err := r.x.SeekFirst()
+	if err != nil {
+		return err
+	}
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if k[0] != nil {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
 
 type indexNePlan struct { // column != val
 	tableDefaultPlan

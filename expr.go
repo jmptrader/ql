@@ -60,6 +60,20 @@ func isConst(v interface{}) bool {
 	}
 }
 
+func isColumnExpression(v expression) (bool, string) {
+	x, ok := v.(*ident)
+	if ok {
+		return true, x.s
+	}
+
+	c, ok := v.(*call)
+	if !ok || c.f != "id" || len(c.arg) != 0 {
+		return false, ""
+	}
+
+	return true, "id()"
+}
+
 func mentionedColumns0(e expression, q, nq bool, m map[string]struct{}) {
 	switch x := e.(type) {
 	case parameter,

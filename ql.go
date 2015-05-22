@@ -181,7 +181,7 @@ func (r *groupByRset) plan(ctx *execCtx) (plan, error) {
 			}
 		}
 		if !found {
-			return nil, fmt.Errorf("unknown column %s", v)
+			return nil, fmt.Errorf("unknown field %s", v)
 		}
 	}
 	return &groupByDefaultPlan{colNames: r.colNames, src: r.src, fields: fields}, nil
@@ -305,7 +305,7 @@ func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
 				}
 			}
 			if !found {
-				return nil, fmt.Errorf("unknown column %s", k)
+				return nil, fmt.Errorf("unknown field %s", k)
 			}
 		}
 		if len(cols) == 0 {
@@ -409,9 +409,17 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			}
 
 			return nil, nil, nil
-		case *isNull:
-			//TODO optimize
-			return nil, nil, nil
+		//case *isNull:
+		//	p2, err := p.filterUsingIndex(expr)
+		//	if err != nil {
+		//		return nil, nil, err
+		//	}
+
+		//	if p2 != nil {
+		//		return p2, nil, nil
+		//	}
+
+		//	return nil, nil, nil
 		case *pIn:
 			//TODO optimize
 			//TODO show plan

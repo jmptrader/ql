@@ -11902,3 +11902,22 @@ SELECT * FROM t WHERE id() > 0;
 [<nil>]
 [0]
 [314]
+
+-- 988
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int);
+	INSERT INTO t VALUES (314, 100), (0, 200), (NULL, 300), (-1, 400), (278, 500);
+COMMIT;
+SELECT * FROM t WHERE i IS NULL;
+|"i", "j"
+[<nil> 300]
+
+-- 989
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (314, 100), (0, 200), (NULL, 300), (-1, 400), (278, 500);
+COMMIT;
+SELECT * FROM t WHERE i IS NULL;
+|"i", "j"
+[<nil> 300]
