@@ -212,7 +212,7 @@ func (s *updateStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 		id := data[1].(int64)
 		m["$id"] = id
 		if expr != nil {
-			val, err := s.where.eval(ctx, m, ctx.arg)
+			val, err := s.where.eval(ctx, m)
 			if err != nil {
 				return nil, err
 			}
@@ -243,7 +243,7 @@ func (s *updateStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 			}
 		}
 		for i, asgn := range s.list {
-			val, err := asgn.expr.eval(ctx, m, ctx.arg)
+			val, err := asgn.expr.eval(ctx, m)
 			if err != nil {
 				return nil, err
 			}
@@ -364,7 +364,7 @@ func (s *deleteStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 		}
 		id := data[1].(int64)
 		m["$id"] = id
-		val, err := s.where.eval(ctx, m, ctx.arg)
+		val, err := s.where.eval(ctx, m)
 		if err != nil {
 			return nil, err
 		}
@@ -1018,7 +1018,7 @@ func checkConstraintsAndDefaults(
 			continue
 		}
 
-		dval, err := expr.eval(ctx, m, ctx.arg)
+		dval, err := expr.eval(ctx, m)
 		if err != nil {
 			return err
 		}
@@ -1052,7 +1052,7 @@ func checkConstraintsAndDefaults(
 		}
 
 		// Constraint is an expression
-		cval, err := expr.eval(ctx, m, ctx.arg)
+		cval, err := expr.eval(ctx, m)
 		if err != nil {
 			return err
 		}
@@ -1110,14 +1110,13 @@ func (s *insertIntoStmt) exec(ctx *execCtx) (Recordset, error) {
 		}
 	}
 
-	arg := ctx.arg
 	root := ctx.db.root
 	cc := ctx.db.cc
 	r := make([]interface{}, len(t.cols0))
 	m := map[interface{}]interface{}{}
 	for _, list := range s.lists {
 		for i, expr := range list {
-			val, err := expr.eval(ctx, m, arg)
+			val, err := expr.eval(ctx, m)
 			if err != nil {
 				return nil, err
 			}
