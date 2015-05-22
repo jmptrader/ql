@@ -6312,3 +6312,17 @@ EXPLAIN EXPLAIN SELECT * FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 
+---- 983
+SELECT * FROM t WHERE i != 42;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on i != 42
+└Output field names ["i"]
+
+---- 984
+SELECT * FROM t WHERE i != 42;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on i != 42
+└Output field names ["i"]
+
