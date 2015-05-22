@@ -278,15 +278,6 @@ func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 }
 
 func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	//TODO p2, err := r.src.filterUsingIndex(expr)
-	//TODO if err != nil {
-	//TODO 	return nil, err
-	//TODO }
-
-	//TODO if p2 != nil {
-	//TODO 	panic("TODO")
-	//TODO }
-
 	return nil, nil
 }
 
@@ -636,15 +627,6 @@ func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) {
 }
 
 func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, error) {
-	//TODO (297) p2, err := r.src.filterUsingIndex(expr)
-	//TODO (297) if err != nil {
-	//TODO (297) 	return nil, err
-	//TODO (297) }
-
-	//TODO (297) if p2 != nil {
-	//TODO (297) 	panic("")
-	//TODO (297) }
-
 	return nil, nil
 }
 
