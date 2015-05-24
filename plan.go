@@ -112,25 +112,29 @@ func (r *indexIntervalPlan) doGe(ctx *execCtx, f func(interface{}, []interface{}
 
 func (r *indexIntervalPlan) doGt(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	t := r.src
-	it, err := r.x.SeekLast()
+	it, _, err := r.x.Seek([]interface{}{r.lval})
 	if err != nil {
 		return noEOF(err)
 	}
 
+	var ok bool
 	for {
-		k, h, err := it.Prev()
+		k, h, err := it.Next()
 		if err != nil {
 			return noEOF(err)
 		}
 
-		val, err := expand1(k[0], nil)
-		if err != nil {
-			return err
-		}
+		if !ok {
+			val, err := expand1(k[0], nil)
+			if err != nil {
+				return err
+			}
 
-		// c > n: val > n ok
-		if collate1(val, r.lval) <= 0 {
-			return nil
+			if collate1(val, r.lval) == 0 {
+				continue
+			}
+
+			ok = true
 		}
 
 		id, data, err := t.row(ctx, h)
