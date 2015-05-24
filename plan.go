@@ -21,7 +21,7 @@ var (
 	_ plan = (*filterByIndexBoolPlan)(nil)
 	_ plan = (*filterByIndexEqPlan)(nil)
 	//TODO- _ plan = (*filterByIndexGePlan)(nil)
-	_ plan = (*filterByIndexGtPlan)(nil)
+	//TODO-_ plan = (*filterByIndexGtPlan)(nil)
 	_ plan = (*filterByIndexIsNotNullPlan)(nil)
 	_ plan = (*filterByIndexIsNullPlan)(nil)
 	_ plan = (*filterByIndexLePlan)(nil)
@@ -63,7 +63,7 @@ func isTableOrIndex(p plan) bool {
 		*filterByIndexLtPlan,
 		*filterByIndexLePlan,
 		//TODO- *filterByIndexGePlan,
-		*filterByIndexGtPlan,
+		//TODO- *filterByIndexGtPlan,
 		*filterByIndexBoolPlan,
 		*indexIntervalPlan,
 		*sysTableDefaultPlan,
@@ -110,6 +110,40 @@ func (r *indexIntervalPlan) doGe(ctx *execCtx, f func(interface{}, []interface{}
 	}
 }
 
+func (r *indexIntervalPlan) doGt(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	t := r.src
+	it, err := r.x.SeekLast()
+	if err != nil {
+		return noEOF(err)
+	}
+
+	for {
+		k, h, err := it.Prev()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		val, err := expand1(k[0], nil)
+		if err != nil {
+			return err
+		}
+
+		// c > n: val > n ok
+		if collate1(val, r.lval) <= 0 {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	switch {
 	case r.lval != nil && r.hval != nil: // L, H
@@ -117,7 +151,7 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 	case r.lval != nil && r.hval == nil: // L...
 		switch {
 		case r.lopen: // column > L
-			panic("TODO")
+			return r.doGt(ctx, f)
 		default: // column >= L
 			return r.doGe(ctx, f)
 		}
@@ -134,11 +168,9 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 	case r.lval != nil && r.hval != nil: // L, H
 		panic("TODO")
 	case r.lval != nil && r.hval == nil: // L...
-		switch {
-		case r.lopen: // column > L
-			panic("TODO")
-		default: // column >= L
-			w.Format(">=")
+		w.Format(">")
+		if !r.lopen {
+			w.Format("=")
 		}
 		w.Format(" %v\n", value{r.lval})
 	case r.lval == nil && r.hval != nil: // ...H
@@ -1110,12 +1142,13 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 		//TODO- }, nil, nil
 		return &indexIntervalPlan{t, cn, ix.name, ix.x, false, true, rval, nil}, nil, nil
 	case '>':
-		return &filterByIndexGtPlan{
-			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-			ix.name,
-			ix.x,
-			rval,
-		}, nil, nil
+		//TODO- return &filterByIndexGtPlan{
+		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+		//TODO- 	ix.name,
+		//TODO- 	ix.x,
+		//TODO- 	rval,
+		//TODO- }, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, true, true, rval, nil}, nil, nil
 	case neq:
 		return &filterByIndexNePlan{
 			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1554,42 +1587,42 @@ func (r *filterByIndexBoolPlan) do(ctx *execCtx, f func(id interface{}, data []i
 //TODO- 	x   btreeIndex
 //TODO- 	val interface{}
 //TODO- }
-//TODO- 
+//TODO-
 //TODO- func (r *filterByIndexGePlan) hasID() bool { return true }
-//TODO- 
+//TODO-
 //TODO- func (r *filterByIndexGePlan) explain(w strutil.Formatter) {
 //TODO- 	w.Format(
 //TODO- 		"┌Iterate all rows of table %q using index %q where the indexed value is >= %v\n└Output field names %v\n",
 //TODO- 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 //TODO- 	)
 //TODO- }
-//TODO- 
+//TODO-
 //TODO- func (r *filterByIndexGePlan) filter(expr expression) (plan, []string, error) {
 //TODO- 	return nil, nil, nil //TODO
 //TODO- }
-//TODO- 
+//TODO-
 //TODO- func (r *filterByIndexGePlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
 //TODO- 	if err != nil {
 //TODO- 		return err
 //TODO- 	}
-//TODO- 
+//TODO-
 //TODO- 	t := r.t
 //TODO- 	it, _, err := r.x.Seek([]interface{}{r.val})
 //TODO- 	if err != nil {
 //TODO- 		return noEOF(err)
 //TODO- 	}
-//TODO- 
+//TODO-
 //TODO- 	for {
 //TODO- 		_, h, err := it.Next()
 //TODO- 		if err != nil {
 //TODO- 			return noEOF(err)
 //TODO- 		}
-//TODO- 
+//TODO-
 //TODO- 		id, data, err := t.row(ctx, h)
 //TODO- 		if err != nil {
 //TODO- 			return err
 //TODO- 		}
-//TODO- 
+//TODO-
 //TODO- 		if more, err := f(id, data); err != nil || !more {
 //TODO- 			return err
 //TODO- 		}
@@ -1660,69 +1693,69 @@ func (r *filterByIndexLePlan) do(ctx *execCtx, f func(id interface{}, data []int
 	}
 }
 
-type filterByIndexGtPlan struct { // column > val
-	tableDefaultPlan
-	xn  string
-	x   btreeIndex
-	val interface{}
-}
-
-func (r *filterByIndexGtPlan) hasID() bool { return true }
-
-func (r *filterByIndexGtPlan) explain(w strutil.Formatter) {
-	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value is > %v\n└Output field names %v\n",
-		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
-	)
-}
-
-func (r *filterByIndexGtPlan) filter(expr expression) (plan, []string, error) {
-	return nil, nil, nil //TODO
-}
-
-func (r *filterByIndexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-	cmp0, err := newBinaryOperation('>', &ident{}, value{val: r.val})
-	if err != nil {
-		return err
-	}
-
-	cmp := cmp0.(*binaryOperation)
-	t := r.t
-	it, err := r.x.SeekLast()
-	if err != nil {
-		return noEOF(err)
-	}
-
-	for {
-		k, h, err := it.Prev()
-		if err != nil {
-			return noEOF(err)
-		}
-
-		cmp.l = value{val: k[0]}
-		v, err := cmp.eval(ctx, nil)
-		if err != nil {
-			return err
-		}
-
-		if v == nil {
-			continue
-		}
-
-		if !v.(bool) {
-			return nil
-		}
-
-		id, data, err := t.row(ctx, h)
-		if err != nil {
-			return err
-		}
-
-		if more, err := f(id, data); err != nil || !more {
-			return err
-		}
-	}
-}
+//TODO- type filterByIndexGtPlan struct { // column > val
+//TODO- 	tableDefaultPlan
+//TODO- 	xn  string
+//TODO- 	x   btreeIndex
+//TODO- 	val interface{}
+//TODO- }
+//TODO-
+//TODO- func (r *filterByIndexGtPlan) hasID() bool { return true }
+//TODO-
+//TODO- func (r *filterByIndexGtPlan) explain(w strutil.Formatter) {
+//TODO- 	w.Format(
+//TODO- 		"┌Iterate all rows of table %q using index %q where the indexed value is > %v\n└Output field names %v\n",
+//TODO- 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
+//TODO- 	)
+//TODO- }
+//TODO-
+//TODO- func (r *filterByIndexGtPlan) filter(expr expression) (plan, []string, error) {
+//TODO- 	return nil, nil, nil //TODO
+//TODO- }
+//TODO-
+//TODO- func (r *filterByIndexGtPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+//TODO- 	cmp0, err := newBinaryOperation('>', &ident{}, value{val: r.val})
+//TODO- 	if err != nil {
+//TODO- 		return err
+//TODO- 	}
+//TODO-
+//TODO- 	cmp := cmp0.(*binaryOperation)
+//TODO- 	t := r.t
+//TODO- 	it, err := r.x.SeekLast()
+//TODO- 	if err != nil {
+//TODO- 		return noEOF(err)
+//TODO- 	}
+//TODO-
+//TODO- 	for {
+//TODO- 		k, h, err := it.Prev()
+//TODO- 		if err != nil {
+//TODO- 			return noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		cmp.l = value{val: k[0]}
+//TODO- 		v, err := cmp.eval(ctx, nil)
+//TODO- 		if err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO-
+//TODO- 		if v == nil {
+//TODO- 			continue
+//TODO- 		}
+//TODO-
+//TODO- 		if !v.(bool) {
+//TODO- 			return nil
+//TODO- 		}
+//TODO-
+//TODO- 		id, data, err := t.row(ctx, h)
+//TODO- 		if err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO-
+//TODO- 		if more, err := f(id, data); err != nil || !more {
+//TODO- 			return err
+//TODO- 		}
+//TODO- 	}
+//TODO- }
 
 type filterByIndexLtPlan struct { // column < val
 	tableDefaultPlan
