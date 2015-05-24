@@ -330,170 +330,199 @@ type whereRset struct {
 	src  plan
 }
 
+func (r *whereRset) planBinOp(f func(plan, expression) (plan, expression, error), p plan, expr expression, x *binaryOperation, is *[]string) (plan, expression, error) {
+	ok, cn := isColumnExpression(x.l)
+	if ok && cn == "id()" {
+		if v := isConstValue(x.r); v != nil {
+			v, err := typeCheck1(v, idCol)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			rv := v.(int64)
+			switch {
+			case p.hasID():
+				switch x.op {
+				case '<':
+					if rv <= 1 {
+						return &nullPlan{p.fieldNames()}, nil, nil
+					}
+				case '>':
+					if rv <= 0 {
+						return p, nil, nil
+					}
+				case ge:
+					if rv >= 1 {
+						return p, nil, nil
+					}
+				case neq:
+					if rv <= 0 {
+						return p, nil, nil
+					}
+				case eq:
+					if rv <= 0 {
+						return &nullPlan{p.fieldNames()}, nil, nil
+					}
+				case le:
+					if rv <= 0 {
+						return &nullPlan{p.fieldNames()}, nil, nil
+					}
+				default:
+					//dbg("", yySymName(x.op))
+					//panic("TODO")
+				}
+			default:
+				//panic("TODO")
+			}
+		}
+	}
+
+	p2, is2, err := p.filter(expr)
+	*is = append(*is, is2...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if p2 != nil {
+		return p2, nil, nil
+	}
+
+	lp, lexpr, err := f(p, x.l)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	rp, rexpr, err := f(p, x.r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	switch {
+	case lp == nil && rp == nil:
+		return nil, nil, nil
+	case lp == nil && rp != nil:
+		if rexpr != nil {
+			return nil, nil, nil //TODO
+		}
+
+		switch x.op {
+		case andand:
+			return rp, x.l, nil
+		default:
+			return nil, nil, nil //TODO
+		}
+	case lp != nil && rp == nil:
+		if lexpr != nil {
+			return nil, nil, nil //TODO
+		}
+
+		switch x.op {
+		case andand:
+			return lp, x.r, nil
+		default:
+			return nil, nil, nil //TODO
+		}
+	default: // case lp != nil && rp != nil:
+		if lexpr != nil || rexpr != nil {
+			return nil, nil, nil //TODO
+		}
+
+		switch x.op {
+		case andand:
+			if lp == rp {
+				return lp, nil, nil
+			}
+
+			return nil, nil, nil //TODO
+		case oror:
+			return nil, nil, nil
+		default:
+			return nil, nil, nil //TODO
+		}
+	}
+}
+
+func (r *whereRset) planIsNull(p plan, expr expression, x *isNull, is *[]string) (plan, expression, error) {
+	ok, cn := isColumnExpression(x.expr)
+	if !ok {
+		return nil, nil, nil
+	}
+
+	if cn == "id()" {
+		switch {
+		case r.src.hasID():
+			switch {
+			case x.not: // IS NOT NULL
+				return r.src, nil, nil
+			default: // IS NULL
+				return &nullPlan{r.src.fieldNames()}, nil, nil
+			}
+		default:
+			switch {
+			case x.not: // IS NOT NULL
+				return &nullPlan{r.src.fieldNames()}, nil, nil
+			default: // IS NULL
+				return r.src, nil, nil
+			}
+		}
+	}
+
+	p2, is2, err := p.filter(expr)
+	*is = append(*is, is2...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if p2 != nil {
+		return p2, nil, nil
+	}
+
+	return nil, nil, nil
+}
+
+func (r *whereRset) planIdent(p plan, expr expression, x *ident, is *[]string) (plan, expression, error) {
+	p2, is2, err := p.filter(expr)
+	*is = append(*is, is2...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if p2 != nil {
+		return p2, nil, nil
+	}
+
+	return nil, nil, nil
+}
+
+func (r *whereRset) planCall(p plan, expr expression, x *call, is *[]string) (plan, expression, error) {
+	if x.f != "id" || len(x.arg) != 0 {
+		return nil, nil, nil
+	}
+
+	p2, is2, err := p.filter(expr)
+	*is = append(*is, is2...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if p2 != nil {
+		return nil, nil, nil //TODO
+	}
+
+	return nil, nil, nil
+}
+
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 	var is []string
 	var f func(plan, expression) (plan, expression, error)
 	f = func(p plan, expr expression) (plan, expression, error) {
 		switch x := expr.(type) {
 		case *binaryOperation:
-			ok, cn := isColumnExpression(x.l)
-			if ok && cn == "id()" {
-				if v := isConstValue(x.r); v != nil {
-					v, err := typeCheck1(v, idCol)
-					if err != nil {
-						return nil, nil, err
-					}
-
-					rv := v.(int64)
-					switch {
-					case p.hasID():
-						switch x.op {
-						case '<':
-							if rv <= 1 {
-								return &nullPlan{p.fieldNames()}, nil, nil
-							}
-						case '>':
-							if rv <= 0 {
-								return p, nil, nil
-							}
-						case ge:
-							if rv >= 1 {
-								return p, nil, nil
-							}
-						case neq:
-							if rv <= 0 {
-								return p, nil, nil
-							}
-						case eq:
-							if rv <= 0 {
-								return &nullPlan{p.fieldNames()}, nil, nil
-							}
-						case le:
-							if rv <= 0 {
-								return &nullPlan{p.fieldNames()}, nil, nil
-							}
-						default:
-							//dbg("", yySymName(x.op))
-							//panic("TODO")
-						}
-					default:
-						//panic("TODO")
-					}
-				}
-			}
-
-			p2, s, err := p.filter(expr)
-			is = append(is, s...)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			if p2 != nil {
-				return p2, nil, nil
-			}
-
-			lp, lexpr, err := f(p, x.l)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			rp, rexpr, err := f(p, x.r)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			switch {
-			case lp == nil && rp == nil:
-				return nil, nil, nil
-			case lp == nil && rp != nil:
-				if rexpr != nil {
-					return nil, nil, nil //TODO
-				}
-
-				switch x.op {
-				case andand:
-					return rp, x.l, nil
-				default:
-					return nil, nil, nil //TODO
-				}
-			case lp != nil && rp == nil:
-				if lexpr != nil {
-					return nil, nil, nil //TODO
-				}
-
-				switch x.op {
-				case andand:
-					return lp, x.r, nil
-				default:
-					return nil, nil, nil //TODO
-				}
-			default: // case lp != nil && rp != nil:
-				if lexpr != nil || rexpr != nil {
-					return nil, nil, nil //TODO
-				}
-
-				switch x.op {
-				case andand:
-					if lp == rp {
-						return lp, nil, nil
-					}
-
-					return nil, nil, nil //TODO
-				case oror:
-					return nil, nil, nil
-				default:
-					return nil, nil, nil //TODO
-				}
-			}
-
+			return r.planBinOp(f, p, expr, x, &is)
 		case *isNull:
-			ok, cn := isColumnExpression(x.expr)
-			if !ok {
-				return nil, nil, nil
-			}
-
-			if cn == "id()" {
-				switch {
-				case r.src.hasID():
-					switch {
-					case x.not: // IS NOT NULL
-						return r.src, nil, nil
-					default: // IS NULL
-						return &nullPlan{r.src.fieldNames()}, nil, nil
-					}
-				default:
-					switch {
-					case x.not: // IS NOT NULL
-						return &nullPlan{r.src.fieldNames()}, nil, nil
-					default: // IS NULL
-						return r.src, nil, nil
-					}
-				}
-			}
-
-			p2, s, err := p.filter(expr)
-			is = append(is, s...)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			if p2 != nil {
-				return p2, nil, nil
-			}
-
-			return nil, nil, nil
+			return r.planIsNull(p, expr, x, &is)
 		case *ident:
-			p2, s, err := p.filter(expr)
-			is = append(is, s...)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			if p2 != nil {
-				return p2, nil, nil
-			}
-
-			return nil, nil, nil
+			return r.planIdent(p, expr, x, &is)
 		case *pIn:
 			//TODO optimize
 			//TODO show plan
@@ -509,23 +538,9 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				return nil, nil, nil
 			}
 		case *call:
-			if x.f != "id" || len(x.arg) != 0 {
-				return nil, nil, nil
-			}
-
-			p2, s, err := p.filter(expr)
-			is = append(is, s...)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			if p2 != nil {
-				return nil, nil, nil //TODO
-			}
-
-			return nil, nil, nil
+			return r.planCall(p, expr, x, &is)
 		case *pLike:
-			return nil, nil, nil
+			return nil, nil, nil //TODO
 		default:
 			return nil, nil, nil //TODO
 		}

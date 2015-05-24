@@ -1101,7 +1101,6 @@ func (r *tableDefaultPlan) filterIsNull(x *isNull) (plan, []string, error) {
 }
 
 func (r *tableDefaultPlan) filter(expr expression) (plan, []string, error) {
-	t := r.t
 	cols := mentionedColumns(expr)
 	for _, v := range r.fields {
 		delete(cols, v)
@@ -1134,30 +1133,6 @@ func (r *tableDefaultPlan) filter(expr expression) (plan, []string, error) {
 		return r.filterIdent(x)
 	case *isNull:
 		return r.filterIsNull(x)
-		ok, cn := isColumnExpression(x.expr)
-		if !ok {
-			return nil, nil, nil
-		}
-		_, ix := t.findIndexByColName(cn)
-		if ix == nil { // Column cn has no index.
-			is = append(is, fmt.Sprintf("%s(%s)", t.name, cn))
-			return nil, is, nil
-		}
-
-		switch {
-		case x.not:
-			return &filterByIndexIsNotNullPlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-			}, nil, nil
-		default:
-			return &filterByIndexIsNullPlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-			}, nil, nil
-		}
 	default:
 		//dbg("", expr)
 		return nil, is, nil //TODO
