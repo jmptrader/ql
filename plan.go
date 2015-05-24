@@ -973,6 +973,133 @@ func (r *tableDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table %q\n└Output field names %v\n", r.t.name, qnames(r.fields))
 }
 
+func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, error) {
+	ok, cn, rval, err := x.isIdentRelOpVal()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !ok {
+		return nil, nil, nil
+	}
+
+	t := r.t
+	c, ix := t.findIndexByColName(cn)
+	if ix == nil { // Column cn has no index.
+		return nil, []string{fmt.Sprintf("%s(%s)", t.name, cn)}, nil
+	}
+
+	if rval, err = typeCheck1(rval, c); err != nil {
+		return nil, nil, err
+	}
+
+	switch x.op {
+	case eq:
+		return &filterByIndexEqPlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+			rval,
+		}, nil, nil
+	case '<':
+		return &filterByIndexLtPlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+			rval,
+		}, nil, nil
+	case le:
+		return &filterByIndexLePlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+			rval,
+		}, nil, nil
+	case ge:
+		return &filterByIndexGePlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+			rval,
+		}, nil, nil
+	case '>':
+		return &filterByIndexGtPlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+			rval,
+		}, nil, nil
+	case neq:
+		return &filterByIndexNePlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+			rval,
+		}, nil, nil
+	default:
+		panic("internal error 069")
+	}
+}
+
+func (r *tableDefaultPlan) filterIdent(x *ident) (plan, []string, error) {
+	cn := x.s
+	t := r.t
+	for _, v := range t.cols {
+		if v.name != cn {
+			continue
+		}
+
+		if v.typ != qBool {
+			return nil, nil, nil
+		}
+
+		xi := v.index + 1 // 0: id()
+		if xi >= len(t.indices) {
+			return nil, nil, nil
+		}
+
+		ix := t.indices[xi]
+		if ix == nil { // Column cn has no index.
+			return nil, []string{fmt.Sprintf("%s(%s)", t.name, cn)}, nil
+		}
+
+		return &filterByIndexBoolPlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+		}, nil, nil
+	}
+	return nil, nil, nil
+}
+
+func (r *tableDefaultPlan) filterIsNull(x *isNull) (plan, []string, error) {
+	ok, cn := isColumnExpression(x.expr)
+	if !ok {
+		return nil, nil, nil
+	}
+
+	t := r.t
+	_, ix := t.findIndexByColName(cn)
+	if ix == nil { // Column cn has no index.
+		return nil, []string{fmt.Sprintf("%s(%s)", t.name, cn)}, nil
+	}
+
+	switch {
+	case x.not:
+		return &filterByIndexIsNotNullPlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+		}, nil, nil
+	default:
+		return &filterByIndexIsNullPlan{
+			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+			ix.name,
+			ix.x,
+		}, nil, nil
+	}
+}
+
 func (r *tableDefaultPlan) filter(expr expression) (plan, []string, error) {
 	t := r.t
 	cols := mentionedColumns(expr)
@@ -1002,100 +1129,11 @@ func (r *tableDefaultPlan) filter(expr expression) (plan, []string, error) {
 
 	switch x := expr.(type) {
 	case *binaryOperation:
-		ok, cn, rval, err := x.isIdentRelOpVal()
-		if err != nil {
-			return nil, nil, err
-		}
-
-		if !ok {
-			return nil, is, nil
-		}
-
-		c, ix := t.findIndexByColName(cn)
-		if ix == nil { // Column cn has no index.
-			is = append(is, fmt.Sprintf("%s(%s)", t.name, cn))
-			return nil, is, nil
-		}
-
-		if rval, err = typeCheck1(rval, c); err != nil {
-			return nil, nil, err
-		}
-
-		switch x.op {
-		case eq:
-			return &filterByIndexEqPlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-				rval,
-			}, nil, nil
-		case '<':
-			return &filterByIndexLtPlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-				rval,
-			}, nil, nil
-		case le:
-			return &filterByIndexLePlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-				rval,
-			}, nil, nil
-		case ge:
-			return &filterByIndexGePlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-				rval,
-			}, nil, nil
-		case '>':
-			return &filterByIndexGtPlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-				rval,
-			}, nil, nil
-		case neq:
-			return &filterByIndexNePlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-				rval,
-			}, nil, nil
-		default:
-			panic("internal error 069")
-		}
+		return r.filterBinOp(x)
 	case *ident:
-		cn := x.s
-		for _, v := range t.cols {
-			if v.name != cn {
-				continue
-			}
-
-			if v.typ != qBool {
-				return nil, nil, nil
-			}
-
-			xi := v.index + 1 // 0: id()
-			if xi >= len(t.indices) {
-				return nil, nil, nil
-			}
-
-			ix := t.indices[xi]
-			if ix == nil { // Column cn has no index.
-				is = append(is, fmt.Sprintf("%s(%s)", t.name, cn))
-				return nil, is, nil
-			}
-
-			return &filterByIndexBoolPlan{
-				tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-				ix.name,
-				ix.x,
-			}, nil, nil
-		}
+		return r.filterIdent(x)
 	case *isNull:
+		return r.filterIsNull(x)
 		ok, cn := isColumnExpression(x.expr)
 		if !ok {
 			return nil, nil, nil
