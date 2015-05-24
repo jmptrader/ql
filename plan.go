@@ -1584,7 +1584,7 @@ func (r *filterByIndexGtPlan) hasID() bool { return true }
 
 func (r *filterByIndexGtPlan) explain(w strutil.Formatter) {
 	w.Format(
-		"┌Iterate all rows on table %q using index %q where the indexed value is > %v\n└Output field names %v\n",
+		"┌Iterate all rows of table %q using index %q where the indexed value is > %v\n└Output field names %v\n",
 		r.tableDefaultPlan.t.name, r.xn, value{r.val}, qnames(r.fields),
 	)
 }

@@ -519,6 +519,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 		switch x := expr.(type) {
 		case *binaryOperation:
 			return r.planBinOp(f, p, expr, x, &is)
+		//TODO case *exists:
 		case *isNull:
 			return r.planIsNull(p, expr, x, &is)
 		case *ident:
