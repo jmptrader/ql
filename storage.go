@@ -769,6 +769,14 @@ func (t *table) flds() (r []*fld) {
 	return
 }
 
+func (t *table) fieldNames() []string {
+	r := make([]string, len(t.cols))
+	for i, v := range t.cols {
+		r[i] = v.name
+	}
+	return r
+}
+
 func (t *table) updateCols() *table {
 	t.cols = t.cols[:0]
 	for i, c := range t.cols0 {
