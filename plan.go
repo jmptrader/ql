@@ -50,7 +50,7 @@ type plan interface {
 	do(ctx *execCtx, f func(id interface{}, data []interface{}) (more bool, err error)) error
 	explain(w strutil.Formatter)
 	fieldNames() []string
-	filterUsingIndex(expr expression) (p plan, indicesSought []string, err error)
+	filter(expr expression) (p plan, indicesSought []string, err error)
 	hasID() bool
 }
 
@@ -104,7 +104,7 @@ func (r *explainDefaultPlan) fieldNames() []string {
 	return []string{""}
 }
 
-func (r *explainDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *explainDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -200,7 +200,7 @@ func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("%u└Output field names %v\n", qnames(r.fields))
 }
 
-func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *crossJoinDefaultPlan) filter(expr expression) (plan, []string, error) {
 	var is []string
 	for i, v := range r.names {
 		e2, err := expr.clone(nil, v)
@@ -208,7 +208,7 @@ func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string
 			return nil, nil, err
 		}
 
-		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		p2, is2, err := r.rsets[i].filter(e2)
 		is = append(is, is2...)
 		if err != nil {
 			return nil, nil, err
@@ -256,7 +256,7 @@ func (r *distinctDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Compute distinct rows\n└Output field names %v\n", r.fields)
 }
 
-func (r *distinctDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *distinctDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -320,7 +320,7 @@ func (r *groupByDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("\n└Output field names %v\n", qnames(r.fields))
 }
 
-func (r *groupByDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *groupByDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -417,7 +417,7 @@ func (r *selectIndexDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all values of index %q\n└Output field names N/A\n", r.nm)
 }
 
-func (r *selectIndexDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *selectIndexDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -468,7 +468,7 @@ func (r *limitDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Pass first %v records\n└Output field names %v\n", r.expr, r.fields)
 }
 
-func (r *limitDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *limitDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -524,7 +524,7 @@ func (r *offsetDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Skip first %v records\n└Output field names %v\n", r.expr, qnames(r.fields))
 }
 
-func (r *offsetDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *offsetDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -584,7 +584,7 @@ func (r *orderByDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("\n└Output field names %v\n", qnames(r.fields))
 }
 
-func (r *orderByDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *orderByDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -679,7 +679,7 @@ func (r *selectFieldsDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("\n└Output field names %v\n", qnames(r.fields))
 }
 
-func (r *selectFieldsDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *selectFieldsDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -726,7 +726,7 @@ func (r *selectFieldsGroupPlan) explain(w strutil.Formatter) {
 
 func (r *selectFieldsGroupPlan) fieldNames() []string { return r.fields }
 
-func (r *selectFieldsGroupPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *selectFieldsGroupPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -810,7 +810,7 @@ func (r *sysColumnDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table \"__Column\"\n└Output field names %v\n", qnames(r.fieldNames()))
 }
 
-func (r *sysColumnDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *sysColumnDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -851,7 +851,7 @@ func (r *sysIndexDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table \"__Index\"\n└Output field names %v\n", qnames(r.fieldNames()))
 }
 
-func (r *sysIndexDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *sysIndexDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -888,7 +888,7 @@ func (r *sysTableDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table \"__Table\"\n└Output field names %v\n", qnames(r.fieldNames()))
 }
 
-func (r *sysTableDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *sysTableDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -939,7 +939,7 @@ func (r *tableNilPlan) explain(w strutil.Formatter) {
 
 func (r *tableNilPlan) fieldNames() []string { return []string{} }
 
-func (r *tableNilPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *tableNilPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil
 }
 
@@ -973,7 +973,7 @@ func (r *tableDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table %q\n└Output field names %v\n", r.t.name, qnames(r.fields))
 }
 
-func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *tableDefaultPlan) filter(expr expression) (plan, []string, error) {
 	t := r.t
 	cols := mentionedColumns(expr)
 	for _, v := range r.fields {
@@ -985,20 +985,20 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, []string, er
 
 	var is []string
 
-	//TODOvar sexpr string
-	//TODOfor _, ix := range t.indices2 {
-	//TODO	if len(ix.exprList) != 1 {
-	//TODO		continue
-	//TODO	}
+	//TODO var sexpr string
+	//TODO for _, ix := range t.indices2 {
+	//TODO 	if len(ix.exprList) != 1 {
+	//TODO 		continue
+	//TODO 	}
 
-	//TODO	if sexpr == "" {
-	//TODO		sexpr = expr.String()
-	//TODO	}
-	//TODO	if ix.sources[0] != sexpr {
-	//TODO		continue
-	//TODO	}
+	//TODO 	if sexpr == "" {
+	//TODO 		sexpr = expr.String()
+	//TODO 	}
+	//TODO 	if ix.sources[0] != sexpr {
+	//TODO 		continue
+	//TODO 	}
 
-	//TODO}
+	//TODO }
 
 	switch x := expr.(type) {
 	case *binaryOperation:
@@ -1121,6 +1121,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, []string, er
 			}, nil, nil
 		}
 	default:
+		//dbg("", expr)
 		return nil, is, nil //TODO
 	}
 
@@ -1174,7 +1175,7 @@ func (r *filterByIndexIsNotNullPlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexIsNotNullPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexIsNotNullPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1221,7 +1222,7 @@ func (r *nullPlan) do(*execCtx, func(interface{}, []interface{}) (bool, error)) 
 	return nil
 }
 
-func (r *nullPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *nullPlan) filter(expr expression) (plan, []string, error) {
 	return r, nil, nil
 }
 
@@ -1240,7 +1241,7 @@ func (r *filterByIndexIsNullPlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexIsNullPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexIsNullPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1287,7 +1288,7 @@ func (r *filterByIndexNePlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexNePlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexNePlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1368,7 +1369,7 @@ func (r *filterByIndexEqPlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexEqPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexEqPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1415,7 +1416,7 @@ func (r *filterByIndexBoolPlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexBoolPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexBoolPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1463,7 +1464,7 @@ func (r *filterByIndexGePlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexGePlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexGePlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1511,7 +1512,7 @@ func (r *filterByIndexLePlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexLePlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexLePlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1575,7 +1576,7 @@ func (r *filterByIndexGtPlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexGtPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexGtPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1639,7 +1640,7 @@ func (r *filterByIndexLtPlan) explain(w strutil.Formatter) {
 	)
 }
 
-func (r *filterByIndexLtPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *filterByIndexLtPlan) filter(expr expression) (plan, []string, error) {
 	return nil, nil, nil //TODO
 }
 
@@ -1717,7 +1718,7 @@ func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("└Output field names %v\n", qnames(r.fields))
 }
 
-func (r *leftJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *leftJoinDefaultPlan) filter(expr expression) (plan, []string, error) {
 	var is []string
 	for i, v := range r.names {
 		e2, err := expr.clone(nil, v)
@@ -1725,7 +1726,7 @@ func (r *leftJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string,
 			return nil, nil, err
 		}
 
-		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		p2, is2, err := r.rsets[i].filter(e2)
 		is = append(is, is2...)
 		if err != nil {
 			return nil, nil, err
@@ -1761,7 +1762,7 @@ func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("└Output field names %v\n", qnames(r.fields))
 }
 
-func (r *rightJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *rightJoinDefaultPlan) filter(expr expression) (plan, []string, error) {
 	var is []string
 	for i, v := range r.names {
 		e2, err := expr.clone(nil, v)
@@ -1769,7 +1770,7 @@ func (r *rightJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string
 			return nil, nil, err
 		}
 
-		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		p2, is2, err := r.rsets[i].filter(e2)
 		is = append(is, is2...)
 		if err != nil {
 			return nil, nil, err
@@ -1806,7 +1807,7 @@ func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
 	w.Format("└Output field names %v\n", qnames(r.fields))
 }
 
-func (r *fullJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+func (r *fullJoinDefaultPlan) filter(expr expression) (plan, []string, error) {
 	var is []string
 	for i, v := range r.names {
 		e2, err := expr.clone(nil, v)
@@ -1814,7 +1815,7 @@ func (r *fullJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string,
 			return nil, nil, err
 		}
 
-		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		p2, is2, err := r.rsets[i].filter(e2)
 		is = append(is, is2...)
 		if err != nil {
 			return nil, nil, err
