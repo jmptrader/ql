@@ -219,6 +219,8 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentID >= 34 && department.DepartmentID <= 36
+│Possibly useful indices
+│CREATE INDEX xdepartment_DepartmentID ON department(DepartmentID);
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Evaluate department.DepartmentName as "department.DepartmentName", department.DepartmentID as "department.DepartmentID", employee.LastName as "employee.LastName", employee.DepartmentID as "employee.DepartmentID",
 └Output field names ["department.DepartmentName" "department.DepartmentID" "employee.LastName" "employee.DepartmentID"]
@@ -234,6 +236,8 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentID >= 34 && department.DepartmentID <= 36
+│Possibly useful indices
+│CREATE INDEX xdepartment_DepartmentID ON department(DepartmentID);
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Evaluate department.DepartmentName as "department.DepartmentName", department.DepartmentID as "department.DepartmentID", employee.LastName as "employee.LastName", employee.DepartmentID as "employee.DepartmentID",
 └Output field names ["department.DepartmentName" "department.DepartmentID" "employee.LastName" "employee.DepartmentID"]
@@ -249,6 +253,8 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentID < 33 || department.DepartmentID > 34
+│Possibly useful indices
+│CREATE INDEX xdepartment_DepartmentID ON department(DepartmentID);
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Evaluate department.DepartmentName as "department.DepartmentName", department.DepartmentID as "department.DepartmentID", employee.LastName as "employee.LastName", employee.DepartmentID as "employee.DepartmentID",
 └Output field names ["department.DepartmentName" "department.DepartmentID" "employee.LastName" "employee.DepartmentID"]
@@ -4013,6 +4019,9 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on u.y < 60 && t.k < 7
+│Possibly useful indices
+│CREATE INDEX xu_y ON u(y);
+│CREATE INDEX xt_k ON t(k);
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
 ---- 643
@@ -4024,6 +4033,8 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on u.y < 60
+│Possibly useful indices
+│CREATE INDEX xu_y ON u(y);
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
 ---- 644
@@ -4035,6 +4046,8 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on t.k < 7
+│Possibly useful indices
+│CREATE INDEX xt_k ON t(k);
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
 ---- 645
