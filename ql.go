@@ -382,7 +382,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				}
 			}
 
-			p2, s, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filter(expr)
 			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
@@ -471,7 +471,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				}
 			}
 
-			p2, s, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filter(expr)
 			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
@@ -483,7 +483,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 
 			return nil, nil, nil
 		case *ident:
-			p2, s, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filter(expr)
 			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
@@ -513,7 +513,7 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				return nil, nil, nil
 			}
 
-			p2, s, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filter(expr)
 			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
