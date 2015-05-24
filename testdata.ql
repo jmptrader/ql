@@ -12122,3 +12122,14 @@ SELECT * FROM t WHERE id() != 0;
 [<nil>]
 [0]
 [314]
+
+-- 1008
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE -1 < i && 314 > i;
+|"i"
+[278]
+[0]
