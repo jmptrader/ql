@@ -12133,3 +12133,14 @@ SELECT * FROM t WHERE -1 < i && 314 > i;
 |"i"
 [278]
 [0]
+
+-- 1009
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
+COMMIT;
+SELECT * FROM t WHERE -1 < i && 314 > i OR i > 1000 && i < 2000;
+|"i"
+[278]
+[0]
