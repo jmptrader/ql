@@ -493,6 +493,10 @@ func (o *binaryOperation) isIdentRelOpVal() (bool, string, interface{}, error) {
 
 		sid = "id()"
 	} else {
+		if id.isQualified() {
+			return false, "", nil, nil
+		}
+
 		sid = id.s
 	}
 

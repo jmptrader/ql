@@ -208,8 +208,8 @@ func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string
 			return nil, nil, err
 		}
 
-		p2, _, err := r.rsets[i].filterUsingIndex(e2)
-		//TODO is = append(is, x...)
+		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		is = append(is, is2...)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -1718,7 +1718,25 @@ func (r *leftJoinDefaultPlan) explain(w strutil.Formatter) {
 }
 
 func (r *leftJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
-	return nil, nil, nil //TODO
+	var is []string
+	for i, v := range r.names {
+		e2, err := expr.clone(nil, v)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		is = append(is, is2...)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if p2 != nil {
+			r.rsets[i] = p2
+			return r, is, nil
+		}
+	}
+	return nil, is, nil
 }
 
 type rightJoinDefaultPlan struct {
@@ -1744,7 +1762,25 @@ func (r *rightJoinDefaultPlan) explain(w strutil.Formatter) {
 }
 
 func (r *rightJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
-	return nil, nil, nil //TODO
+	var is []string
+	for i, v := range r.names {
+		e2, err := expr.clone(nil, v)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		is = append(is, is2...)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if p2 != nil {
+			r.rsets[i] = p2
+			return r, is, nil
+		}
+	}
+	return nil, is, nil
 }
 
 type fullJoinDefaultPlan struct {
@@ -1771,7 +1807,25 @@ func (r *fullJoinDefaultPlan) explain(w strutil.Formatter) {
 }
 
 func (r *fullJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
-	return nil, nil, nil //TODO
+	var is []string
+	for i, v := range r.names {
+		e2, err := expr.clone(nil, v)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		p2, is2, err := r.rsets[i].filterUsingIndex(e2)
+		is = append(is, is2...)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if p2 != nil {
+			r.rsets[i] = p2
+			return r, is, nil
+		}
+	}
+	return nil, is, nil
 }
 
 func (r *leftJoinDefaultPlan) fieldNames() []string { return r.fields }
