@@ -6710,10 +6710,10 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE i > 30;
 |"i"
-[50]
-[50]
 [40]
 [40]
+[50]
+[50]
 
 -- 591
 BEGIN TRANSACTION;
@@ -6861,10 +6861,10 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE i > $1; // 30
 |"i"
-[50]
-[50]
 [40]
 [40]
+[50]
+[50]
 
 -- 598 // ordered -> index is used
 BEGIN TRANSACTION;
@@ -6983,10 +6983,10 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE $1 < i; // 30
 |"i"
-[50]
-[50]
 [40]
 [40]
+[50]
+[50]
 
 -- 603 // ordered -> index is used
 BEGIN TRANSACTION;
@@ -7105,10 +7105,10 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE 30 < i;
 |"i"
-[50]
-[50]
 [40]
 [40]
+[50]
+[50]
 
 -- 608
 BEGIN TRANSACTION;
@@ -8724,8 +8724,8 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE i > 4;
 |"i"
-[6]
 [5]
+[6]
 
 -- 741
 BEGIN TRANSACTION;
