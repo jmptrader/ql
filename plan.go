@@ -201,23 +201,25 @@ func (r *crossJoinDefaultPlan) explain(w strutil.Formatter) {
 }
 
 func (r *crossJoinDefaultPlan) filterUsingIndex(expr expression) (plan, []string, error) {
+	var is []string
 	for i, v := range r.names {
 		e2, err := expr.clone(nil, v)
 		if err != nil {
 			return nil, nil, err
 		}
 
-		p2, x, err := r.rsets[i].filterUsingIndex(e2)
+		p2, _, err := r.rsets[i].filterUsingIndex(e2)
+		//TODO is = append(is, x...)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		if p2 != nil {
 			r.rsets[i] = p2
-			return r, x, nil
+			return r, is, nil
 		}
 	}
-	return nil, nil, nil
+	return nil, is, nil
 }
 
 func (r *crossJoinDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) error {
@@ -981,7 +983,7 @@ func (r *tableDefaultPlan) filterUsingIndex(expr expression) (plan, []string, er
 		return nil, nil, fmt.Errorf("unknown field %s", k)
 	}
 
-	is := []string{fmt.Sprintf("%s(%s)", t.name, expr.String())}
+	var is []string
 
 	//TODOvar sexpr string
 	//TODOfor _, ix := range t.indices2 {
@@ -1638,15 +1640,6 @@ func (r *indexLtPlan) explain(w strutil.Formatter) {
 }
 
 func (r *indexLtPlan) filterUsingIndex(expr expression) (plan, []string, error) {
-	//TODO p2, err := r.tableDefaultPlan.filterUsingIndex(expr)
-	//TODO if err != nil {
-	//TODO 	return nil, err
-	//TODO }
-
-	//TODO if p2 == nil {
-	//TODO 	return nil, nil
-	//TODO }
-
 	return nil, nil, nil //TODO
 }
 
