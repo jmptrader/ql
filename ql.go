@@ -331,6 +331,7 @@ type whereRset struct {
 }
 
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
+	var is []string
 	var f func(plan, expression) (plan, expression, error)
 	f = func(p plan, expr expression) (plan, expression, error) {
 		switch x := expr.(type) {
@@ -381,7 +382,8 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				}
 			}
 
-			p2, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filterUsingIndex(expr)
+			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -469,7 +471,8 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				}
 			}
 
-			p2, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filterUsingIndex(expr)
+			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -480,7 +483,8 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 
 			return nil, nil, nil
 		case *ident:
-			p2, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filterUsingIndex(expr)
+			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -509,7 +513,8 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 				return nil, nil, nil
 			}
 
-			p2, err := p.filterUsingIndex(expr)
+			p2, s, err := p.filterUsingIndex(expr)
+			is = append(is, s...)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -539,13 +544,13 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 
 	if p2 != nil {
 		if expr2 != nil {
-			return &filterDefaultPlan{p2, expr2}, nil
+			return &filterDefaultPlan{p2, expr2, is}, nil
 		}
 
 		return p2, nil
 	}
 
-	return &filterDefaultPlan{p, expr}, nil
+	return &filterDefaultPlan{p, expr, is}, nil
 }
 
 type offsetRset struct {
