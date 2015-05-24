@@ -71,6 +71,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1" "c2"]
 
 ---- 35
@@ -99,6 +102,9 @@ SELECT * FROM t WHERE c1 % 2 == 0 ORDER BY c2 DESC;
 ┌Iterate all rows of table "t"
 └Output field names ["c1" "c2"]
 ┌Filter on c1 % 2 == 0
+│Possibly useful indices
+│CREATE INDEX xt_c1_2_0 ON t(c1 % 2 == 0);
+│CREATE INDEX xt_c1_2 ON t(c1 % 2);
 └Output field names ["c1" "c2"]
 ┌Order descending by c2,
 └Output field names ["c1" "c2"]
@@ -603,6 +609,9 @@ SELECT * FROM t WHERE c1 > 3;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 > 3
+│Possibly useful indices
+│CREATE INDEX xt_c1_3 ON t(c1 > 3);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 120
@@ -617,6 +626,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 123
@@ -624,6 +636,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 124
@@ -631,6 +646,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 125
@@ -638,6 +656,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 126
@@ -645,6 +666,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 127
@@ -652,6 +676,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 128
@@ -659,6 +686,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 129
@@ -666,6 +696,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 130
@@ -673,6 +706,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 131
@@ -680,6 +716,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 132
@@ -687,6 +726,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 133
@@ -694,6 +736,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 134
@@ -701,6 +746,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 135
@@ -708,6 +756,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 136
@@ -715,6 +766,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 137
@@ -722,6 +776,9 @@ SELECT * FROM t WHERE c1 == 1;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 1
+│Possibly useful indices
+│CREATE INDEX xt_c1_1 ON t(c1 == 1);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 138
@@ -729,6 +786,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 139
@@ -736,6 +796,9 @@ SELECT * FROM t WHERE c1 == 8;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 8
+│Possibly useful indices
+│CREATE INDEX xt_c1_8 ON t(c1 == 8);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 140
@@ -743,6 +806,9 @@ SELECT * FROM t WHERE c1 == 2;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
+│Possibly useful indices
+│CREATE INDEX xt_c1_2 ON t(c1 == 2);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 141
@@ -750,6 +816,9 @@ SELECT * FROM t WHERE c1 == 2;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
+│Possibly useful indices
+│CREATE INDEX xt_c1_2 ON t(c1 == 2);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 142
@@ -757,6 +826,9 @@ SELECT * FROM t WHERE c1 == 2;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
+│Possibly useful indices
+│CREATE INDEX xt_c1_2 ON t(c1 == 2);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 143
@@ -764,6 +836,9 @@ SELECT * FROM t WHERE c1 == "foo";
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == "foo"
+│Possibly useful indices
+│CREATE INDEX xt_c1_foo ON t(c1 == "foo");
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 144
@@ -771,6 +846,9 @@ SELECT * FROM t WHERE c1 == 2+5i;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2+5i
+│Possibly useful indices
+│CREATE INDEX xt_c1_2_5i ON t(c1 == 2+5i);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 145
@@ -778,6 +856,9 @@ SELECT * FROM t WHERE c1 == "2";
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == "2"
+│Possibly useful indices
+│CREATE INDEX xt_c1_2 ON t(c1 == "2");
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 146
@@ -785,6 +866,9 @@ SELECT * FROM t WHERE c1 == 2+5i;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2+5i
+│Possibly useful indices
+│CREATE INDEX xt_c1_2_5i ON t(c1 == 2+5i);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 147
@@ -792,6 +876,9 @@ SELECT * FROM t WHERE c1 == 2;
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == 2
+│Possibly useful indices
+│CREATE INDEX xt_c1_2 ON t(c1 == 2);
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 148
@@ -799,6 +886,9 @@ SELECT * FROM t WHERE c1 == "foo";
 ┌Iterate all rows of table "t"
 └Output field names ["c1"]
 ┌Filter on c1 == "foo"
+│Possibly useful indices
+│CREATE INDEX xt_c1_foo ON t(c1 == "foo");
+│CREATE INDEX xt_c1 ON t(c1);
 └Output field names ["c1"]
 
 ---- 153
@@ -865,6 +955,9 @@ SELECT * FROM department WHERE DepartmentID >= 33 ORDER BY DepartmentID;
 ┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Filter on DepartmentID >= 33
+│Possibly useful indices
+│CREATE INDEX xdepartment_DepartmentID_33 ON department(DepartmentID >= 33);
+│CREATE INDEX xdepartment_DepartmentID ON department(DepartmentID);
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Order by DepartmentID,
 └Output field names ["DepartmentID" "DepartmentName"]
@@ -874,6 +967,9 @@ SELECT * FROM department WHERE DepartmentID <= 34 ORDER BY DepartmentID;
 ┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Filter on DepartmentID <= 34
+│Possibly useful indices
+│CREATE INDEX xdepartment_DepartmentID_34 ON department(DepartmentID <= 34);
+│CREATE INDEX xdepartment_DepartmentID ON department(DepartmentID);
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Order by DepartmentID,
 └Output field names ["DepartmentID" "DepartmentName"]
@@ -883,6 +979,9 @@ SELECT * FROM department WHERE DepartmentID < 34 ORDER BY DepartmentID;
 ┌Iterate all rows of table "department"
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Filter on DepartmentID < 34
+│Possibly useful indices
+│CREATE INDEX xdepartment_DepartmentID_34 ON department(DepartmentID < 34);
+│CREATE INDEX xdepartment_DepartmentID ON department(DepartmentID);
 └Output field names ["DepartmentID" "DepartmentName"]
 ┌Order by DepartmentID,
 └Output field names ["DepartmentID" "DepartmentName"]
@@ -1011,6 +1110,12 @@ SELECT * FROM employee WHERE LastName == "Jones" || DepartmentID IS NULL ORDER B
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on LastName == "Jones" || DepartmentID IS NULL
+│Possibly useful indices
+│CREATE INDEX xemployee_LastName_Jones_DepartmentID_IS_NULL ON employee(LastName == "Jones" || DepartmentID IS NULL);
+│CREATE INDEX xemployee_LastName_Jones ON employee(LastName == "Jones");
+│CREATE INDEX xemployee_LastName ON employee(LastName);
+│CREATE INDEX xemployee_DepartmentID_IS_NULL ON employee(DepartmentID IS NULL);
+│CREATE INDEX xemployee_DepartmentID ON employee(DepartmentID);
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
 └Output field names ["LastName" "DepartmentID"]
@@ -1020,6 +1125,12 @@ SELECT * FROM employee WHERE LastName != "Jones" && DepartmentID IS NOT NULL ORD
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on LastName != "Jones" && DepartmentID IS NOT NULL
+│Possibly useful indices
+│CREATE INDEX xemployee_LastName_Jones_DepartmentID_IS_NOT_NULL ON employee(LastName != "Jones" && DepartmentID IS NOT NULL);
+│CREATE INDEX xemployee_LastName_Jones ON employee(LastName != "Jones");
+│CREATE INDEX xemployee_LastName ON employee(LastName);
+│CREATE INDEX xemployee_DepartmentID_IS_NOT_NULL ON employee(DepartmentID IS NOT NULL);
+│CREATE INDEX xemployee_DepartmentID ON employee(DepartmentID);
 └Output field names ["LastName" "DepartmentID"]
 ┌Order by LastName,
 └Output field names ["LastName" "DepartmentID"]
@@ -1086,6 +1197,9 @@ SELECT DepartmentID AS x, DepartmentID << 1 AS a, 1 << uint64(DepartmentID) AS b
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on DepartmentID IS NOT NULL
+│Possibly useful indices
+│CREATE INDEX xemployee_DepartmentID_IS_NOT_NULL ON employee(DepartmentID IS NOT NULL);
+│CREATE INDEX xemployee_DepartmentID ON employee(DepartmentID);
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "x", DepartmentID << 1 as "a", 1 << uint64(DepartmentID) as "b",
 └Output field names ["x" "a" "b"]
@@ -1097,6 +1211,9 @@ SELECT DepartmentID AS x, DepartmentID >> 1 AS a, 9223372036854775808 >> uint64(
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on DepartmentID IS NOT NULL
+│Possibly useful indices
+│CREATE INDEX xemployee_DepartmentID_IS_NOT_NULL ON employee(DepartmentID IS NOT NULL);
+│CREATE INDEX xemployee_DepartmentID ON employee(DepartmentID);
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "x", DepartmentID >> 1 as "a", 9223372036854775808 >> uint64(DepartmentID) as "b",
 └Output field names ["x" "a" "b"]
@@ -1108,6 +1225,9 @@ SELECT DISTINCT DepartmentID FROM employee WHERE DepartmentID IS NOT NULL;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on DepartmentID IS NOT NULL
+│Possibly useful indices
+│CREATE INDEX xemployee_DepartmentID_IS_NOT_NULL ON employee(DepartmentID IS NOT NULL);
+│CREATE INDEX xemployee_DepartmentID ON employee(DepartmentID);
 └Output field names ["LastName" "DepartmentID"]
 ┌Evaluate DepartmentID as "DepartmentID",
 └Output field names ["DepartmentID"]
@@ -1697,6 +1817,9 @@ SELECT count() FROM t WHERE n < 2;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 2
+│Possibly useful indices
+│CREATE INDEX xt_n_2 ON t(n < 2);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1708,6 +1831,9 @@ SELECT count() FROM t WHERE n < 1;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 1
+│Possibly useful indices
+│CREATE INDEX xt_n_1 ON t(n < 1);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1719,6 +1845,9 @@ SELECT count() FROM t WHERE n < 0;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 0
+│Possibly useful indices
+│CREATE INDEX xt_n_0 ON t(n < 0);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1730,6 +1859,9 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 2;);
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 2
+│Possibly useful indices
+│CREATE INDEX xt_n_2 ON t(n < 2);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1743,6 +1875,9 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 1;);
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 1
+│Possibly useful indices
+│CREATE INDEX xt_n_1 ON t(n < 1);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1756,6 +1891,9 @@ SELECT s + 10 FROM (SELECT sum(n) AS s FROM t WHERE n < 0;);
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 0
+│Possibly useful indices
+│CREATE INDEX xt_n_0 ON t(n < 0);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1769,6 +1907,9 @@ SELECT sum(n) AS s FROM t WHERE n < 2;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 2
+│Possibly useful indices
+│CREATE INDEX xt_n_2 ON t(n < 2);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1780,6 +1921,9 @@ SELECT sum(n) AS s FROM t WHERE n < 1;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 1
+│Possibly useful indices
+│CREATE INDEX xt_n_1 ON t(n < 1);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -1791,6 +1935,9 @@ SELECT sum(n) AS s FROM t WHERE n < 0;
 ┌Iterate all rows of table "t"
 └Output field names ["n"]
 ┌Filter on n < 0
+│Possibly useful indices
+│CREATE INDEX xt_n_0 ON t(n < 0);
+│CREATE INDEX xt_n ON t(n);
 └Output field names ["n"]
 ┌Group by distinct rows
 └Output field names ["n"]
@@ -2397,6 +2544,9 @@ SELECT * FROM t WHERE c > 100 ORDER BY c DESC;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c > 100
+│Possibly useful indices
+│CREATE INDEX xt_c_100 ON t(c > 100);
+│CREATE INDEX xt_c ON t(c);
 └Output field names ["c"]
 ┌Order descending by c,
 └Output field names ["c"]
@@ -2406,6 +2556,9 @@ SELECT * FROM t WHERE c < 110 ORDER BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c < 110
+│Possibly useful indices
+│CREATE INDEX xt_c_110 ON t(c < 110);
+│CREATE INDEX xt_c ON t(c);
 └Output field names ["c"]
 ┌Order by c,
 └Output field names ["c"]
@@ -2415,6 +2568,9 @@ SELECT * FROM t WHERE c <= 110 ORDER BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c <= 110
+│Possibly useful indices
+│CREATE INDEX xt_c_110 ON t(c <= 110);
+│CREATE INDEX xt_c ON t(c);
 └Output field names ["c"]
 ┌Order by c,
 └Output field names ["c"]
@@ -2424,6 +2580,9 @@ SELECT * FROM t WHERE c >= 110 ORDER BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c >= 110
+│Possibly useful indices
+│CREATE INDEX xt_c_110 ON t(c >= 110);
+│CREATE INDEX xt_c ON t(c);
 └Output field names ["c"]
 ┌Order by c,
 └Output field names ["c"]
@@ -2433,6 +2592,9 @@ SELECT * FROM t WHERE c != 110 ORDER BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c != 110
+│Possibly useful indices
+│CREATE INDEX xt_c_110 ON t(c != 110);
+│CREATE INDEX xt_c ON t(c);
 └Output field names ["c"]
 ┌Order by c,
 └Output field names ["c"]
@@ -2442,6 +2604,9 @@ SELECT * FROM t WHERE c == 110 ORDER BY c;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c == 110
+│Possibly useful indices
+│CREATE INDEX xt_c_110 ON t(c == 110);
+│CREATE INDEX xt_c ON t(c);
 └Output field names ["c"]
 ┌Order by c,
 └Output field names ["c"]
@@ -2487,6 +2652,9 @@ SELECT * FROM t WHERE c & 349525 == 70992;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c & 349525 == 70992
+│Possibly useful indices
+│CREATE INDEX xt_c_349525_70992 ON t(c & 349525 == 70992);
+│CREATE INDEX xt_c_349525 ON t(c & 349525);
 └Output field names ["c"]
 
 ---- 392
@@ -2494,6 +2662,9 @@ SELECT * FROM t WHERE c | 349525 == 358389;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c | 349525 == 358389
+│Possibly useful indices
+│CREATE INDEX xt_c_349525_358389 ON t(c | 349525 == 358389);
+│CREATE INDEX xt_c_349525 ON t(c | 349525);
 └Output field names ["c"]
 
 ---- 393
@@ -2501,6 +2672,9 @@ SELECT * FROM t WHERE c &^ 349525 == 8864;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c &^ 349525 == 8864
+│Possibly useful indices
+│CREATE INDEX xt_c_349525_8864 ON t(c &^ 349525 == 8864);
+│CREATE INDEX xt_c_349525 ON t(c &^ 349525);
 └Output field names ["c"]
 
 ---- 394
@@ -2508,6 +2682,9 @@ SELECT * FROM t WHERE c ^ 349525 == 287397;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c ^ 349525 == 287397
+│Possibly useful indices
+│CREATE INDEX xt_c_349525_287397 ON t(c ^ 349525 == 287397);
+│CREATE INDEX xt_c_349525 ON t(c ^ 349525);
 └Output field names ["c"]
 
 ---- 395
@@ -2515,6 +2692,9 @@ SELECT * FROM t WHERE c % 256 == 240;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c % 256 == 240
+│Possibly useful indices
+│CREATE INDEX xt_c_256_240 ON t(c % 256 == 240);
+│CREATE INDEX xt_c_256 ON t(c % 256);
 └Output field names ["c"]
 
 ---- 396
@@ -2522,6 +2702,9 @@ SELECT * FROM t WHERE c * 16 == 1277696;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c * 16 == 1277696
+│Possibly useful indices
+│CREATE INDEX xt_c_16_1277696 ON t(c * 16 == 1277696);
+│CREATE INDEX xt_c_16 ON t(c * 16);
 └Output field names ["c"]
 
 ---- 397
@@ -2529,6 +2712,8 @@ SELECT * FROM t WHERE ^c == -79857;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on ^c == -79857
+│Possibly useful indices
+│CREATE INDEX xt_c_79857 ON t(^c == -79857);
 └Output field names ["c"]
 
 ---- 398
@@ -2536,6 +2721,9 @@ SELECT * FROM t WHERE c == 79856;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on c == 79856
+│Possibly useful indices
+│CREATE INDEX xt_c_79856 ON t(c == 79856);
+│CREATE INDEX xt_c ON t(c);
 └Output field names ["c"]
 
 ---- 399
@@ -2543,6 +2731,8 @@ SELECT * FROM t WHERE -c == -79856;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
 ┌Filter on -c == -79856
+│Possibly useful indices
+│CREATE INDEX xt_c_79856 ON t(-c == -79856);
 └Output field names ["c"]
 
 ---- 400
@@ -3584,6 +3774,9 @@ SELECT i FROM t WHERE i < 30;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i < 30
+│Possibly useful indices
+│CREATE INDEX xt_i_30 ON t(i < 30);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 582
@@ -3596,6 +3789,9 @@ SELECT * FROM t WHERE i <= 30;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i <= 30
+│Possibly useful indices
+│CREATE INDEX xt_i_30 ON t(i <= 30);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 584
@@ -3608,6 +3804,9 @@ SELECT i FROM t WHERE i == 30;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i == 30
+│Possibly useful indices
+│CREATE INDEX xt_i_30 ON t(i == 30);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 586
@@ -3620,6 +3819,9 @@ SELECT * FROM t WHERE i >= 30;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i >= 30
+│Possibly useful indices
+│CREATE INDEX xt_i_30 ON t(i >= 30);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 588
@@ -3632,6 +3834,9 @@ SELECT * FROM t WHERE i > 30;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i > 30
+│Possibly useful indices
+│CREATE INDEX xt_i_30 ON t(i > 30);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 590
@@ -3741,6 +3946,9 @@ SELECT * FROM t WHERE i < 30;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i < 30
+│Possibly useful indices
+│CREATE INDEX xt_i_30 ON t(i < 30);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 609
@@ -3845,6 +4053,9 @@ SELECT * FROM t WHERE s == "test";
 ┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Filter on s == "test"
+│Possibly useful indices
+│CREATE INDEX xt_s_test ON t(s == "test");
+│CREATE INDEX xt_s ON t(s);
 └Output field names ["i" "s"]
 
 ---- 637
@@ -4363,6 +4574,13 @@ SELECT count(1) AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input 
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
+│Possibly useful indices
+│CREATE INDEX xfibonacci_input_5_input_7_input_3 ON fibonacci(input >= 5 && input <= 7 || input == 3);
+│CREATE INDEX xfibonacci_input_5_input_7 ON fibonacci(input >= 5 && input <= 7);
+│CREATE INDEX xfibonacci_input_5 ON fibonacci(input >= 5);
+│CREATE INDEX xfibonacci_input ON fibonacci(input);
+│CREATE INDEX xfibonacci_input_7 ON fibonacci(input <= 7);
+│CREATE INDEX xfibonacci_input_3 ON fibonacci(input == 3);
 └Output field names ["input" "output"]
 ┌Group by distinct rows
 └Output field names ["input" "output"]
@@ -4374,6 +4592,13 @@ SELECT * FROM fibonacci WHERE input >= 5 && input <= 7 || input == 3 ORDER BY in
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
+│Possibly useful indices
+│CREATE INDEX xfibonacci_input_5_input_7_input_3 ON fibonacci(input >= 5 && input <= 7 || input == 3);
+│CREATE INDEX xfibonacci_input_5_input_7 ON fibonacci(input >= 5 && input <= 7);
+│CREATE INDEX xfibonacci_input_5 ON fibonacci(input >= 5);
+│CREATE INDEX xfibonacci_input ON fibonacci(input);
+│CREATE INDEX xfibonacci_input_7 ON fibonacci(input <= 7);
+│CREATE INDEX xfibonacci_input_3 ON fibonacci(input == 3);
 └Output field names ["input" "output"]
 ┌Order descending by input,
 └Output field names ["input" "output"]
@@ -4401,6 +4626,13 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
+│Possibly useful indices
+│CREATE INDEX xfibonacci_input_5_input_7_input_3 ON fibonacci(input >= 5 && input <= 7 || input == 3);
+│CREATE INDEX xfibonacci_input_5_input_7 ON fibonacci(input >= 5 && input <= 7);
+│CREATE INDEX xfibonacci_input_5 ON fibonacci(input >= 5);
+│CREATE INDEX xfibonacci_input ON fibonacci(input);
+│CREATE INDEX xfibonacci_input_7 ON fibonacci(input <= 7);
+│CREATE INDEX xfibonacci_input_3 ON fibonacci(input == 3);
 └Output field names ["input" "output"]
 ┌Group by distinct rows
 └Output field names ["input" "output"]
@@ -4412,6 +4644,13 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
+│Possibly useful indices
+│CREATE INDEX xfibonacci_input_5_input_7_input_3 ON fibonacci(input >= 5 && input <= 7 || input == 3);
+│CREATE INDEX xfibonacci_input_5_input_7 ON fibonacci(input >= 5 && input <= 7);
+│CREATE INDEX xfibonacci_input_5 ON fibonacci(input >= 5);
+│CREATE INDEX xfibonacci_input ON fibonacci(input);
+│CREATE INDEX xfibonacci_input_7 ON fibonacci(input <= 7);
+│CREATE INDEX xfibonacci_input_3 ON fibonacci(input == 3);
 └Output field names ["input" "output"]
 ┌Group by distinct rows
 └Output field names ["input" "output"]
@@ -4613,6 +4852,9 @@ SELECT s FROM t WHERE s < "z";
 ┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Filter on s < "z"
+│Possibly useful indices
+│CREATE INDEX xt_s_z ON t(s < "z");
+│CREATE INDEX xt_s ON t(s);
 └Output field names ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
@@ -4622,6 +4864,9 @@ SELECT s FROM t WHERE s < "z";
 ┌Iterate all rows of table "t"
 └Output field names ["i" "s"]
 ┌Filter on s < "z"
+│Possibly useful indices
+│CREATE INDEX xt_s_z ON t(s < "z");
+│CREATE INDEX xt_s ON t(s);
 └Output field names ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
@@ -4710,6 +4955,9 @@ SELECT * FROM t WHERE id() < 4;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on id() < 4
+│Possibly useful indices
+│CREATE INDEX xt_id_4 ON t(id() < 4);
+│CREATE INDEX xt_id ON t(id());
 └Output field names ["i"]
 
 ---- 736
@@ -5014,6 +5262,12 @@ SELECT * FROM t WHERE name == "b" && mail == "bar@example.com";
 ┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" && mail == "bar@example.com"
+│Possibly useful indices
+│CREATE INDEX xt_name_b_mail_bar_example_com ON t(name == "b" && mail == "bar@example.com");
+│CREATE INDEX xt_name_b ON t(name == "b");
+│CREATE INDEX xt_name ON t(name);
+│CREATE INDEX xt_mail_bar_example_com ON t(mail == "bar@example.com");
+│CREATE INDEX xt_mail ON t(mail);
 └Output field names ["name" "mail"]
 
 ---- 768
@@ -5021,6 +5275,12 @@ SELECT * FROM t WHERE name == "b" && mail == "bar@example.com";
 ┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" && mail == "bar@example.com"
+│Possibly useful indices
+│CREATE INDEX xt_name_b_mail_bar_example_com ON t(name == "b" && mail == "bar@example.com");
+│CREATE INDEX xt_name_b ON t(name == "b");
+│CREATE INDEX xt_name ON t(name);
+│CREATE INDEX xt_mail_bar_example_com ON t(mail == "bar@example.com");
+│CREATE INDEX xt_mail ON t(mail);
 └Output field names ["name" "mail"]
 
 ---- 769
@@ -5028,6 +5288,12 @@ SELECT * FROM t WHERE name == "b" || mail == "bar@example.com" ORDER BY name;
 ┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" || mail == "bar@example.com"
+│Possibly useful indices
+│CREATE INDEX xt_name_b_mail_bar_example_com ON t(name == "b" || mail == "bar@example.com");
+│CREATE INDEX xt_name_b ON t(name == "b");
+│CREATE INDEX xt_name ON t(name);
+│CREATE INDEX xt_mail_bar_example_com ON t(mail == "bar@example.com");
+│CREATE INDEX xt_mail ON t(mail);
 └Output field names ["name" "mail"]
 ┌Order by name,
 └Output field names ["name" "mail"]
@@ -5037,6 +5303,12 @@ SELECT * FROM t WHERE name == "b" || mail == "bar@example.com" ORDER BY name;
 ┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" || mail == "bar@example.com"
+│Possibly useful indices
+│CREATE INDEX xt_name_b_mail_bar_example_com ON t(name == "b" || mail == "bar@example.com");
+│CREATE INDEX xt_name_b ON t(name == "b");
+│CREATE INDEX xt_name ON t(name);
+│CREATE INDEX xt_mail_bar_example_com ON t(mail == "bar@example.com");
+│CREATE INDEX xt_mail ON t(mail);
 └Output field names ["name" "mail"]
 ┌Order by name,
 └Output field names ["name" "mail"]
@@ -6306,6 +6578,9 @@ SELECT * FROM t WHERE i != 42;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i != 42
+│Possibly useful indices
+│CREATE INDEX xt_i_42 ON t(i != 42);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 984
@@ -6333,6 +6608,9 @@ SELECT * FROM t WHERE i IS NULL;
 ┌Iterate all rows of table "t"
 └Output field names ["i" "j"]
 ┌Filter on i IS NULL
+│Possibly useful indices
+│CREATE INDEX xt_i_IS_NULL ON t(i IS NULL);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i" "j"]
 
 ---- 989
@@ -6345,6 +6623,9 @@ SELECT * FROM t WHERE i IS NOT NULL;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i IS NOT NULL
+│Possibly useful indices
+│CREATE INDEX xt_i_IS_NOT_NULL ON t(i IS NOT NULL);
+│CREATE INDEX xt_i ON t(i);
 └Output field names ["i"]
 
 ---- 991

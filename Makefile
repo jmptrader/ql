@@ -31,7 +31,7 @@ cpu: ql.test
 	go tool pprof --lines $< cpu.out
 
 editor: ql.y scanner.go parser.go coerce.go
-	go fmt
+	gofmt -s -l -w *.go
 	go test -i
 	go test
 
