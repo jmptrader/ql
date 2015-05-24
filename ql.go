@@ -429,13 +429,13 @@ func (r *whereRset) planBinOp(f func(plan, expression) (plan, expression, error)
 
 		switch x.op {
 		case andand:
-			if lp == rp {
+			if lp == rp { // eg. same crossJoinDefaultPlan
 				return lp, nil, nil
 			}
 
 			return nil, nil, nil //TODO
 		case oror:
-			return nil, nil, nil
+			return nil, nil, nil //TODO
 		default:
 			return nil, nil, nil //TODO
 		}

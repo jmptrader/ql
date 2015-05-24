@@ -6599,3 +6599,10 @@ SELECT * FROM t WHERE id() != 0;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 
+---- 1008
+SELECT * FROM t WHERE i > -1 && i < 314;
+┌Iterate all rows of table "t"
+└Output field names ["i"]
+┌Filter on i > -1 && i < 314
+└Output field names ["i"]
+
