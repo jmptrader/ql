@@ -4739,7 +4739,7 @@ SELECT * FROM x;
 
 ---- 716
 SELECT s FROM t WHERE s != "z";
-┌Iterate all rows of table "t" using index "x" where the indexed value != "z"
+┌Iterate all rows of table "t" using index "x" where s != "z"
 └Output field names ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
@@ -6473,12 +6473,12 @@ SELECT * FROM t WHERE i != 42;
 
 ---- 984
 SELECT * FROM t WHERE i != 42;
-┌Iterate all rows of table "t" using index "x" where the indexed value != 42
+┌Iterate all rows of table "t" using index "x" where i != 42
 └Output field names ["i"]
 
 ---- 985
 SELECT * FROM t WHERE i != 42;
-┌Iterate all rows of table "t" using index "x" where the indexed value != 42
+┌Iterate all rows of table "t" using index "x" where i != 42
 └Output field names ["i"]
 
 ---- 986

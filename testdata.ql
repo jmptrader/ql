@@ -8386,8 +8386,8 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT s FROM t WHERE s != "z";
 |"s"
-[foo]
 [bar]
+[foo]
 
 -- 717
 BEGIN TRANSACTION;
@@ -11858,10 +11858,10 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE i != 42;
 |"i"
-[314]
-[278]
-[0]
 [-1]
+[0]
+[278]
+[314]
 
 -- 985 // order -> index is used
 BEGIN TRANSACTION;
@@ -11871,10 +11871,10 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE i != 42;
 |"i"
-[314]
-[278]
-[0]
 [-1]
+[0]
+[278]
+[314]
 
 -- 986
 BEGIN TRANSACTION;
