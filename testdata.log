@@ -3704,7 +3704,7 @@ SELECT i FROM t WHERE i < 30;
 
 ---- 582
 SELECT i FROM t WHERE i < 30;
-┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where i < 30
 └Output field names ["i"]
 
 ---- 583
@@ -3787,7 +3787,7 @@ SELECT i FROM t WHERE !b ORDER BY i;
 
 ---- 593
 SELECT i FROM t WHERE i < $1;
-┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where i < 30
 └Output field names ["i"]
 
 ---- 594
@@ -3812,7 +3812,7 @@ SELECT * FROM t WHERE i > $1;
 
 ---- 598
 SELECT i FROM t WHERE i < $1;
-┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where i < 30
 └Output field names ["i"]
 
 ---- 599
@@ -3837,7 +3837,7 @@ SELECT * FROM t WHERE i > $1;
 
 ---- 603
 SELECT i FROM t WHERE i < 30;
-┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where i < 30
 └Output field names ["i"]
 
 ---- 604
@@ -3871,7 +3871,7 @@ SELECT * FROM t WHERE i < 30;
 
 ---- 609
 SELECT * FROM t WHERE i < 30;
-┌Iterate all rows of table "t" using index "x" where the indexed value is < 30
+┌Iterate all rows of table "t" using index "x" where i < 30
 └Output field names ["i"]
 
 ---- 624
@@ -4027,7 +4027,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ---- 643
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table "t" using index "xk" where the indexed value is < 7
+│   ┌Iterate all rows of table "t" using index "xk" where k < 7
 │   └Output field names ["i" "j" "k"]
 │   ┌Iterate all rows of table "u"
 │   └Output field names ["x" "y" "z"]
@@ -4042,7 +4042,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
 │   ┌Iterate all rows of table "t"
 │   └Output field names ["i" "j" "k"]
-│   ┌Iterate all rows of table "u" using index "xy" where the indexed value is < 60
+│   ┌Iterate all rows of table "u" using index "xy" where y < 60
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 ┌Filter on t.k < 7
@@ -4053,9 +4053,9 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ---- 645
 SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table "t" using index "xk" where the indexed value is < 7
+│   ┌Iterate all rows of table "t" using index "xk" where k < 7
 │   └Output field names ["i" "j" "k"]
-│   ┌Iterate all rows of table "u" using index "xy" where the indexed value is < 60
+│   ┌Iterate all rows of table "u" using index "xy" where y < 60
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
@@ -4746,7 +4746,7 @@ SELECT s FROM t WHERE s != "z";
 
 ---- 717
 SELECT s FROM t WHERE s < "z";
-┌Iterate all rows of table "t" using index "x" where the indexed value is < "z"
+┌Iterate all rows of table "t" using index "x" where s < "z"
 └Output field names ["i" "s"]
 ┌Evaluate s as "s",
 └Output field names ["s"]
@@ -4863,7 +4863,7 @@ SELECT * FROM t WHERE id() < 4;
 
 ---- 736
 SELECT * FROM t WHERE i < 4;
-┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
+┌Iterate all rows of table "t" using index "x" where i < 4
 └Output field names ["i"]
 
 ---- 737
@@ -4889,9 +4889,9 @@ SELECT * FROM t WHERE i > 4;
 ---- 741
 SELECT * FROM (SELECT i FROM t WHERE i < 4;) AS t, (SELECT * FROM u WHERE i < 40;) AS u;
 ┌Compute Cartesian product of
-│   ┌Iterate all rows of table "t" using index "x" where the indexed value is < 4
+│   ┌Iterate all rows of table "t" using index "x" where i < 4
 │   └Output field names ["i"]
-│   ┌Iterate all rows of table "u" using index "y" where the indexed value is < 40
+│   ┌Iterate all rows of table "u" using index "y" where i < 40
 │   └Output field names ["i"]
 └Output field names ["t.i" "u.i"]
 
