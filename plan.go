@@ -87,6 +87,8 @@ type indexIntervalPlan struct {
 }
 
 func (r *indexIntervalPlan) doGe(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ...
+	// ---  ---  ---  ---  ---  +  +  +++  +++  +++
 	t := r.src
 	it, _, err := r.x.Seek([]interface{}{r.lval})
 	if err != nil {
@@ -111,6 +113,8 @@ func (r *indexIntervalPlan) doGe(ctx *execCtx, f func(interface{}, []interface{}
 }
 
 func (r *indexIntervalPlan) doGt(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ...
+	// ---  ---  ---  ---  ---  -  -  +++  +++  +++
 	t := r.src
 	it, _, err := r.x.Seek([]interface{}{r.lval})
 	if err != nil {
@@ -148,6 +152,41 @@ func (r *indexIntervalPlan) doGt(ctx *execCtx, f func(interface{}, []interface{}
 	}
 }
 
+func (r *indexIntervalPlan) doLe(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ..., H-1, H-1, H, H, H+1, H+1, ...
+	// ---  ---  +++  +++  +++  +  +  ---  ---
+	t := r.src
+	it, err := r.x.SeekFirst()
+	if err != nil {
+		return noEOF(err)
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		val := k[0]
+		if val == nil {
+			continue
+		}
+
+		if collate1(val, r.hval) > 0 {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	switch {
 	case r.lval != nil && r.hval != nil: // L, H
@@ -160,7 +199,12 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 			return r.doGe(ctx, f)
 		}
 	case r.lval == nil && r.hval != nil: // ...H
-		panic("TODO")
+		switch {
+		case r.hopen: // column < H
+			panic("TODO")
+		default: // column <= H
+			return r.doLe(ctx, f)
+		}
 	default: // r.lval = nil && r.hval == nil:
 		panic("internal error 070")
 	}
@@ -178,7 +222,11 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 		}
 		w.Format(" %v\n", value{r.lval})
 	case r.lval == nil && r.hval != nil: // ...H
-		panic("TODO")
+		w.Format("<")
+		if !r.hopen {
+			w.Format("=")
+		}
+		w.Format(" %v\n", value{r.hval})
 	default: // r.lval = nil && r.hval == nil:
 		panic("internal error 071")
 	}
@@ -1131,12 +1179,13 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 			rval,
 		}, nil, nil
 	case le:
-		return &filterByIndexLePlan{
-			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-			ix.name,
-			ix.x,
-			rval,
-		}, nil, nil
+		//TODO- return &filterByIndexLePlan{
+		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+		//TODO- 	ix.name,
+		//TODO- 	ix.x,
+		//TODO- 	rval,
+		//TODO- }, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, false, false, nil, rval}, nil, nil
 	case ge:
 		//TODO- return &filterByIndexGePlan{
 		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
