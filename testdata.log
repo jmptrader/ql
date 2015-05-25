@@ -3732,7 +3732,7 @@ SELECT i FROM t WHERE i == 30;
 
 ---- 586
 SELECT i FROM t WHERE i == 30;
-┌Iterate all rows of table "t" using index "x" where the indexed value == 30
+┌Iterate all rows of table "t" using index "x" where i == 30
 └Output field names ["i"]
 
 ---- 587
@@ -3797,7 +3797,7 @@ SELECT * FROM t WHERE i <= $1;
 
 ---- 595
 SELECT i FROM t WHERE i == $1;
-┌Iterate all rows of table "t" using index "x" where the indexed value == 30
+┌Iterate all rows of table "t" using index "x" where i == 30
 └Output field names ["i"]
 
 ---- 596
@@ -3822,7 +3822,7 @@ SELECT * FROM t WHERE i <= $1;
 
 ---- 600
 SELECT i FROM t WHERE i == $1;
-┌Iterate all rows of table "t" using index "x" where the indexed value == 30
+┌Iterate all rows of table "t" using index "x" where i == 30
 └Output field names ["i"]
 
 ---- 601
@@ -3847,7 +3847,7 @@ SELECT * FROM t WHERE i <= 30;
 
 ---- 605
 SELECT i FROM t WHERE i == 30;
-┌Iterate all rows of table "t" using index "x" where the indexed value == 30
+┌Iterate all rows of table "t" using index "x" where i == 30
 └Output field names ["i"]
 
 ---- 606
@@ -3977,7 +3977,7 @@ SELECT * FROM t WHERE s == "test";
 
 ---- 637
 SELECT * FROM t WHERE s == "test";
-┌Iterate all rows of table "t" using index "idx_s" where the indexed value == "test"
+┌Iterate all rows of table "t" using index "idx_s" where s == "test"
 └Output field names ["i" "s"]
 
 ---- 638
@@ -4847,7 +4847,7 @@ SELECT id() IN (SELECT id() FROM t WHERE username == "xiaolunwen";), username ==
 
 ---- 734
 SELECT user, remain, total FROM no_id_user WHERE user == "xlw" LIMIT 1;
-┌Iterate all rows of table "no_id_user" using index "UQE_no_id_user_user" where the indexed value == "xlw"
+┌Iterate all rows of table "no_id_user" using index "UQE_no_id_user_user" where user == "xlw"
 └Output field names ["user" "remain" "total"]
 ┌Pass first 1 records
 └Output field names [user remain total]
@@ -4873,7 +4873,7 @@ SELECT * FROM t WHERE i <= 4;
 
 ---- 738
 SELECT * FROM t WHERE i == 4;
-┌Iterate all rows of table "t" using index "x" where the indexed value == 4
+┌Iterate all rows of table "t" using index "x" where i == 4
 └Output field names ["i"]
 
 ---- 739
@@ -6326,7 +6326,7 @@ SELECT Expr FROM __Index2_Expr WHERE Index2_ID IN (SELECT id() FROM __Index2 WHE
 
 ---- 938
 SELECT TableName, IndexName, IsUnique, IsSimple, Root > 0 || Root == -1 FROM __Index2 WHERE TableName == "t";
-┌Iterate all rows of table "__Index2" using index "__xIndex2_TableName" where the indexed value == "t"
+┌Iterate all rows of table "__Index2" using index "__xIndex2_TableName" where TableName == "t"
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" "Root"]
 ┌Evaluate TableName as "TableName", IndexName as "IndexName", IsUnique as "IsUnique", IsSimple as "IsSimple", Root > 0 || Root == -1 as "",
 └Output field names ["TableName" "IndexName" "IsUnique" "IsSimple" ""]
