@@ -3718,7 +3718,7 @@ SELECT * FROM t WHERE i <= 30;
 
 ---- 584
 SELECT * FROM t WHERE i <= 30;
-┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where i <= 30
 └Output field names ["i"]
 
 ---- 585
@@ -3792,7 +3792,7 @@ SELECT i FROM t WHERE i < $1;
 
 ---- 594
 SELECT * FROM t WHERE i <= $1;
-┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where i <= 30
 └Output field names ["i"]
 
 ---- 595
@@ -3817,7 +3817,7 @@ SELECT i FROM t WHERE i < $1;
 
 ---- 599
 SELECT * FROM t WHERE i <= $1;
-┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where i <= 30
 └Output field names ["i"]
 
 ---- 600
@@ -3842,7 +3842,7 @@ SELECT i FROM t WHERE i < 30;
 
 ---- 604
 SELECT * FROM t WHERE i <= 30;
-┌Iterate all rows of table "t" using index "x" where the indexed value is <= 30
+┌Iterate all rows of table "t" using index "x" where i <= 30
 └Output field names ["i"]
 
 ---- 605
@@ -4868,7 +4868,7 @@ SELECT * FROM t WHERE i < 4;
 
 ---- 737
 SELECT * FROM t WHERE i <= 4;
-┌Iterate all rows of table "t" using index "x" where the indexed value is <= 4
+┌Iterate all rows of table "t" using index "x" where i <= 4
 └Output field names ["i"]
 
 ---- 738
