@@ -894,62 +894,55 @@ func (s *insertIntoStmt) execSelect(t *table, cols []*col, ctx *execCtx) (_ Reco
 				return false, err
 			}
 
-			id, err := t.store.ID()
+		if len(constraints) != 0 { // => len(defaults) != 0 as well
+			if err = checkConstraintsAndDefaults(ctx, data0[2:], t.cols, m, constraints, defaults); err != nil {
+				return false, err
+			}
+		}
+
+		id, err := t.store.ID()
+		if err != nil {
+			return false, err
+		}
+
+		data0[0] = h
+		data0[1] = id
+
+		// Any overflow chunks are written here.
+		if h, err = t.store.Create(data0...); err != nil {
+			return false, err
+		}
+
+		for i, v := range t.indices {
+			if v == nil {
+				continue
+			}
+
+			// Any overflow chunks are shared with the BTree key
+			if err = v.x.Create([]interface{}{data0[i+1]}, h); err != nil {
+				return false, err
+			}
+		}
+		for _, ix := range t.indices2 {
+			vlist, err := ix.eval(ctx, t.cols, id, data0[2:])
 			if err != nil {
 				return false, err
 			}
 
-			data0[0] = h
-			data0[1] = id
-
-			// Any overflow chunks are written here.
-			if h, err = t.store.Create(data0...); err != nil {
+			if err := ix.x.Create(vlist, h); err != nil {
 				return false, err
 			}
-
-			for i, v := range t.indices {
-				if v == nil {
-					continue
-				}
-
-				// Any overflow chunks are shared with the BTree key
-				if err = v.x.Create([]interface{}{data0[i+1]}, h); err != nil {
-					return false, err
-				}
-			}
-			for _, ix := range t.indices2 {
-				vlist, err := ix.eval(ctx, t.cols, id, data0[2:])
-				if err != nil {
-					return false, err
-				}
-
-				if err := ix.x.Create(vlist, h); err != nil {
-					return false, err
-				}
-			}
-
-			cc.RowsAffected++
-			ctx.db.root.lastInsertID = id
-			return true, nil
 		}
 
-		ok = true
-		flds := data[0].([]*fld)
-		if g, e := len(flds), len(cols); g != e {
-			return false, fmt.Errorf("INSERT INTO SELECT: mismatched column counts, have %d, need %d", g, e)
-		}
-
+		cc.RowsAffected++
+		ctx.db.root.lastInsertID = id
 		return true, nil
 	}); err != nil {
-		return
-	}
-
-	if err = t.store.Update(t.hhead, h); err != nil {
-		return
+		return nil, err
 	}
 
 	t.head = h
-	return
+	return nil, t.store.Update(t.hhead, h)
 }
 
 var (
@@ -1005,7 +998,7 @@ func (s *insertIntoStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 			r[cols[i].index] = val
 		}
 		if err = typeCheck(r, cols); err != nil {
-			return
+			return nil, err
 		}
 
 		if err = t.checkConstraintsAndDefaults(ctx, r, m); err != nil {
@@ -1020,7 +1013,7 @@ func (s *insertIntoStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 		cc.RowsAffected++
 		root.lastInsertID = id
 	}
-	return
+	return nil, nil
 }
 
 func (s *insertIntoStmt) isUpdating() bool { return true }
