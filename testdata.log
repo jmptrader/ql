@@ -6516,7 +6516,7 @@ SELECT * FROM t WHERE i IS NOT NULL;
 
 ---- 991
 SELECT * FROM t WHERE i IS NOT NULL;
-┌Iterate all rows of table "t" using index "x" where the indexed value IS NOT NULL
+┌Iterate all rows of table "t" using index "x" where i IS NOT NULL
 └Output field names ["i"]
 
 ---- 992

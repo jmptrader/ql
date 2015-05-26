@@ -774,14 +774,23 @@ func (t *table) updateCols() *table {
 	return t
 }
 
-func (t *table) row(ctx *execCtx, h int64) (int64, []interface{}, error) {
+func (t *table) row0(ctx *execCtx, h int64) ([]interface{}, error) {
 	rec, err := ctx.db.store.Read(nil, h, t.cols...)
 	if err != nil {
-		return -1, nil, err
+		return nil, err
 	}
 
-	if d := len(t.cols) - (len(rec) - 2); d != 0 {
+	if d := len(t.cols) - (len(rec) - 2); d > 0 {
 		rec = append(rec, make([]interface{}, d))
+	}
+
+	return rec, nil
+}
+
+func (t *table) row(ctx *execCtx, h int64) (int64, []interface{}, error) {
+	rec, err := t.row0(ctx, h)
+	if err != nil {
+		return -1, nil, err
 	}
 
 	return rec[1].(int64), rec[2:], nil

@@ -34,7 +34,7 @@ var (
 	//TODO- _ plan = (*filterByIndexEqPlan)(nil)
 	//TODO- _ plan = (*filterByIndexGePlan)(nil)
 	//TODO-_ plan = (*filterByIndexGtPlan)(nil)
-	_ plan = (*filterByIndexIsNotNullPlan)(nil)
+	//TODO- _ plan = (*filterByIndexIsNotNullPlan)(nil)
 	//TODO- _ plan = (*filterByIndexIsNullPlan)(nil)
 	//TODO- _ plan = (*filterByIndexLePlan)(nil)
 	//TODO- _ plan = (*filterByIndexLtPlan)(nil)
@@ -328,6 +328,32 @@ func (r *indexIntervalPlan) doIsNull(ctx *execCtx, f func(interface{}, []interfa
 	}
 }
 
+func (r *indexIntervalPlan) doIsNotNull(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ...
+	// ---  ---  +++
+	t := r.src
+	it, _, err := r.x.Seek([]interface{}{false}) // lldb collates false right after NULL.
+	if err != nil {
+		return noEOF(err)
+	}
+
+	for {
+		_, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	switch r.kind {
 	case intervalEq:
@@ -344,6 +370,8 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 		return r.doNe(ctx, f)
 	case intervalIsNull:
 		return r.doIsNull(ctx, f)
+	case intervalIsNotNull:
+		return r.doIsNotNull(ctx, f)
 	default:
 		//dbg("", r.kind)
 		panic("internal error 072")
@@ -367,6 +395,8 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 		w.Format("!= %v\n", value{r.lval})
 	case intervalIsNull:
 		w.Format("IS NULL\n")
+	case intervalIsNotNull:
+		w.Format("IS NOT NULL\n")
 	default:
 		//dbg("", r.kind)
 		panic("internal error 073")
@@ -1403,11 +1433,12 @@ func (r *tableDefaultPlan) filterIsNull(x *isNull) (plan, []string, error) {
 
 	switch {
 	case x.not:
-		return &filterByIndexIsNotNullPlan{
-			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-			ix.name,
-			ix.x,
-		}, nil, nil
+		//TODO- return &filterByIndexIsNotNullPlan{
+		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+		//TODO- 	ix.name,
+		//TODO- 	ix.x,
+		//TODO- }, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalIsNotNull, nil, nil}, nil, nil
 	default:
 		//TODO- return &filterByIndexIsNullPlan{
 		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1459,83 +1490,102 @@ func (r *tableDefaultPlan) filter(expr expression) (plan, []string, error) {
 	return nil, is, nil
 }
 
-func (r *tableDefaultPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+func (r *tableDefaultPlan) do(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) (err error) {
+	//TODO- t := r.t
+	//TODO- h := t.head
+	//TODO- cols := t.cols
+	//TODO- for h > 0 {
+	//TODO- 	rec, err := t.store.Read(nil, h, cols...) // 0:next, 1:id, 2...: data
+	//TODO- 	if err != nil {
+	//TODO- 		return err
+	//TODO- 	}
+
+	//TODO- 	if n := len(cols) + 2 - len(rec); n > 0 {
+	//TODO- 		rec = append(rec, make([]interface{}, n)...)
+	//TODO- 	}
+	//TODO- 	for i, c := range cols {
+	//TODO- 		if x := c.index; 2+x < len(rec) {
+	//TODO- 			rec[2+i] = rec[2+x]
+	//TODO- 			continue
+	//TODO- 		}
+
+	//TODO- 		rec[2+i] = nil
+	//TODO- 	}
+	//TODO- 	if m, err := f(rec[1], rec[2:2+len(cols)]); !m || err != nil {
+	//TODO- 		return err
+	//TODO- 	}
+
+	//TODO- 	h = rec[0].(int64) // next
+	//TODO- }
+	//TODO- return nil
 	t := r.t
-	h := t.head
 	cols := t.cols
+	h := t.head
 	for h > 0 {
-		rec, err := t.store.Read(nil, h, cols...) // 0:next, 1:id, 2...: data
+		rec, err := t.row0(ctx, h)
 		if err != nil {
 			return err
 		}
 
-		if n := len(cols) + 2 - len(rec); n > 0 {
-			rec = append(rec, make([]interface{}, n)...)
-		}
+		h = rec[0].(int64)
+		id := rec[1].(int64)
 		for i, c := range cols {
-			if x := c.index; 2+x < len(rec) {
-				rec[2+i] = rec[2+x]
-				continue
-			}
-
-			rec[2+i] = nil
+			rec[i] = rec[c.index+2]
 		}
-		if m, err := f(rec[1], rec[2:2+len(cols)]); !m || err != nil {
+		if m, err := f(id, rec[:len(cols)]); !m || err != nil {
 			return err
 		}
-
-		h = rec[0].(int64) // next
 	}
 	return nil
 }
 
 func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
 
-type filterByIndexIsNotNullPlan struct { // column IS NULL
-	tableDefaultPlan
-	xn string
-	x  btreeIndex
-}
-
-func (r *filterByIndexIsNotNullPlan) hasID() bool { return true }
-
-func (r *filterByIndexIsNotNullPlan) explain(w strutil.Formatter) {
-	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value IS NOT NULL\n└Output field names %v\n",
-		r.tableDefaultPlan.t.name, r.xn, qnames(r.fieldNames()),
-	)
-}
-
-func (r *filterByIndexIsNotNullPlan) filter(expr expression) (plan, []string, error) {
-	return nil, nil, nil //TODO
-}
-
-func (r *filterByIndexIsNotNullPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-	t := r.t
-	it, err := r.x.SeekLast()
-	if err != nil {
-		return noEOF(err)
-	}
-	for {
-		k, h, err := it.Prev()
-		if err != nil {
-			return noEOF(err)
-		}
-
-		if k[0] == nil {
-			return nil
-		}
-
-		id, data, err := t.row(ctx, h)
-		if err != nil {
-			return err
-		}
-
-		if more, err := f(id, data); err != nil || !more {
-			return err
-		}
-	}
-}
+//type filterByIndexIsNotNullPlan struct { // column IS NULL
+//	tableDefaultPlan
+//	xn string
+//	x  btreeIndex
+//}
+//
+//func (r *filterByIndexIsNotNullPlan) hasID() bool { return true }
+//
+//func (r *filterByIndexIsNotNullPlan) explain(w strutil.Formatter) {
+//	w.Format(
+//		"┌Iterate all rows of table %q using index %q where the indexed value IS NOT NULL\n└Output field names %v\n",
+//		r.tableDefaultPlan.t.name, r.xn, qnames(r.fieldNames()),
+//	)
+//}
+//
+//func (r *filterByIndexIsNotNullPlan) filter(expr expression) (plan, []string, error) {
+//	return nil, nil, nil //TODO
+//}
+//
+//func (r *filterByIndexIsNotNullPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+//	t := r.t
+//	it, err := r.x.SeekLast()
+//	if err != nil {
+//		return noEOF(err)
+//	}
+//	for {
+//		k, h, err := it.Prev()
+//		if err != nil {
+//			return noEOF(err)
+//		}
+//
+//		if k[0] == nil {
+//			return nil
+//		}
+//
+//		id, data, err := t.row(ctx, h)
+//		if err != nil {
+//			return err
+//		}
+//
+//		if more, err := f(id, data); err != nil || !more {
+//			return err
+//		}
+//	}
+//}
 
 type nullPlan struct {
 	fields []string
