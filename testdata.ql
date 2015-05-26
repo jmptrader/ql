@@ -12144,3 +12144,18 @@ SELECT * FROM t WHERE -1 < i && 314 > i OR i > 1000 && i < 2000;
 |"i"
 [278]
 [0]
+
+-- 1010
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, b bool);
+	CREATE INDEX x ON t (b);
+	INSERT INTO t VALUES(24, false);
+	INSERT INTO t VALUES(333, NULL);
+	INSERT INTO t VALUES(42, true);
+	INSERT INTO t VALUES(240, false);
+	INSERT INTO t VALUES(420, true);
+COMMIT;
+SELECT i FROM t WHERE !b ORDER BY i; //TODO use index
+|"i"
+[24]
+[240]

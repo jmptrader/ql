@@ -33,7 +33,6 @@ var (
 	_ plan = (*crossJoinDefaultPlan)(nil)
 	_ plan = (*distinctDefaultPlan)(nil)
 	_ plan = (*explainDefaultPlan)(nil)
-	//TODO- _ plan = (*filterByIndexBoolPlan)(nil)
 	_ plan = (*filterDefaultPlan)(nil)
 	_ plan = (*fullJoinDefaultPlan)(nil)
 	_ plan = (*groupByDefaultPlan)(nil)
@@ -65,7 +64,6 @@ type plan interface {
 func isTableOrIndex(p plan) bool {
 	switch p.(type) {
 	case
-		//TODO- *filterByIndexBoolPlan,
 		*indexIntervalPlan,
 		*sysColumnDefaultPlan,
 		*sysIndexDefaultPlan,
@@ -1400,11 +1398,6 @@ func (r *tableDefaultPlan) filterIdent(x *ident) (plan, []string, error) { //TOD
 			return nil, []string{fmt.Sprintf("%s(%s)", t.name, cn)}, nil
 		}
 
-		//TODO- return &filterByIndexBoolPlan{
-		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-		//TODO- 	ix.name,
-		//TODO- 	ix.x,
-		//TODO- }, nil, nil
 		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalTrue, nil, nil}, nil, nil
 	}
 	return nil, nil, nil
@@ -1495,52 +1488,6 @@ func (r *tableDefaultPlan) do(ctx *execCtx, f func(interface{}, []interface{}) (
 
 func (r *tableDefaultPlan) fieldNames() []string { return r.fields }
 
-//type filterByIndexIsNotNullPlan struct { // column IS NULL
-//	tableDefaultPlan
-//	xn string
-//	x  btreeIndex
-//}
-//
-//func (r *filterByIndexIsNotNullPlan) hasID() bool { return true }
-//
-//func (r *filterByIndexIsNotNullPlan) explain(w strutil.Formatter) {
-//	w.Format(
-//		"┌Iterate all rows of table %q using index %q where the indexed value IS NOT NULL\n└Output field names %v\n",
-//		r.tableDefaultPlan.t.name, r.xn, qnames(r.fieldNames()),
-//	)
-//}
-//
-//func (r *filterByIndexIsNotNullPlan) filter(expr expression) (plan, []string, error) {
-//	return nil, nil, nil //TODO
-//}
-//
-//func (r *filterByIndexIsNotNullPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-//	t := r.t
-//	it, err := r.x.SeekLast()
-//	if err != nil {
-//		return noEOF(err)
-//	}
-//	for {
-//		k, h, err := it.Prev()
-//		if err != nil {
-//			return noEOF(err)
-//		}
-//
-//		if k[0] == nil {
-//			return nil
-//		}
-//
-//		id, data, err := t.row(ctx, h)
-//		if err != nil {
-//			return err
-//		}
-//
-//		if more, err := f(id, data); err != nil || !more {
-//			return err
-//		}
-//	}
-//}
-
 type nullPlan struct {
 	fields []string
 }
@@ -1560,53 +1507,6 @@ func (r *nullPlan) do(*execCtx, func(interface{}, []interface{}) (bool, error)) 
 func (r *nullPlan) filter(expr expression) (plan, []string, error) {
 	return r, nil, nil
 }
-
-//TODO- type filterByIndexBoolPlan struct { // column (of type bool)
-//TODO- 	tableDefaultPlan
-//TODO- 	xn string
-//TODO- 	x  btreeIndex
-//TODO- }
-//TODO-
-//TODO- func (r *filterByIndexBoolPlan) hasID() bool { return true }
-//TODO-
-//TODO- func (r *filterByIndexBoolPlan) explain(w strutil.Formatter) {
-//TODO- 	w.Format(
-//TODO- 		"┌Iterate all rows of table %q using index %q where the indexed value == true\n└Output field names %v\n",
-//TODO- 		r.tableDefaultPlan.t.name, r.xn, qnames(r.fields),
-//TODO- 	)
-//TODO- }
-//TODO-
-//TODO- func (r *filterByIndexBoolPlan) filter(expr expression) (plan, []string, error) {
-//TODO- 	return nil, nil, nil //TODO
-//TODO- }
-//TODO-
-//TODO- func (r *filterByIndexBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-//TODO- 	t := r.t
-//TODO- 	it, _, err := r.x.Seek([]interface{}{true})
-//TODO- 	if err != nil {
-//TODO- 		return noEOF(err)
-//TODO- 	}
-//TODO-
-//TODO- 	for {
-//TODO- 		k, h, err := it.Next()
-//TODO- 		if err != nil {
-//TODO- 			return noEOF(err)
-//TODO- 		}
-//TODO-
-//TODO- 		if k[0] != true {
-//TODO- 			return nil
-//TODO- 		}
-//TODO-
-//TODO- 		id, data, err := t.row(ctx, h)
-//TODO- 		if err != nil {
-//TODO- 			return err
-//TODO- 		}
-//TODO-
-//TODO- 		if more, err := f(id, data); err != nil || !more {
-//TODO- 			return err
-//TODO- 		}
-//TODO- 	}
-//TODO- }
 
 type leftJoinDefaultPlan struct {
 	on     expression
