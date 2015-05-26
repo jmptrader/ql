@@ -253,8 +253,6 @@ SELECT department.DepartmentName, department.DepartmentID, employee.LastName, em
 │   └Output field names ["DepartmentID" "DepartmentName"]
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Filter on department.DepartmentID < 33 || department.DepartmentID > 34
-│Possibly useful indices
-│CREATE INDEX xdepartment_DepartmentID ON department(DepartmentID);
 └Output field names ["employee.LastName" "employee.DepartmentID" "department.DepartmentID" "department.DepartmentName"]
 ┌Evaluate department.DepartmentName as "department.DepartmentName", department.DepartmentID as "department.DepartmentID", employee.LastName as "employee.LastName", employee.DepartmentID as "employee.DepartmentID",
 └Output field names ["department.DepartmentName" "department.DepartmentID" "employee.LastName" "employee.DepartmentID"]
@@ -1081,9 +1079,6 @@ SELECT * FROM employee WHERE LastName == "Jones" || DepartmentID IS NULL ORDER B
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
 ┌Filter on LastName == "Jones" || DepartmentID IS NULL
-│Possibly useful indices
-│CREATE INDEX xemployee_LastName ON employee(LastName);
-│CREATE INDEX xemployee_DepartmentID ON employee(DepartmentID);
 └Output field names ["LastName" "DepartmentID"]
 ┌Order descending by LastName,
 └Output field names ["LastName" "DepartmentID"]
@@ -4030,7 +4025,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   ┌Iterate all rows of table "u"
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
-┌Filter on u.y < 60
+┌Filter on u.y < 60 && t.k < 7
 │Possibly useful indices
 │CREATE INDEX xu_y ON u(y);
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
@@ -4043,7 +4038,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   ┌Iterate all rows of table "u" using index "xy" where y < 60
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
-┌Filter on t.k < 7
+┌Filter on u.y < 60 && t.k < 7
 │Possibly useful indices
 │CREATE INDEX xt_k ON t(k);
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
@@ -4055,6 +4050,8 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   └Output field names ["i" "j" "k"]
 │   ┌Iterate all rows of table "u" using index "xy" where y < 60
 │   └Output field names ["x" "y" "z"]
+└Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
+┌Filter on u.y < 60 && t.k < 7
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
 ---- 646
@@ -4496,8 +4493,6 @@ SELECT count(1) AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input 
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
-│Possibly useful indices
-│CREATE INDEX xfibonacci_input ON fibonacci(input);
 └Output field names ["input" "output"]
 ┌Group by distinct rows
 └Output field names ["input" "output"]
@@ -4509,8 +4504,6 @@ SELECT * FROM fibonacci WHERE input >= 5 && input <= 7 || input == 3 ORDER BY in
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
-│Possibly useful indices
-│CREATE INDEX xfibonacci_input ON fibonacci(input);
 └Output field names ["input" "output"]
 ┌Order descending by input,
 └Output field names ["input" "output"]
@@ -4538,8 +4531,6 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
-│Possibly useful indices
-│CREATE INDEX xfibonacci_input ON fibonacci(input);
 └Output field names ["input" "output"]
 ┌Group by distinct rows
 └Output field names ["input" "output"]
@@ -4551,8 +4542,6 @@ SELECT count() AS total FROM fibonacci WHERE input >= 5 && input <= 7 || input =
 ┌Iterate all rows of table "fibonacci"
 └Output field names ["input" "output"]
 ┌Filter on input >= 5 && input <= 7 || input == 3
-│Possibly useful indices
-│CREATE INDEX xfibonacci_input ON fibonacci(input);
 └Output field names ["input" "output"]
 ┌Group by distinct rows
 └Output field names ["input" "output"]
@@ -5181,9 +5170,6 @@ SELECT * FROM t WHERE name == "b" || mail == "bar@example.com" ORDER BY name;
 ┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" || mail == "bar@example.com"
-│Possibly useful indices
-│CREATE INDEX xt_name ON t(name);
-│CREATE INDEX xt_mail ON t(mail);
 └Output field names ["name" "mail"]
 ┌Order by name,
 └Output field names ["name" "mail"]
@@ -5193,9 +5179,6 @@ SELECT * FROM t WHERE name == "b" || mail == "bar@example.com" ORDER BY name;
 ┌Iterate all rows of table "t"
 └Output field names ["name" "mail"]
 ┌Filter on name == "b" || mail == "bar@example.com"
-│Possibly useful indices
-│CREATE INDEX xt_name ON t(name);
-│CREATE INDEX xt_mail ON t(mail);
 └Output field names ["name" "mail"]
 ┌Order by name,
 └Output field names ["name" "mail"]
@@ -6599,7 +6582,7 @@ SELECT * FROM t WHERE id() != 0;
 
 ---- 1008
 SELECT * FROM t WHERE i > -1 && i < 314;
-┌Iterate all rows of table "t"
+┌Iterate all rows of table "t" using index "x" where i > -1
 └Output field names ["i"]
 ┌Filter on i > -1 && i < 314
 └Output field names ["i"]

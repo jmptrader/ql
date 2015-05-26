@@ -330,13 +330,266 @@ type whereRset struct {
 	src  plan
 }
 
-func (r *whereRset) planBinOp(f func(plan, expression) (plan, expression, error), p plan, expr expression, x *binaryOperation, is *[]string) (plan, expression, error) {
+//TODO- func (r *whereRset) planBinOp(f func(plan, expression) (plan, expression, error), p plan, expr expression, x *binaryOperation, is *[]string) (plan, expression, error) {
+//TODO- 	ok, cn := isColumnExpression(x.l)
+//TODO- 	if ok && cn == "id()" {
+//TODO- 		if v := isConstValue(x.r); v != nil {
+//TODO- 			v, err := typeCheck1(v, idCol)
+//TODO- 			if err != nil {
+//TODO- 				return nil, nil, err
+//TODO- 			}
+//TODO-
+//TODO- 			rv := v.(int64)
+//TODO- 			switch {
+//TODO- 			case p.hasID():
+//TODO- 				switch x.op {
+//TODO- 				case '<':
+//TODO- 					if rv <= 1 {
+//TODO- 						return &nullPlan{p.fieldNames()}, nil, nil
+//TODO- 					}
+//TODO- 				case '>':
+//TODO- 					if rv <= 0 {
+//TODO- 						return p, nil, nil
+//TODO- 					}
+//TODO- 				case ge:
+//TODO- 					if rv >= 1 {
+//TODO- 						return p, nil, nil
+//TODO- 					}
+//TODO- 				case neq:
+//TODO- 					if rv <= 0 {
+//TODO- 						return p, nil, nil
+//TODO- 					}
+//TODO- 				case eq:
+//TODO- 					if rv <= 0 {
+//TODO- 						return &nullPlan{p.fieldNames()}, nil, nil
+//TODO- 					}
+//TODO- 				case le:
+//TODO- 					if rv <= 0 {
+//TODO- 						return &nullPlan{p.fieldNames()}, nil, nil
+//TODO- 					}
+//TODO- 				default:
+//TODO- 					//dbg("", yySymName(x.op))
+//TODO- 					//panic("TODO")
+//TODO- 				}
+//TODO- 			default:
+//TODO- 				//panic("TODO")
+//TODO- 			}
+//TODO- 		}
+//TODO- 	}
+//TODO-
+//TODO- 	p2, is2, err := p.filter(expr)
+//TODO- 	*is = append(*is, is2...)
+//TODO- 	if err != nil {
+//TODO- 		return nil, nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	if p2 != nil {
+//TODO- 		return p2, nil, nil
+//TODO- 	}
+//TODO-
+//TODO- 	lp, lexpr, err := f(p, x.l)
+//TODO- 	if err != nil {
+//TODO- 		return nil, nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	rp, rexpr, err := f(p, x.r)
+//TODO- 	if err != nil {
+//TODO- 		return nil, nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	switch {
+//TODO- 	case lp == nil && rp == nil:
+//TODO- 		return nil, nil, nil
+//TODO- 	case lp == nil && rp != nil:
+//TODO- 		if rexpr != nil {
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		}
+//TODO-
+//TODO- 		switch x.op {
+//TODO- 		case andand:
+//TODO- 			return rp, x.l, nil
+//TODO- 		default:
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		}
+//TODO- 	case lp != nil && rp == nil:
+//TODO- 		if lexpr != nil {
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		}
+//TODO-
+//TODO- 		switch x.op {
+//TODO- 		case andand:
+//TODO- 			return lp, x.r, nil
+//TODO- 		default:
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		}
+//TODO- 	default: // case lp != nil && rp != nil:
+//TODO- 		if lexpr != nil || rexpr != nil {
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		}
+//TODO-
+//TODO- 		switch x.op {
+//TODO- 		case andand:
+//TODO- 			if lp == rp { // eg. same crossJoinDefaultPlan
+//TODO- 				return lp, nil, nil
+//TODO- 			}
+//TODO-
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		case oror:
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		default:
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		}
+//TODO- 	}
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) planIsNull(p plan, expr expression, x *isNull, is *[]string) (plan, expression, error) {
+//TODO- 	ok, cn := isColumnExpression(x.expr)
+//TODO- 	if !ok {
+//TODO- 		return nil, nil, nil
+//TODO- 	}
+//TODO-
+//TODO- 	if cn == "id()" {
+//TODO- 		switch {
+//TODO- 		case r.src.hasID():
+//TODO- 			switch {
+//TODO- 			case x.not: // IS NOT NULL
+//TODO- 				return r.src, nil, nil
+//TODO- 			default: // IS NULL
+//TODO- 				return &nullPlan{r.src.fieldNames()}, nil, nil
+//TODO- 			}
+//TODO- 		default:
+//TODO- 			switch {
+//TODO- 			case x.not: // IS NOT NULL
+//TODO- 				return &nullPlan{r.src.fieldNames()}, nil, nil
+//TODO- 			default: // IS NULL
+//TODO- 				return r.src, nil, nil
+//TODO- 			}
+//TODO- 		}
+//TODO- 	}
+//TODO-
+//TODO- 	p2, is2, err := p.filter(expr)
+//TODO- 	*is = append(*is, is2...)
+//TODO- 	if err != nil {
+//TODO- 		return nil, nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	if p2 != nil {
+//TODO- 		return p2, nil, nil
+//TODO- 	}
+//TODO-
+//TODO- 	return nil, nil, nil
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) planIdent(p plan, expr expression, x *ident, is *[]string) (plan, expression, error) {
+//TODO- 	p2, is2, err := p.filter(expr)
+//TODO- 	*is = append(*is, is2...)
+//TODO- 	if err != nil {
+//TODO- 		return nil, nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	if p2 != nil {
+//TODO- 		return p2, nil, nil
+//TODO- 	}
+//TODO-
+//TODO- 	return nil, nil, nil
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) planUnaryOp(p plan, expr expression, x *unaryOperation, is *[]string) (plan, expression, error) {
+//TODO- 	p2, is2, err := p.filter(expr)
+//TODO- 	*is = append(*is, is2...)
+//TODO- 	if err != nil {
+//TODO- 		return nil, nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	if p2 != nil {
+//TODO- 		return p2, nil, nil
+//TODO- 	}
+//TODO-
+//TODO- 	return nil, nil, nil
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) planCall(p plan, expr expression, x *call, is *[]string) (plan, expression, error) {
+//TODO- 	if x.f != "id" || len(x.arg) != 0 {
+//TODO- 		return nil, nil, nil
+//TODO- 	}
+//TODO-
+//TODO- 	p2, is2, err := p.filter(expr)
+//TODO- 	*is = append(*is, is2...)
+//TODO- 	if err != nil {
+//TODO- 		return nil, nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	if p2 != nil {
+//TODO- 		return nil, nil, nil //TODO
+//TODO- 	}
+//TODO-
+//TODO- 	return nil, nil, nil
+//TODO- }
+//TODO-
+//TODO- func (r *whereRset) plan(ctx *execCtx) (plan, error) {
+//TODO- 	var is []string
+//TODO- 	var f func(plan, expression) (plan, expression, error)
+//TODO- 	f = func(p plan, expr expression) (plan, expression, error) {
+//TODO- 		switch x := expr.(type) {
+//TODO- 		case *binaryOperation:
+//TODO- 			return r.planBinOp(f, p, expr, x, &is)
+//TODO- 		//TODO case *exists:
+//TODO- 		case *isNull:
+//TODO- 			return r.planIsNull(p, expr, x, &is)
+//TODO- 		case *ident:
+//TODO- 			return r.planIdent(p, expr, x, &is)
+//TODO- 		case *unaryOperation:
+//TODO- 			return r.planUnaryOp(p, expr, x, &is)
+//TODO- 		case *pIn:
+//TODO- 			//TODO optimize
+//TODO- 			//TODO show plan
+//TODO- 			return nil, nil, nil
+//TODO- 		case value:
+//TODO- 			switch x.val.(type) {
+//TODO- 			case bool:
+//TODO- 				return nil, nil, nil //TODO
+//TODO- 			default:
+//TODO- 				return nil, nil, nil
+//TODO- 			}
+//TODO- 		case *call:
+//TODO- 			return r.planCall(p, expr, x, &is)
+//TODO- 		case *pLike:
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		default:
+//TODO- 			return nil, nil, nil //TODO
+//TODO- 		}
+//TODO- 	}
+//TODO-
+//TODO- 	expr, err := r.expr.clone(ctx.arg)
+//TODO- 	if err != nil {
+//TODO- 		return nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	p := r.src
+//TODO- 	p2, expr2, err := f(p, expr)
+//TODO- 	if err != nil {
+//TODO- 		return nil, err
+//TODO- 	}
+//TODO-
+//TODO- 	if p2 != nil {
+//TODO- 		if expr2 != nil {
+//TODO- 			return &filterDefaultPlan{p2, expr2, is}, nil
+//TODO- 		}
+//TODO-
+//TODO- 		return p2, nil
+//TODO- 	}
+//TODO-
+//TODO- 	return &filterDefaultPlan{p, expr, is}, nil
+//TODO- }
+
+func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
+	p := r.src
 	ok, cn := isColumnExpression(x.l)
 	if ok && cn == "id()" {
 		if v := isConstValue(x.r); v != nil {
 			v, err := typeCheck1(v, idCol)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			rv := v.(int64)
@@ -345,27 +598,27 @@ func (r *whereRset) planBinOp(f func(plan, expression) (plan, expression, error)
 				switch x.op {
 				case '<':
 					if rv <= 1 {
-						return &nullPlan{p.fieldNames()}, nil, nil
+						return &nullPlan{p.fieldNames()}, nil
 					}
 				case '>':
 					if rv <= 0 {
-						return p, nil, nil
+						return p, nil
 					}
 				case ge:
 					if rv >= 1 {
-						return p, nil, nil
+						return p, nil
 					}
 				case neq:
 					if rv <= 0 {
-						return p, nil, nil
+						return p, nil
 					}
 				case eq:
 					if rv <= 0 {
-						return &nullPlan{p.fieldNames()}, nil, nil
+						return &nullPlan{p.fieldNames()}, nil
 					}
 				case le:
 					if rv <= 0 {
-						return &nullPlan{p.fieldNames()}, nil, nil
+						return &nullPlan{p.fieldNames()}, nil
 					}
 				default:
 					//dbg("", yySymName(x.op))
@@ -377,210 +630,166 @@ func (r *whereRset) planBinOp(f func(plan, expression) (plan, expression, error)
 		}
 	}
 
-	p2, is2, err := p.filter(expr)
-	*is = append(*is, is2...)
+	var err error
+	var p2 plan
+	var is []string
+	switch x.op {
+	case eq, ge, '>', le, '<', neq:
+		if p2, is, err = p.filter(x); err != nil {
+			return nil, err
+		}
+
+		if p2 != nil {
+			return p2, nil
+		}
+	case andand:
+		in := []expression{x.l}
+	loop:
+		for {
+			switch r := x.r.(type) {
+			case *binaryOperation:
+				switch r.op {
+				case eq, ge, '>', le, '<', neq:
+					in = append(in, r)
+					break loop
+				default:
+					//dbg("", string(r.op), yySymName(r.op))
+					//panic("TODO")
+				}
+			case *isNull:
+				in = append(in, r)
+				break loop
+			default:
+				//dbg("%T: %v", r, r.String())
+				//panic("TODO")
+			}
+		}
+		var rest []expression
+		p0 := p
+		for _, e := range in {
+			p2, is2, err := p.filter(e)
+			if err != nil {
+				return nil, err
+			}
+
+			is = append(is, is2...)
+			if p2 == nil {
+				rest = append(rest, e)
+				continue
+			}
+
+			p = p2
+		}
+
+		if p == p0 {
+			break
+		}
+
+		//dbg("", in)
+		//dbg("", rest)
+		//panic("TODO")
+	case oror:
+		//TODO #53
+	default:
+		//dbg("", string(x.op), yySymName(x.op))
+		//panic("TODO")
+	}
+
+	return &filterDefaultPlan{p, x, is}, nil
+}
+
+func (r *whereRset) planIdent(x *ident) (plan, error) {
+	p := r.src
+	p2, is, err := p.filter(x)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if p2 != nil {
-		return p2, nil, nil
+		return p2, nil
 	}
 
-	lp, lexpr, err := f(p, x.l)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	rp, rexpr, err := f(p, x.r)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	switch {
-	case lp == nil && rp == nil:
-		return nil, nil, nil
-	case lp == nil && rp != nil:
-		if rexpr != nil {
-			return nil, nil, nil //TODO
-		}
-
-		switch x.op {
-		case andand:
-			return rp, x.l, nil
-		default:
-			return nil, nil, nil //TODO
-		}
-	case lp != nil && rp == nil:
-		if lexpr != nil {
-			return nil, nil, nil //TODO
-		}
-
-		switch x.op {
-		case andand:
-			return lp, x.r, nil
-		default:
-			return nil, nil, nil //TODO
-		}
-	default: // case lp != nil && rp != nil:
-		if lexpr != nil || rexpr != nil {
-			return nil, nil, nil //TODO
-		}
-
-		switch x.op {
-		case andand:
-			if lp == rp { // eg. same crossJoinDefaultPlan
-				return lp, nil, nil
-			}
-
-			return nil, nil, nil //TODO
-		case oror:
-			return nil, nil, nil //TODO
-		default:
-			return nil, nil, nil //TODO
-		}
-	}
+	return &filterDefaultPlan{p, x, is}, nil
 }
 
-func (r *whereRset) planIsNull(p plan, expr expression, x *isNull, is *[]string) (plan, expression, error) {
+func (r *whereRset) planIsNull(x *isNull) (plan, error) {
+	p := r.src
 	ok, cn := isColumnExpression(x.expr)
 	if !ok {
-		return nil, nil, nil
+		return &filterDefaultPlan{p, x, nil}, nil
 	}
 
 	if cn == "id()" {
 		switch {
-		case r.src.hasID():
+		case p.hasID():
 			switch {
 			case x.not: // IS NOT NULL
-				return r.src, nil, nil
+				return p, nil
 			default: // IS NULL
-				return &nullPlan{r.src.fieldNames()}, nil, nil
+				return &nullPlan{p.fieldNames()}, nil
 			}
 		default:
 			switch {
 			case x.not: // IS NOT NULL
-				return &nullPlan{r.src.fieldNames()}, nil, nil
+				return &nullPlan{p.fieldNames()}, nil
 			default: // IS NULL
-				return r.src, nil, nil
+				return p, nil
 			}
 		}
 	}
 
-	p2, is2, err := p.filter(expr)
-	*is = append(*is, is2...)
+	p2, is, err := p.filter(x)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if p2 != nil {
-		return p2, nil, nil
+		return p2, nil
 	}
 
-	return nil, nil, nil
+	return &filterDefaultPlan{p, x, is}, nil
 }
 
-func (r *whereRset) planIdent(p plan, expr expression, x *ident, is *[]string) (plan, expression, error) {
-	p2, is2, err := p.filter(expr)
-	*is = append(*is, is2...)
+func (r *whereRset) planUnaryOp(x *unaryOperation) (plan, error) {
+	p := r.src
+	p2, is, err := p.filter(x)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if p2 != nil {
-		return p2, nil, nil
+		return p2, nil
 	}
 
-	return nil, nil, nil
-}
-
-func (r *whereRset) planUnaryOp(p plan, expr expression, x *unaryOperation, is *[]string) (plan, expression, error) {
-	p2, is2, err := p.filter(expr)
-	*is = append(*is, is2...)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if p2 != nil {
-		return p2, nil, nil
-	}
-
-	return nil, nil, nil
-}
-
-func (r *whereRset) planCall(p plan, expr expression, x *call, is *[]string) (plan, expression, error) {
-	if x.f != "id" || len(x.arg) != 0 {
-		return nil, nil, nil
-	}
-
-	p2, is2, err := p.filter(expr)
-	*is = append(*is, is2...)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if p2 != nil {
-		return nil, nil, nil //TODO
-	}
-
-	return nil, nil, nil
+	return &filterDefaultPlan{p, x, is}, nil
 }
 
 func (r *whereRset) plan(ctx *execCtx) (plan, error) {
-	var is []string
-	var f func(plan, expression) (plan, expression, error)
-	f = func(p plan, expr expression) (plan, expression, error) {
-		switch x := expr.(type) {
-		case *binaryOperation:
-			return r.planBinOp(f, p, expr, x, &is)
-		//TODO case *exists:
-		//TODO case *between:
-		case *isNull:
-			return r.planIsNull(p, expr, x, &is)
-		case *ident:
-			return r.planIdent(p, expr, x, &is)
-		case *unaryOperation:
-			return r.planUnaryOp(p, expr, x, &is)
-		case *pIn:
-			//TODO optimize
-			//TODO show plan
-			return nil, nil, nil
-		case value:
-			switch x.val.(type) {
-			case bool:
-				return nil, nil, nil //TODO
-			default:
-				return nil, nil, nil
-			}
-		case *call:
-			return r.planCall(p, expr, x, &is)
-		case *pLike:
-			return nil, nil, nil //TODO
-		default:
-			return nil, nil, nil //TODO
-		}
-	}
-
 	expr, err := r.expr.clone(ctx.arg)
 	if err != nil {
 		return nil, err
 	}
 
-	p := r.src
-	p2, expr2, err := f(p, expr)
-	if err != nil {
-		return nil, err
+	switch x := expr.(type) {
+	case *binaryOperation:
+		return r.planBinOp(x)
+	case *ident:
+		return r.planIdent(x)
+	case *isNull:
+		return r.planIsNull(x)
+	case *pIn:
+		//TODO optimize
+		//TODO show plan
+	case *pLike:
+		//TODO optimize
+	case *unaryOperation:
+		return r.planUnaryOp(x)
+	default:
+		//dbg("%T: %v", x, x.String())
+		//panic("TODO")
 	}
 
-	if p2 != nil {
-		if expr2 != nil {
-			return &filterDefaultPlan{p2, expr2, is}, nil
-		}
-
-		return p2, nil
-	}
-
-	return &filterDefaultPlan{p, expr, is}, nil
+	return &filterDefaultPlan{r.src, expr, nil}, nil
 }
 
 type offsetRset struct {

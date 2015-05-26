@@ -461,6 +461,7 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 func (r *indexIntervalPlan) fieldNames() []string { return r.src.fieldNames() }
 
 func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []string, err error) {
+	//dbg("%v: %v", r, expr)
 	return nil, nil, nil //TODO
 }
 

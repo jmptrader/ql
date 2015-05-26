@@ -12131,8 +12131,8 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT * FROM t WHERE -1 < i && 314 > i; //TODO use intervals
 |"i"
-[278]
 [0]
+[278]
 
 -- 1009
 BEGIN TRANSACTION;
