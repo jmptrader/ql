@@ -13,6 +13,16 @@ import (
 	"github.com/cznic/strutil"
 )
 
+const (
+	interval   = iota
+	intervalEq // [L]
+	intervalGe // [L, ...)
+	intervalGt // (L, ...)
+	intervalLe // (..., H]
+	intervalLt // (..., H)
+	intervalNe // (L)
+)
+
 // Note: All plans must have a pointer receiver. Enables planA == planB operation.
 var (
 	_ plan = (*crossJoinDefaultPlan)(nil)
@@ -83,9 +93,8 @@ type indexIntervalPlan struct {
 	cname string
 	xname string
 	x     btreeIndex
-	lopen bool
-	hopen bool
-	lval  interface{} // L, H: Ordered and comparable.
+	kind  int         // See interval* consts.
+	lval  interface{} // L, H: Ordered and comparable (lldb perspective).
 	hval  interface{}
 }
 
@@ -288,85 +297,43 @@ func (r *indexIntervalPlan) doNe(ctx *execCtx, f func(interface{}, []interface{}
 }
 
 func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
-	switch {
-	case r.lval != nil && r.hval != nil: // L, H
-		switch {
-		case r.lopen && r.hopen: // (L, H)
-			switch {
-			case r.lval == r.hval:
-				return r.doNe(ctx, f)
-			default: // r.lval != r.hval
-				panic("TODO")
-			}
-		case r.lopen && !r.hopen: // (L, H]
-			panic("TODO")
-		case !r.lopen && r.hopen: // [L, H)
-			panic("TODO")
-		default: // !r.lopen && !r.hopen: // [L, H]
-			switch {
-			case r.lval == r.hval:
-				return r.doEq(ctx, f)
-			default: // r.lval != r.hval
-				panic("TODO")
-			}
-		}
-	case r.lval != nil && r.hval == nil: // L...
-		switch {
-		case r.lopen: // column > L
-			return r.doGt(ctx, f)
-		default: // column >= L
-			return r.doGe(ctx, f)
-		}
-	case r.lval == nil && r.hval != nil: // ...H
-		switch {
-		case r.hopen: // column < H
-			return r.doLt(ctx, f)
-		default: // column <= H
-			return r.doLe(ctx, f)
-		}
-	default: // r.lval = nil && r.hval == nil:
-		panic("internal error 070")
+	switch r.kind {
+	case intervalEq:
+		return r.doEq(ctx, f)
+	case intervalGe:
+		return r.doGe(ctx, f)
+	case intervalGt:
+		return r.doGt(ctx, f)
+	case intervalLe:
+		return r.doLe(ctx, f)
+	case intervalLt:
+		return r.doLt(ctx, f)
+	case intervalNe:
+		return r.doNe(ctx, f)
+	default:
+		//dbg("", r.kind)
+		panic("internal error 072")
 	}
 }
 
 func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table %q using index %q where %s ", r.src.name, r.xname, r.cname)
-	switch {
-	case r.lval != nil && r.hval != nil: // L, H
-		switch {
-		case r.lopen && r.hopen: // (L, H)
-			switch {
-			case r.lval == r.hval:
-				w.Format("!= %v\n", value{r.lval})
-			default: // r.lval != r.hval
-				panic("TODO")
-			}
-		case r.lopen && !r.hopen: // (L, H]
-			panic("TODO")
-		case !r.lopen && r.hopen: // [L, H)
-			panic("TODO")
-		default: // !r.lopen && !r.hopen: // [L, H]
-			switch {
-			case r.lval == r.hval:
-				w.Format("== %v\n", value{r.lval})
-			default: // r.lval != r.hval
-				panic("TODO")
-			}
-		}
-	case r.lval != nil && r.hval == nil: // L...
-		w.Format(">")
-		if !r.lopen {
-			w.Format("=")
-		}
-		w.Format(" %v\n", value{r.lval})
-	case r.lval == nil && r.hval != nil: // ...H
-		w.Format("<")
-		if !r.hopen {
-			w.Format("=")
-		}
-		w.Format(" %v\n", value{r.hval})
-	default: // r.lval = nil && r.hval == nil:
-		panic("internal error 071")
+	switch r.kind {
+	case intervalEq:
+		w.Format("== %v\n", value{r.lval})
+	case intervalGe:
+		w.Format(">= %v\n", value{r.lval})
+	case intervalGt:
+		w.Format("> %v\n", value{r.lval})
+	case intervalLe:
+		w.Format("<= %v\n", value{r.hval})
+	case intervalLt:
+		w.Format("< %v\n", value{r.hval})
+	case intervalNe:
+		w.Format("!= %v\n", value{r.lval})
+	default:
+		//dbg("", r.kind)
+		panic("internal error 073")
 	}
 	w.Format("└Output field names %v\n", qnames(r.fieldNames()))
 }
@@ -1309,7 +1276,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 		//TODO- 	ix.x,
 		//TODO- 	rval,
 		//TODO- }, nil, nil
-		return &indexIntervalPlan{t, cn, ix.name, ix.x, false, false, rval, rval}, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalEq, rval, rval}, nil, nil
 	case '<':
 		//TODO- return &filterByIndexLtPlan{
 		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1317,7 +1284,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 		//TODO- 	ix.x,
 		//TODO- 	rval,
 		//TODO- }, nil, nil
-		return &indexIntervalPlan{t, cn, ix.name, ix.x, false, true, nil, rval}, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalLt, nil, rval}, nil, nil
 	case le:
 		//TODO- return &filterByIndexLePlan{
 		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1325,7 +1292,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 		//TODO- 	ix.x,
 		//TODO- 	rval,
 		//TODO- }, nil, nil
-		return &indexIntervalPlan{t, cn, ix.name, ix.x, false, false, nil, rval}, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalLe, nil, rval}, nil, nil
 	case ge:
 		//TODO- return &filterByIndexGePlan{
 		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1333,7 +1300,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 		//TODO- 	ix.x,
 		//TODO- 	rval,
 		//TODO- }, nil, nil
-		return &indexIntervalPlan{t, cn, ix.name, ix.x, false, true, rval, nil}, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalGe, rval, nil}, nil, nil
 	case '>':
 		//TODO- return &filterByIndexGtPlan{
 		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1341,7 +1308,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 		//TODO- 	ix.x,
 		//TODO- 	rval,
 		//TODO- }, nil, nil
-		return &indexIntervalPlan{t, cn, ix.name, ix.x, true, true, rval, nil}, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalGt, rval, nil}, nil, nil
 	case neq:
 		//return &filterByIndexNePlan{
 		//	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
@@ -1349,7 +1316,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 		//	ix.x,
 		//	rval,
 		//}, nil, nil
-		return &indexIntervalPlan{t, cn, ix.name, ix.x, true, true, rval, rval}, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalNe, rval, rval}, nil, nil
 	default:
 		panic("internal error 069")
 	}
