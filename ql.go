@@ -494,6 +494,20 @@ func (r *whereRset) planIdent(p plan, expr expression, x *ident, is *[]string) (
 	return nil, nil, nil
 }
 
+func (r *whereRset) planUnaryOp(p plan, expr expression, x *unaryOperation, is *[]string) (plan, expression, error) {
+	p2, is2, err := p.filter(expr)
+	*is = append(*is, is2...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if p2 != nil {
+		return p2, nil, nil
+	}
+
+	return nil, nil, nil
+}
+
 func (r *whereRset) planCall(p plan, expr expression, x *call, is *[]string) (plan, expression, error) {
 	if x.f != "id" || len(x.arg) != 0 {
 		return nil, nil, nil
@@ -524,12 +538,11 @@ func (r *whereRset) plan(ctx *execCtx) (plan, error) {
 			return r.planIsNull(p, expr, x, &is)
 		case *ident:
 			return r.planIdent(p, expr, x, &is)
+		case *unaryOperation:
+			return r.planUnaryOp(p, expr, x, &is)
 		case *pIn:
 			//TODO optimize
 			//TODO show plan
-			return nil, nil, nil
-		case *unaryOperation:
-			//TODO optimize
 			return nil, nil, nil
 		case value:
 			switch x.val.(type) {

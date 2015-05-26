@@ -3776,9 +3776,7 @@ SELECT i FROM t WHERE !b ORDER BY i;
 
 ---- 592
 SELECT i FROM t WHERE !b ORDER BY i;
-┌Iterate all rows of table "t"
-└Output field names ["i" "b"]
-┌Filter on !b
+┌Iterate all rows of table "t" using index "x" where !b
 └Output field names ["i" "b"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
@@ -6615,9 +6613,7 @@ SELECT * FROM t WHERE i > -1 && i < 314 || i > 1000 && i < 2000;
 
 ---- 1010
 SELECT i FROM t WHERE !b ORDER BY i;
-┌Iterate all rows of table "t"
-└Output field names ["i" "b"]
-┌Filter on !b
+┌Iterate all rows of table "t" using index "x" where !b
 └Output field names ["i" "b"]
 ┌Evaluate i as "i",
 └Output field names ["i"]

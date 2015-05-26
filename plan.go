@@ -342,6 +342,35 @@ func (r *indexIntervalPlan) doIsNotNull(ctx *execCtx, f func(interface{}, []inte
 	}
 }
 
+func (r *indexIntervalPlan) doFalse(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	t := r.src
+	it, _, err := r.x.Seek([]interface{}{false})
+	if err != nil {
+		return noEOF(err)
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		b, ok := k[0].(bool)
+		if !ok || b {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) doTrue(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	t := r.src
 	it, _, err := r.x.Seek([]interface{}{true})
@@ -388,6 +417,8 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 		return r.doIsNull(ctx, f)
 	case intervalIsNotNull:
 		return r.doIsNotNull(ctx, f)
+	case intervalFalse:
+		return r.doFalse(ctx, f)
 	case intervalTrue:
 		return r.doTrue(ctx, f)
 	default:
@@ -404,28 +435,28 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 	w.Format("┌Iterate all rows of table %q using index %q where %s%s", r.src.name, r.xname, s, r.cname)
 	switch r.kind {
 	case intervalEq:
-		w.Format(" == %v\n", value{r.lval})
+		w.Format(" == %v", value{r.lval})
 	case intervalGe:
-		w.Format(" >= %v\n", value{r.lval})
+		w.Format(" >= %v", value{r.lval})
 	case intervalGt:
-		w.Format(" > %v\n", value{r.lval})
+		w.Format(" > %v", value{r.lval})
 	case intervalLe:
-		w.Format(" <= %v\n", value{r.hval})
+		w.Format(" <= %v", value{r.hval})
 	case intervalLt:
-		w.Format(" < %v\n", value{r.hval})
+		w.Format(" < %v", value{r.hval})
 	case intervalNe:
-		w.Format(" != %v\n", value{r.lval})
+		w.Format(" != %v", value{r.lval})
 	case intervalIsNull:
-		w.Format(" IS NULL\n")
+		w.Format(" IS NULL")
 	case intervalIsNotNull:
-		w.Format(" IS NOT NULL\n")
-	case intervalTrue:
-		w.Format("\n")
+		w.Format(" IS NOT NULL")
+	case intervalFalse, intervalTrue:
+		// nop
 	default:
 		//dbg("", r.kind)
 		panic("internal error 073")
 	}
-	w.Format("└Output field names %v\n", qnames(r.fieldNames()))
+	w.Format("\n└Output field names %v\n", qnames(r.fieldNames()))
 }
 
 func (r *indexIntervalPlan) fieldNames() []string { return r.src.fieldNames() }
@@ -1376,7 +1407,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 	}
 }
 
-func (r *tableDefaultPlan) filterIdent(x *ident) (plan, []string, error) { //TODO !ident
+func (r *tableDefaultPlan) filterIdent(x *ident, trueValue bool) (plan, []string, error) { //TODO !ident
 	cn := x.s
 	t := r.t
 	for _, v := range t.cols {
@@ -1398,7 +1429,11 @@ func (r *tableDefaultPlan) filterIdent(x *ident) (plan, []string, error) { //TOD
 			return nil, []string{fmt.Sprintf("%s(%s)", t.name, cn)}, nil
 		}
 
-		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalTrue, nil, nil}, nil, nil
+		kind := intervalFalse
+		if trueValue {
+			kind = intervalTrue
+		}
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, kind, nil, nil}, nil, nil
 	}
 	return nil, nil, nil
 }
@@ -1453,9 +1488,17 @@ func (r *tableDefaultPlan) filter(expr expression) (plan, []string, error) {
 	case *binaryOperation:
 		return r.filterBinOp(x)
 	case *ident:
-		return r.filterIdent(x)
+		return r.filterIdent(x, true)
 	case *isNull:
 		return r.filterIsNull(x)
+	case *unaryOperation:
+		if x.op != '!' {
+			break
+		}
+
+		if operand, ok := x.v.(*ident); ok {
+			return r.filterIdent(operand, false)
+		}
 	default:
 		//dbg("", expr)
 		return nil, is, nil //TODO
