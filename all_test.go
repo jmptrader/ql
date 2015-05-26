@@ -19,7 +19,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -3085,7 +3084,7 @@ func issue99Fill(db *sql.DB) (int, error) {
 	}
 
 	sql := "INSERT INTO Node (" + strings.Join(fieldsIssue99, ",") + ") VALUES ($1, $2, $3, $4"
-	for i, _ := range valuesIssue99 {
+	for i := range valuesIssue99 {
 		if i > 3 {
 			sql += ", $" + strconv.Itoa(i+1)
 		}

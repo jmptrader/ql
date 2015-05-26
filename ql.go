@@ -741,6 +741,10 @@ func findCol(cols []*col, name string) (c *col) {
 func (f *col) clone() *col {
 	var r col
 	r = *f
+	r.constraint = f.constraint.clone()
+	if f.dflt != nil {
+		r.dflt, _ = r.dflt.clone(nil)
+	}
 	return &r
 }
 
@@ -1590,6 +1594,18 @@ func (db *DB) Info() (r *DbInfo, err error) {
 
 type constraint struct {
 	expr expression // If expr == nil: constraint is 'NOT NULL'
+}
+
+func (c *constraint) clone() *constraint {
+	if c == nil {
+		return nil
+	}
+
+	var e expression
+	if c.expr != nil {
+		e, _ = c.expr.clone(nil)
+	}
+	return &constraint{e}
 }
 
 type joinRset struct {

@@ -359,6 +359,11 @@ func test(t *testing.T, s testDB) (panicked error) {
 		if !func() (ok bool) {
 			tnl0 := db.tnl
 			defer func() {
+				s3 := list.String()
+				if g, e := s1, s3; g != e {
+					t.Errorf("#%d: execution mutates compiled statement list\n---- orig\n%s----new\n%s", itest, g, e)
+				}
+
 				if !ok {
 					noErrors = false
 				}

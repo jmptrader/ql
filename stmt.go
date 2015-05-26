@@ -875,29 +875,26 @@ func (s *insertIntoStmt) String() string {
 }
 
 func (s *insertIntoStmt) execSelect(t *table, cols []*col, ctx *execCtx) (_ Recordset, err error) {
-	r := s.sel.exec0()
-	ok := false
+	//TODO missing rs column number eq check
+	r, err := s.sel.plan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	h := t.head
 	data0 := make([]interface{}, len(t.cols0)+2)
 	cc := ctx.db.cc
 	m := map[interface{}]interface{}{}
-	if err = r.do(ctx, false, func(id interface{}, data []interface{}) (more bool, err error) {
-		if ok {
-			for i, d := range data {
-				data0[cols[i].index+2] = d
-			}
-			if err = typeCheck(data0[2:], cols); err != nil {
-				return
-			}
+	if err = r.do(ctx, func(_ interface{}, data []interface{}) (more bool, err error) {
+		for i, d := range data {
+			data0[cols[i].index+2] = d
+		}
+		if err = typeCheck(data0[2:], cols); err != nil {
+			return
+		}
 
-			if err = t.checkConstraintsAndDefaults(ctx, data0[2:], m); err != nil {
-				return false, err
-			}
-
-		if len(constraints) != 0 { // => len(defaults) != 0 as well
-			if err = checkConstraintsAndDefaults(ctx, data0[2:], t.cols, m, constraints, defaults); err != nil {
-				return false, err
-			}
+		if err = t.checkConstraintsAndDefaults(ctx, data0[2:], m); err != nil {
+			return false, err
 		}
 
 		id, err := t.store.ID()
@@ -945,16 +942,9 @@ func (s *insertIntoStmt) execSelect(t *table, cols []*col, ctx *execCtx) (_ Reco
 	return nil, t.store.Update(t.hhead, h)
 }
 
-var (
-	selectColumn2 = MustCompile(`
-		select Name, NotNull, ConstraintExpr, DefaultExpr
-		from __Column2
-		where TableName == $1
-	`)
-)
-
 func (s *insertIntoStmt) exec(ctx *execCtx) (_ Recordset, err error) {
-	t, ok := ctx.db.root.tables[s.tableName]
+	root := ctx.db.root
+	t, ok := root.tables[s.tableName]
 	if !ok {
 		return nil, fmt.Errorf("INSERT INTO %s: table does not exist", s.tableName)
 	}
@@ -984,7 +974,6 @@ func (s *insertIntoStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 		}
 	}
 
-	root := ctx.db.root
 	cc := ctx.db.cc
 	r := make([]interface{}, len(t.cols0))
 	m := map[interface{}]interface{}{}
@@ -1246,8 +1235,8 @@ func (s *createTableStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 		c.index = i
 		if c.constraint != nil || c.dflt != nil {
 			if mustCreateColumn2 {
-				for _, s := range createColumn2.l {
-					_, err := s.exec(&execCtx{db: ctx.db})
+				for _, stmt := range createColumn2.l {
+					_, err := stmt.exec(&execCtx{db: ctx.db})
 					if err != nil {
 						return nil, err
 					}
@@ -1268,7 +1257,7 @@ func (s *createTableStmt) exec(ctx *execCtx) (_ Recordset, err error) {
 			}
 		}
 	}
-	t, err := root.createTable(s.tableName, s.cols)
+	t, err := root.createTable(s.tableName, cols)
 	if err != nil {
 		return nil, err
 	}

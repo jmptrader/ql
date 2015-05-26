@@ -154,7 +154,7 @@ func (t *table) constraintsAndDefaults(ctx *execCtx) error {
 	constraints := make([]*constraint, len(cols))
 	defaults := make([]expression, len(cols))
 	arg := []interface{}{t.name}
-	rs, err := selectColumn2.l[0].exec(&execCtx{db: ctx.db})
+	rs, err := selectColumn2.l[0].exec(&execCtx{db: ctx.db, arg: arg})
 	if err != nil {
 		return err
 	}
@@ -163,22 +163,14 @@ func (t *table) constraintsAndDefaults(ctx *execCtx) error {
 	ok = false
 	if err := rs.(recordset).do(
 		&execCtx{db: ctx.db, arg: arg},
-		false,
 		func(id interface{}, data []interface{}) (more bool, err error) {
-			if ok {
-				rows = append(rows, data)
-				return true, nil
-			}
-
-			ok = true
+			rows = append(rows, data)
 			return true, nil
 		},
 	); err != nil {
 		return err
 	}
 
-	hasConstraints := false
-	hasDefauls := false
 	for _, row := range rows {
 		nm := row[0].(string)
 		nonNull := row[1].(bool)
@@ -189,30 +181,24 @@ func (t *table) constraintsAndDefaults(ctx *execCtx) error {
 				var co *constraint
 				if nonNull || cexpr != "" {
 					co = &constraint{}
+					constraints[i] = co
 					if cexpr != "" {
 						if co.expr, err = ctx.db.str2expr(cexpr); err != nil {
 							return fmt.Errorf("constraint %q: %v", cexpr, err)
 						}
 					}
+
+					t.constraints = constraints
 				}
-				if co != nil {
-					hasConstraints = true
-				}
-				constraints[i] = co
 				if dexpr != "" {
-					hasDefauls = true
 					if defaults[i], err = ctx.db.str2expr(dexpr); err != nil {
 						return fmt.Errorf("constraint %q: %v", dexpr, err)
 					}
+
+					t.defaults = defaults
 				}
 			}
 		}
-	}
-	if hasConstraints {
-		t.constraints = constraints
-	}
-	if hasDefauls {
-		t.defaults = defaults
 	}
 	return nil
 }
@@ -234,7 +220,7 @@ func (t *table) checkConstraintsAndDefaults(ctx *execCtx, row []interface{}, m m
 				continue
 			}
 
-			dval, err := expr.eval(ctx, m, ctx.arg)
+			dval, err := expr.eval(ctx, m)
 			if err != nil {
 				return err
 			}
@@ -270,7 +256,7 @@ func (t *table) checkConstraintsAndDefaults(ctx *execCtx, row []interface{}, m m
 			}
 
 			// Constraint is an expression
-			cval, err := expr.eval(ctx, m, ctx.arg)
+			cval, err := expr.eval(ctx, m)
 			if err != nil {
 				return err
 			}

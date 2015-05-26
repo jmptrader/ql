@@ -1397,9 +1397,7 @@
 //  CreateTableStmt = "CREATE" "TABLE" [ "IF" "NOT" "EXISTS" ] TableName
 //  	"(" ColumnDef { "," ColumnDef } [ "," ] ")" .
 //
-//  ColumnDef = ColumnName Type
-//  	[ "NOT" "NULL" | Expression ]
-//  	[ "DEFAULT" Expression ] .
+//  ColumnDef = ColumnName Type [ "NOT" "NULL" | Expression ] [ "DEFAULT" Expression ] .
 //  ColumnName = identifier .
 //  TableName = identifier .
 //
