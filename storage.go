@@ -781,7 +781,7 @@ func (t *table) row0(ctx *execCtx, h int64) ([]interface{}, error) {
 	}
 
 	if d := len(t.cols) - (len(rec) - 2); d > 0 {
-		rec = append(rec, make([]interface{}, d))
+		rec = append(rec, make([]interface{}, d)...)
 	}
 
 	return rec, nil

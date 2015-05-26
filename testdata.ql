@@ -12129,7 +12129,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t(i);
 	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
 COMMIT;
-SELECT * FROM t WHERE -1 < i && 314 > i;
+SELECT * FROM t WHERE -1 < i && 314 > i; //TODO use intervals
 |"i"
 [278]
 [0]
@@ -12140,7 +12140,7 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t(i);
 	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
 COMMIT;
-SELECT * FROM t WHERE -1 < i && 314 > i OR i > 1000 && i < 2000;
+SELECT * FROM t WHERE -1 < i && 314 > i OR i > 1000 && i < 2000; //TODO use interval
 |"i"
 [278]
 [0]
@@ -12155,7 +12155,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES(240, false);
 	INSERT INTO t VALUES(420, true);
 COMMIT;
-SELECT i FROM t WHERE !b ORDER BY i; //TODO use index
+SELECT i FROM t WHERE !b ORDER BY i;
 |"i"
 [24]
 [240]
