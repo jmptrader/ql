@@ -3122,16 +3122,6 @@ func testIssue99(tb testing.TB, db *sql.DB) int {
 	return sum
 }
 
-func TestIssue99(t *testing.T) {
-	RegisterMemDriver()
-	db, err := sql.Open("ql-mem", "issue99")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Logf("Total rows inserted %v", testIssue99(t, db))
-}
-
 var benchmarkIssue99 sync.Once
 
 func BenchmarkIssue99(b *testing.B) {
