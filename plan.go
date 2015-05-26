@@ -16,6 +16,7 @@ import (
 const (
 	interval          = iota
 	intervalEq        // [L]
+	intervalFalse     // [false]
 	intervalGe        // [L, ...)
 	intervalGt        // (L, ...)
 	intervalIsNotNull // (NULL, ...)
@@ -23,14 +24,16 @@ const (
 	intervalLe        // (..., H]
 	intervalLt        // (..., H)
 	intervalNe        // (L)
+	intervalTrue      // [true]
 )
 
 // Note: All plans must have a pointer receiver. Enables planA == planB operation.
 var (
+	//TODO indexFalsePlan
 	_ plan = (*crossJoinDefaultPlan)(nil)
 	_ plan = (*distinctDefaultPlan)(nil)
 	_ plan = (*explainDefaultPlan)(nil)
-	_ plan = (*filterByIndexBoolPlan)(nil)
+	//TODO- _ plan = (*filterByIndexBoolPlan)(nil)
 	_ plan = (*filterDefaultPlan)(nil)
 	_ plan = (*fullJoinDefaultPlan)(nil)
 	_ plan = (*groupByDefaultPlan)(nil)
@@ -62,7 +65,7 @@ type plan interface {
 func isTableOrIndex(p plan) bool {
 	switch p.(type) {
 	case
-		*filterByIndexBoolPlan,
+		//TODO- *filterByIndexBoolPlan,
 		*indexIntervalPlan,
 		*sysColumnDefaultPlan,
 		*sysIndexDefaultPlan,
@@ -341,6 +344,34 @@ func (r *indexIntervalPlan) doIsNotNull(ctx *execCtx, f func(interface{}, []inte
 	}
 }
 
+func (r *indexIntervalPlan) doTrue(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	t := r.src
+	it, _, err := r.x.Seek([]interface{}{true})
+	if err != nil {
+		return noEOF(err)
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if _, ok := k[0].(bool); !ok {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	switch r.kind {
 	case intervalEq:
@@ -359,6 +390,8 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 		return r.doIsNull(ctx, f)
 	case intervalIsNotNull:
 		return r.doIsNotNull(ctx, f)
+	case intervalTrue:
+		return r.doTrue(ctx, f)
 	default:
 		//dbg("", r.kind)
 		panic("internal error 072")
@@ -366,24 +399,30 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 }
 
 func (r *indexIntervalPlan) explain(w strutil.Formatter) {
-	w.Format("┌Iterate all rows of table %q using index %q where %s ", r.src.name, r.xname, r.cname)
+	s := ""
+	if r.kind == intervalFalse {
+		s = "!"
+	}
+	w.Format("┌Iterate all rows of table %q using index %q where %s%s", r.src.name, r.xname, s, r.cname)
 	switch r.kind {
 	case intervalEq:
-		w.Format("== %v\n", value{r.lval})
+		w.Format(" == %v\n", value{r.lval})
 	case intervalGe:
-		w.Format(">= %v\n", value{r.lval})
+		w.Format(" >= %v\n", value{r.lval})
 	case intervalGt:
-		w.Format("> %v\n", value{r.lval})
+		w.Format(" > %v\n", value{r.lval})
 	case intervalLe:
-		w.Format("<= %v\n", value{r.hval})
+		w.Format(" <= %v\n", value{r.hval})
 	case intervalLt:
-		w.Format("< %v\n", value{r.hval})
+		w.Format(" < %v\n", value{r.hval})
 	case intervalNe:
-		w.Format("!= %v\n", value{r.lval})
+		w.Format(" != %v\n", value{r.lval})
 	case intervalIsNull:
-		w.Format("IS NULL\n")
+		w.Format(" IS NULL\n")
 	case intervalIsNotNull:
-		w.Format("IS NOT NULL\n")
+		w.Format(" IS NOT NULL\n")
+	case intervalTrue:
+		w.Format("\n")
 	default:
 		//dbg("", r.kind)
 		panic("internal error 073")
@@ -1361,11 +1400,12 @@ func (r *tableDefaultPlan) filterIdent(x *ident) (plan, []string, error) { //TOD
 			return nil, []string{fmt.Sprintf("%s(%s)", t.name, cn)}, nil
 		}
 
-		return &filterByIndexBoolPlan{
-			tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
-			ix.name,
-			ix.x,
-		}, nil, nil
+		//TODO- return &filterByIndexBoolPlan{
+		//TODO- 	tableDefaultPlan{t: t, fields: append([]string(nil), r.fields...)},
+		//TODO- 	ix.name,
+		//TODO- 	ix.x,
+		//TODO- }, nil, nil
+		return &indexIntervalPlan{t, cn, ix.name, ix.x, intervalTrue, nil, nil}, nil, nil
 	}
 	return nil, nil, nil
 }
@@ -1521,52 +1561,52 @@ func (r *nullPlan) filter(expr expression) (plan, []string, error) {
 	return r, nil, nil
 }
 
-type filterByIndexBoolPlan struct { // column (of type bool)
-	tableDefaultPlan
-	xn string
-	x  btreeIndex
-}
-
-func (r *filterByIndexBoolPlan) hasID() bool { return true }
-
-func (r *filterByIndexBoolPlan) explain(w strutil.Formatter) {
-	w.Format(
-		"┌Iterate all rows of table %q using index %q where the indexed value == true\n└Output field names %v\n",
-		r.tableDefaultPlan.t.name, r.xn, qnames(r.fields),
-	)
-}
-
-func (r *filterByIndexBoolPlan) filter(expr expression) (plan, []string, error) {
-	return nil, nil, nil //TODO
-}
-
-func (r *filterByIndexBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
-	t := r.t
-	it, _, err := r.x.Seek([]interface{}{true})
-	if err != nil {
-		return noEOF(err)
-	}
-
-	for {
-		k, h, err := it.Next()
-		if err != nil {
-			return noEOF(err)
-		}
-
-		if k[0] != true {
-			return nil
-		}
-
-		id, data, err := t.row(ctx, h)
-		if err != nil {
-			return err
-		}
-
-		if more, err := f(id, data); err != nil || !more {
-			return err
-		}
-	}
-}
+//TODO- type filterByIndexBoolPlan struct { // column (of type bool)
+//TODO- 	tableDefaultPlan
+//TODO- 	xn string
+//TODO- 	x  btreeIndex
+//TODO- }
+//TODO-
+//TODO- func (r *filterByIndexBoolPlan) hasID() bool { return true }
+//TODO-
+//TODO- func (r *filterByIndexBoolPlan) explain(w strutil.Formatter) {
+//TODO- 	w.Format(
+//TODO- 		"┌Iterate all rows of table %q using index %q where the indexed value == true\n└Output field names %v\n",
+//TODO- 		r.tableDefaultPlan.t.name, r.xn, qnames(r.fields),
+//TODO- 	)
+//TODO- }
+//TODO-
+//TODO- func (r *filterByIndexBoolPlan) filter(expr expression) (plan, []string, error) {
+//TODO- 	return nil, nil, nil //TODO
+//TODO- }
+//TODO-
+//TODO- func (r *filterByIndexBoolPlan) do(ctx *execCtx, f func(id interface{}, data []interface{}) (bool, error)) (err error) {
+//TODO- 	t := r.t
+//TODO- 	it, _, err := r.x.Seek([]interface{}{true})
+//TODO- 	if err != nil {
+//TODO- 		return noEOF(err)
+//TODO- 	}
+//TODO-
+//TODO- 	for {
+//TODO- 		k, h, err := it.Next()
+//TODO- 		if err != nil {
+//TODO- 			return noEOF(err)
+//TODO- 		}
+//TODO-
+//TODO- 		if k[0] != true {
+//TODO- 			return nil
+//TODO- 		}
+//TODO-
+//TODO- 		id, data, err := t.row(ctx, h)
+//TODO- 		if err != nil {
+//TODO- 			return err
+//TODO- 		}
+//TODO-
+//TODO- 		if more, err := f(id, data); err != nil || !more {
+//TODO- 			return err
+//TODO- 		}
+//TODO- 	}
+//TODO- }
 
 type leftJoinDefaultPlan struct {
 	on     expression

@@ -3681,7 +3681,7 @@ SELECT i FROM t AS u;
 
 ---- 578
 SELECT i FROM t WHERE b ORDER BY i;
-┌Iterate all rows of table "t" using index "x" where the indexed value == true
+┌Iterate all rows of table "t" using index "x" where b
 └Output field names ["i" "b"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
