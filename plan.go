@@ -29,7 +29,6 @@ const (
 
 // Note: All plans must have a pointer receiver. Enables planA == planB operation.
 var (
-	//TODO indexFalsePlan
 	_ plan = (*crossJoinDefaultPlan)(nil)
 	_ plan = (*distinctDefaultPlan)(nil)
 	_ plan = (*explainDefaultPlan)(nil)
