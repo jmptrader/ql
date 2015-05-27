@@ -6669,3 +6669,28 @@ SELECT i FROM t WHERE i == 0 && i > 2;
 ┌Iterate no rows
 └Output field names ["i"]
 
+---- 1025
+SELECT i FROM t WHERE i == 0 && i <= -2;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1026
+SELECT i FROM t WHERE i == 0 && i <= -1;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1027
+SELECT i FROM t WHERE i == 0 && i <= 0;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1028
+SELECT i FROM t WHERE i == 0 && i <= 1;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1029
+SELECT i FROM t WHERE i == 0 && i <= 2;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
