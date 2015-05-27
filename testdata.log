@@ -4025,7 +4025,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   ┌Iterate all rows of table "u"
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
-┌Filter on u.y < 60 && t.k < 7
+┌Filter on u.y < 60
 │Possibly useful indices
 │CREATE INDEX xu_y ON u(y);
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
@@ -4038,7 +4038,7 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   ┌Iterate all rows of table "u" using index "xy" where y < 60
 │   └Output field names ["x" "y" "z"]
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
-┌Filter on u.y < 60 && t.k < 7
+┌Filter on t.k < 7
 │Possibly useful indices
 │CREATE INDEX xt_k ON t(k);
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
@@ -4050,8 +4050,6 @@ SELECT * FROM t, u WHERE u.y < 60 && t.k < 7;
 │   └Output field names ["i" "j" "k"]
 │   ┌Iterate all rows of table "u" using index "xy" where y < 60
 │   └Output field names ["x" "y" "z"]
-└Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
-┌Filter on u.y < 60 && t.k < 7
 └Output field names ["t.i" "t.j" "t.k" "u.x" "u.y" "u.z"]
 
 ---- 646
@@ -6584,7 +6582,7 @@ SELECT * FROM t WHERE id() != 0;
 SELECT * FROM t WHERE i > -1 && i < 314;
 ┌Iterate all rows of table "t" using index "x" where i > -1
 └Output field names ["i"]
-┌Filter on i > -1 && i < 314
+┌Filter on i < 314
 └Output field names ["i"]
 
 ---- 1009

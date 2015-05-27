@@ -142,14 +142,14 @@ func (s *explainStmt) explain(ctx *execCtx, w strutil.Formatter) {
 	}
 }
 
-func (e *explainStmt) String() string {
-	return "EXPLAIN " + e.s.String()
+func (s *explainStmt) String() string {
+	return "EXPLAIN " + s.s.String()
 }
 
-func (e *explainStmt) isUpdating() bool { return false }
+func (*explainStmt) isUpdating() bool { return false }
 
-func (e *explainStmt) exec(ctx *execCtx) (_ Recordset, err error) {
-	return recordset{ctx, &explainDefaultPlan{e.s}, ctx.db.cc}, nil
+func (s *explainStmt) exec(ctx *execCtx) (_ Recordset, err error) {
+	return recordset{ctx, &explainDefaultPlan{s.s}, ctx.db.cc}, nil
 }
 
 type updateStmt struct {

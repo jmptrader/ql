@@ -587,7 +587,7 @@ ORDER BY employee.LastName;
 -- S 53
 SELECT department.DepartmentName, department.DepartmentID, employee.LastName, employee.DepartmentID
 FROM employee, department
-WHERE department.DepartmentID NOT BETWEEN 33 AND 34
+WHERE department.DepartmentID NOT BETWEEN 33 AND 34 //TODO plan for 'or' in this case is possible.
 ORDER BY employee.LastName;
 |"department.DepartmentName", "department.DepartmentID", "employee.LastName", "employee.DepartmentID"
 [Marketing 35 Heisenberg 33]

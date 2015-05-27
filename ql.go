@@ -622,10 +622,10 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 					}
 				default:
 					//dbg("", yySymName(x.op))
-					//panic("TODO")
+					panic("TODO")
 				}
 			default:
-				//panic("TODO")
+				panic("TODO")
 			}
 		}
 	}
@@ -643,56 +643,120 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 			return p2, nil
 		}
 	case andand:
-		in := []expression{x.l}
+		//TODO- 	in := []expression{x.l}
+		//TODO- loop:
+		//TODO- 	for {
+		//TODO- 		switch r := x.r.(type) {
+		//TODO- 		case *binaryOperation:
+		//TODO- 			switch r.op {
+		//TODO- 			case eq, ge, '>', le, '<', neq:
+		//TODO- 				in = append(in, r)
+		//TODO- 				break loop
+		//TODO- 			default:
+		//TODO- 				dbg("", string(r.op), yySymName(r.op))
+		//TODO- 				panic("TODO")
+		//TODO- 			}
+		//TODO- 		case *isNull:
+		//TODO- 			in = append(in, r)
+		//TODO- 			break loop
+		//TODO- 		default:
+		//TODO- 			dbg("%T: %v", r, r.String())
+		//TODO- 			panic("TODO")
+		//TODO- 		}
+		//TODO- 	}
+		//TODO- 	var rest []expression
+		//TODO- 	p0 := p
+		//TODO- 	for _, e := range in {
+		//TODO- 		p2, is2, err := p.filter(e)
+		//TODO- 		if err != nil {
+		//TODO- 			return nil, err
+		//TODO- 		}
+
+		//TODO- 		is = append(is, is2...)
+		//TODO- 		if p2 == nil {
+		//TODO- 			rest = append(rest, e)
+		//TODO- 			continue
+		//TODO- 		}
+
+		//TODO- 		p = p2
+		//TODO- 	}
+
+		//TODO- 	if p == p0 {
+		//TODO- 		break
+		//TODO- 	}
+
+		//TODO- 	if len(rest) == 0 {
+		//TODO- 		return p, nil
+		//TODO- 	}
+
+		//TODO-
+		//TODO- 	dbg("", in)
+		//TODO- 	dbg("", rest)
+		//TODO- 	panic("TODO")
+
+		//dbg("---- src %T, binop: %v", r.src, x)
+		in := []expression{x.r}
 	loop:
 		for {
-			switch r := x.r.(type) {
+			switch l := x.l.(type) {
 			case *binaryOperation:
-				switch r.op {
-				case eq, ge, '>', le, '<', neq:
-					in = append(in, r)
+				switch l.op {
+				case eq, '>', ge, '<', le, neq:
+					in = append(in, l)
 					break loop
 				default:
-					//dbg("", string(r.op), yySymName(r.op))
-					//panic("TODO")
+					//dbg("", string(l.op), yySymName(l.op))
+					panic("TODO")
 				}
-			case *isNull:
-				in = append(in, r)
-				break loop
 			default:
-				//dbg("%T: %v", r, r.String())
-				//panic("TODO")
+				//dbg("%T: %v", l, l)
+				panic("TODO")
 			}
 		}
-		var rest []expression
-		p0 := p
-		for _, e := range in {
+		out := []expression{}
+		p := r.src
+		isNewPlan := false
+		for i := range in {
+			e := in[len(in)-1-i]
 			p2, is2, err := p.filter(e)
 			if err != nil {
 				return nil, err
 			}
 
-			is = append(is, is2...)
 			if p2 == nil {
-				rest = append(rest, e)
+				is = append(is, is2...)
+				out = append(out, e)
 				continue
 			}
 
 			p = p2
+			isNewPlan = true
 		}
 
-		if p == p0 {
+		//dbg("in %v", in)
+		//dbg("out %v", out)
+		//dbg("is %v", is)
+
+		if !isNewPlan {
 			break
 		}
 
-		//dbg("", in)
-		//dbg("", rest)
-		//panic("TODO")
+		if len(out) == 0 {
+			return p, nil
+		}
+
+		for len(out) > 1 {
+			panic("TODO")
+		}
+
+		rest := out[0]
+		//dbg("rest: %v", rest)
+		return &filterDefaultPlan{p, rest, is}, nil
 	case oror:
 		//TODO #53
 	default:
 		//dbg("", string(x.op), yySymName(x.op))
-		//panic("TODO")
+		panic("TODO")
 	}
 
 	return &filterDefaultPlan{p, x, is}, nil

@@ -460,8 +460,39 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 
 func (r *indexIntervalPlan) fieldNames() []string { return r.src.fieldNames() }
 
+func (r *indexIntervalPlan) filterGt(op int, val interface{}) (p plan, indicesSought []string, err error) {
+	return nil, nil, nil
+}
+
 func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []string, err error) {
-	//dbg("%v: %v", r, expr)
+	switch x := expr.(type) {
+	case *binaryOperation:
+		ok, cname, val, err := x.isIdentRelOpVal()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if !ok || r.cname != cname {
+			return nil, nil, nil
+		}
+
+		if val, err = typeCheck1(val, findCol(r.src.cols, cname)); err != nil {
+			return nil, nil, err
+		}
+
+		switch r.kind {
+		case intervalGt:
+			return r.filterGt(x.op, val)
+		default:
+			//dbg("", r.kind)
+			panic("TODO")
+		}
+	default:
+		//dbg("%T: %v", x, x)
+		panic("TODO")
+	}
+
+	//dbg("TODO %T(index %s(%s)): %v", r, r.src.name, r.cname, expr)
 	return nil, nil, nil //TODO
 }
 
