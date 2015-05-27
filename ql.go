@@ -709,8 +709,8 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 					panic("TODO")
 				}
 			default:
-				//dbg("%T: %v", l, l)
-				panic("TODO")
+				in = append(in, l)
+				break loop
 			}
 		}
 		out := []expression{}

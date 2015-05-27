@@ -12433,3 +12433,24 @@ COMMIT;
 SELECT i FROM t WHERE i == 0 && i != 2;
 |"i"
 [0]
+
+-- 1040
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, b bool);
+	CREATE INDEX x ON t(b);
+	INSERT INTO t VALUES (1, false), (NULL, NULL), (-2, false), (0, true), (2, false), (-1, true);
+COMMIT;
+SELECT * FROM t WHERE !b && b ORDER BY i;
+|"i", "b"
+
+-- 1041
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, b bool);
+	CREATE INDEX x ON t(b);
+	INSERT INTO t VALUES (1, false), (NULL, NULL), (-2, false), (0, true), (2, false), (-1, true);
+COMMIT;
+SELECT * FROM t WHERE !b && !b ORDER BY i;
+|"i", "b"
+[-2 false]
+[1 false]
+[2 false]

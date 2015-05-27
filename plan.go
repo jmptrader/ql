@@ -559,6 +559,23 @@ func (r *indexIntervalPlan) filterEq(op int, val interface{}) (p plan, indicesSo
 	return nil, nil, nil
 }
 
+func (r *indexIntervalPlan) filterFalse(op int, val interface{}) (p plan, indicesSought []string, err error) {
+	v, ok := val.(bool)
+	if ok {
+		switch op {
+		case eq:
+			if !v {
+				return r, nil, nil
+			}
+
+			return &nullPlan{r.fieldNames()}, nil, nil
+		case neq:
+			panic("TODO")
+		}
+	}
+	return nil, nil, nil
+}
+
 func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []string, err error) {
 	switch x := expr.(type) {
 	case *binaryOperation:
@@ -568,7 +585,7 @@ func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []str
 		}
 
 		if !ok || r.cname != cname {
-			return nil, nil, nil
+			break
 		}
 
 		if val, err = typeCheck1(val, findCol(r.src.cols, cname)); err != nil {
@@ -579,7 +596,7 @@ func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []str
 		case intervalEq: // [L]
 			return r.filterEq(x.op, val)
 		case intervalFalse: // [false]
-			panic("TODO")
+			return r.filterEq(x.op, val)
 		case intervalGe: // [L, ...)
 			panic("TODO")
 		case intervalGt: // (L, ...)
@@ -601,8 +618,42 @@ func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []str
 		case intervalTrue: // [true]
 			panic("TODO")
 		}
+	case *ident:
+		cname := x.s
+		if r.cname != cname {
+			break
+		}
+
+		switch r.kind {
+		case intervalFalse: // [false]
+			return &nullPlan{r.fieldNames()}, nil, nil
+		case intervalTrue: // [true]
+			panic("TODO")
+		}
+	case *unaryOperation:
+		if x.op != '!' {
+			break
+		}
+
+		operand, ok := x.v.(*ident)
+		if !ok {
+			break
+		}
+
+		cname := operand.s
+		if r.cname != cname {
+			break
+		}
+
+
+		switch r.kind {
+		case intervalFalse: // [false]
+			return r, nil, nil
+		case intervalTrue: // [true]
+			panic("TODO")
+		}
 	default:
-		//dbg("%T: %v", x, x)
+		dbg("%T: %v", x, x)
 		panic("TODO")
 	}
 
