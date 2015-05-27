@@ -6756,3 +6756,15 @@ SELECT * FROM t WHERE !b && !b ORDER BY i;
 ┌Order by i,
 └Output field names ["i" "b"]
 
+---- 1042
+SELECT * FROM t WHERE b && !b ORDER BY i;
+┌Iterate no rows
+└Output field names ["i" "b"]
+
+---- 1043
+SELECT * FROM t WHERE b && b ORDER BY i;
+┌Iterate all rows of table "t" using index "x" where b
+└Output field names ["i" "b"]
+┌Order by i,
+└Output field names ["i" "b"]
+

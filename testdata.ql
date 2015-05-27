@@ -12454,3 +12454,23 @@ SELECT * FROM t WHERE !b && !b ORDER BY i;
 [-2 false]
 [1 false]
 [2 false]
+
+-- 1042
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, b bool);
+	CREATE INDEX x ON t(b);
+	INSERT INTO t VALUES (1, false), (NULL, NULL), (-2, false), (0, true), (2, false), (-1, true);
+COMMIT;
+SELECT * FROM t WHERE b && !b ORDER BY i;
+|"i", "b"
+
+-- 1043
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, b bool);
+	CREATE INDEX x ON t(b);
+	INSERT INTO t VALUES (1, false), (NULL, NULL), (-2, false), (0, true), (2, false), (-1, true);
+COMMIT;
+SELECT * FROM t WHERE b && b ORDER BY i;
+|"i", "b"
+[-1 true]
+[0 true]
