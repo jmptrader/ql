@@ -794,7 +794,15 @@ func (r *indexIntervalPlan) filterLe(binOp2 int, val interface{}) (plan, []strin
 		}
 		return r, nil, nil
 	case neq:
-		panic("TODO")
+		switch c := collate1(r.hval, val); {
+		case c < 0:
+			return r, nil, nil
+		case c == 0:
+			r.kind = intervalLt
+			return r, nil, nil
+		default: // c > 0
+			//bop
+		}
 	}
 	return nil, nil, nil
 }
@@ -871,7 +879,7 @@ func (r *indexIntervalPlan) filter(expr expression) (plan, []string, error) {
 			return &nullPlan{r.fieldNames()}, nil, nil
 		}
 	default:
-		dbg("%T: %v", x, x)
+		//dbg("%T: %v", x, x)
 		panic("TODO")
 	}
 
