@@ -206,6 +206,55 @@ func (r *indexIntervalPlan) doLHOO(ctx *execCtx, f func(interface{}, []interface
 	}
 }
 
+func (r *indexIntervalPlan) doLHOC(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ..., H-1, H-1, H, H, H+1, H+1, ...
+	// ---  ---  ---  ---  ---  -  -  +++  +++  +++  +++  +++  +  +  ---  ---  ---
+	t := r.src
+	it, _, err := r.x.Seek([]interface{}{r.lval})
+	if err != nil {
+		return noEOF(err)
+	}
+
+	var ok bool
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if !ok {
+			val, err := expand1(k[0], nil)
+			if err != nil {
+				return err
+			}
+
+			if collate1(val, r.lval) == 0 {
+				continue
+			}
+
+			ok = true
+		}
+
+		val, err := expand1(k[0], nil)
+		if err != nil {
+			return err
+		}
+
+		if collate1(val, r.hval) > 0 {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) doLHCC(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ..., H-1, H-1, H, H, H+1, H+1, ...
 	// ---  ---  ---  ---  ---  +  +  +++  +++  +++  +++  +++  +  +  ---  ---  ---
@@ -512,6 +561,8 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 		return r.doLHOO(ctx, f)
 	case intervalLHCC:
 		return r.doLHCC(ctx, f)
+	case intervalLHOC:
+		return r.doLHOC(ctx, f)
 	default:
 		//dbg("", r.kind)
 		panic("internal error 072")
@@ -547,6 +598,8 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 		w.Format(" > %v && < %v", value{r.lval}, value{r.hval})
 	case intervalLHCC:
 		w.Format(" >= %v && <= %v", value{r.lval}, value{r.hval})
+	case intervalLHOC:
+		w.Format(" > %v && <= %v", value{r.lval}, value{r.hval})
 	default:
 		//dbg("", r.kind)
 		panic("internal error 073")
@@ -675,7 +728,13 @@ func (r *indexIntervalPlan) filterGt(binOp2 int, val interface{}) (plan, []strin
 		}
 		return r, nil, nil
 	case le:
-		panic("TODO")
+		if collate1(r.lval, val) < 0 {
+			r.hval = val
+			r.kind = intervalLHOC
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
 	case '<':
 		panic("TODO")
 	case neq:
