@@ -24,6 +24,7 @@ const (
 	intervalLe        // (..., H]
 	intervalLt        // (..., H)
 	intervalNe        // (L)
+	intervalLHOO      // (L, H)
 	intervalTrue      // [true]
 )
 
@@ -140,6 +141,55 @@ func (r *indexIntervalPlan) doGt(ctx *execCtx, f func(interface{}, []interface{}
 			}
 
 			ok = true
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
+func (r *indexIntervalPlan) doLHOO(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ..., H-1, H-1, H, H, H+1, H+1, ...
+	// ---  ---  ---  ---  ---  -  -  +++  +++  +++  +++  +++  -  -  ---  ---  ---
+	t := r.src
+	it, _, err := r.x.Seek([]interface{}{r.lval})
+	if err != nil {
+		return noEOF(err)
+	}
+
+	var ok bool
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		if !ok {
+			val, err := expand1(k[0], nil)
+			if err != nil {
+				return err
+			}
+
+			if collate1(val, r.lval) == 0 {
+				continue
+			}
+
+			ok = true
+		}
+
+		val, err := expand1(k[0], nil)
+		if err != nil {
+			return err
+		}
+
+		if collate1(val, r.hval) == 0 {
+			return nil
 		}
 
 		id, data, err := t.row(ctx, h)
@@ -420,6 +470,8 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 		return r.doFalse(ctx, f)
 	case intervalTrue:
 		return r.doTrue(ctx, f)
+	case intervalLHOO:
+		return r.doLHOO(ctx, f)
 	default:
 		//dbg("", r.kind)
 		panic("internal error 072")
@@ -451,6 +503,8 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 		w.Format(" IS NOT NULL")
 	case intervalFalse, intervalTrue:
 		// nop
+	case intervalLHOO:
+		w.Format(" > %v && < %v", value{r.lval}, value{r.hval})
 	default:
 		//dbg("", r.kind)
 		panic("internal error 073")
@@ -461,6 +515,28 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 func (r *indexIntervalPlan) fieldNames() []string { return r.src.fieldNames() }
 
 func (r *indexIntervalPlan) filterGt(op int, val interface{}) (p plan, indicesSought []string, err error) {
+	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ...
+	// ---  ---  ---  ---  ---  -  -  +++  +++  +++
+	switch op {
+	case '<':
+		switch c := collate1(r.lval, val); {
+		case c < 0: // L < val
+			// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ..., H-1, H-1, H, H, H+1, H+1, ...
+			// ---  ---  ---  ---  ---  -  -  +++  +++  +++  +++  +++  -  -  ---  ---  ---
+			r.hval = val
+			r.kind = intervalLHOO
+			return r, nil, nil
+		case c == 0: // L == val
+			//dbg("", r.lval, val)
+			panic("TODO")
+		default: // L > val
+			//dbg("", r.lval, val)
+			panic("TODO")
+		}
+	default:
+		//dbg("", string(op), yySymName(op))
+		panic("TODO")
+	}
 	return nil, nil, nil
 }
 
