@@ -624,6 +624,7 @@ func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (plan, []strin
 		case c < 0:
 			r.hval = val
 			r.kind = intervalLHCC
+			return r, nil, nil
 		case c == 0:
 			r.kind = intervalEq
 			return r, nil, nil
@@ -631,7 +632,13 @@ func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (plan, []strin
 			return &nullPlan{r.fieldNames()}, nil, nil
 		}
 	case '<':
-		panic("TODO")
+		if collate1(r.lval, val) < 0 {
+			r.hval = val
+			r.kind = intervalLHCC
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
 	case neq:
 		panic("TODO")
 	}
