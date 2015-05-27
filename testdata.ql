@@ -12842,3 +12842,57 @@ COMMIT;
 SELECT i FROM t WHERE i > 0 && i == 2;
 |"i"
 [2]
+
+-- 1080
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > 0 && i >= -2;
+|"i"
+[1]
+[2]
+
+-- 1081
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > 0 && i >= -1;
+|"i"
+[1]
+[2]
+
+-- 1082
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > 0 && i >= 0;
+|"i"
+[1]
+[2]
+
+-- 1083
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > 0 && i >= 1;
+|"i"
+[1]
+[2]
+
+-- 1084
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > 0 && i >= 2;
+|"i"
+[2]
