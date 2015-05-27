@@ -640,7 +640,15 @@ func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (plan, []strin
 
 		return &nullPlan{r.fieldNames()}, nil, nil
 	case neq:
-		panic("TODO")
+		switch c := collate1(r.lval, val); {
+		case c < 0:
+			//MAYBE ORed intervals
+		case c == 0:
+			r.kind = intervalGt
+			return r, nil, nil
+		default: // c > 0
+			return r, nil, nil
+		}
 	}
 	return nil, nil, nil
 }
