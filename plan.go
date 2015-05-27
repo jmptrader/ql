@@ -775,7 +775,13 @@ func (r *indexIntervalPlan) filterLe(binOp2 int, val interface{}) (plan, []strin
 			return r, nil, nil
 		}
 	case '>':
-		panic("TODO")
+		if collate1(r.hval, val) > 0 {
+			r.lval = val
+			r.kind = intervalLHOC
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
 	case le:
 		panic("TODO")
 	case '<':
