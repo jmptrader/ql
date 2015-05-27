@@ -550,7 +550,11 @@ func (r *indexIntervalPlan) filterEq(op int, val interface{}) (p plan, indicesSo
 
 		return &nullPlan{r.fieldNames()}, nil, nil
 	case neq:
-		panic("TODO")
+		if collate1(r.lval, val) != 0 {
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
 	}
 	return nil, nil, nil
 }
