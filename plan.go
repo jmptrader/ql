@@ -289,7 +289,7 @@ func (r *indexIntervalPlan) doEq(ctx *execCtx, f func(interface{}, []interface{}
 			return noEOF(err)
 		}
 
-		if collate1(k[0], r.hval) != 0 {
+		if collate1(k[0], r.lval) != 0 {
 			return nil
 		}
 
@@ -517,8 +517,8 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 
 func (r *indexIntervalPlan) fieldNames() []string { return r.src.fieldNames() }
 
-func (r *indexIntervalPlan) filterEq(op int, val interface{}) (p plan, indicesSought []string, err error) {
-	switch op {
+func (r *indexIntervalPlan) filterEq(binOp2 int, val interface{}) (p plan, indicesSought []string, err error) {
+	switch binOp2 {
 	case eq:
 		if collate1(r.lval, val) == 0 {
 			return r, nil, nil
@@ -559,6 +559,30 @@ func (r *indexIntervalPlan) filterEq(op int, val interface{}) (p plan, indicesSo
 	return nil, nil, nil
 }
 
+func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (p plan, indicesSought []string, err error) {
+	switch binOp2 {
+	case eq:
+		if collate1(r.lval, val) <= 0 {
+			r.lval = val
+			r.kind = intervalEq
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
+	case ge:
+		panic("TODO")
+	case '>':
+		panic("TODO")
+	case le:
+		panic("TODO")
+	case '<':
+		panic("TODO")
+	case neq:
+		panic("TODO")
+	}
+	return nil, nil, nil
+}
+
 func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []string, err error) {
 	switch x := expr.(type) {
 	case *binaryOperation:
@@ -579,7 +603,7 @@ func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []str
 		case intervalEq: // [L]
 			return r.filterEq(x.op, val)
 		case intervalGe: // [L, ...)
-			panic("TODO")
+			return r.filterGe(x.op, val)
 		case intervalGt: // (L, ...)
 			panic("TODO")
 		case intervalLHCC: // [L, H]
@@ -623,7 +647,6 @@ func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []str
 		if r.cname != cname {
 			break
 		}
-
 
 		switch r.kind {
 		case intervalFalse: // [false]

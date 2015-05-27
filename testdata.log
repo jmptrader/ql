@@ -6768,3 +6768,28 @@ SELECT * FROM t WHERE b && b ORDER BY i;
 ┌Order by i,
 └Output field names ["i" "b"]
 
+---- 1045
+SELECT i FROM t WHERE i >= 0 && i == -2;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1046
+SELECT i FROM t WHERE i >= 0 && i == -1;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1047
+SELECT i FROM t WHERE i >= 0 && i == 0;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1048
+SELECT i FROM t WHERE i >= 0 && i == 1;
+┌Iterate all rows of table "t" using index "x" where i == 1
+└Output field names ["i"]
+
+---- 1049
+SELECT i FROM t WHERE i >= 0 && i == 2;
+┌Iterate all rows of table "t" using index "x" where i == 2
+└Output field names ["i"]
+
