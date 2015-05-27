@@ -670,7 +670,10 @@ func (r *indexIntervalPlan) filterGt(binOp2 int, val interface{}) (plan, []strin
 		}
 		return r, nil, nil
 	case '>':
-		panic("TODO")
+		if collate1(r.lval, val) < 0 {
+			r.lval = val
+		}
+		return r, nil, nil
 	case le:
 		panic("TODO")
 	case '<':
