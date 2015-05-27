@@ -1791,7 +1791,7 @@ ORDER BY DepartmentID;
 
 -- S 164
 SELECT +DepartmentID FROM employee;
-|"DepartmentID"
+|""
 [<nil>]
 [34]
 [34]
@@ -4483,7 +4483,7 @@ BEGIN TRANSACTION;
 	INSERT INTO t VALUES (bigrat("2/3"), bigrat("5/7"));
 COMMIT;
 SELECT +c, -d FROM t;
-|"c", ""
+|"", ""
 [2/3 -5/7]
 
 -- 425
@@ -4783,7 +4783,7 @@ BEGIN TRANSACTION;
 	;
 COMMIT;
 SELECT +a, +b, +c FROM t;
-|"a", "b", "c"
+|"", "", ""
 [1ns 3ns 5ns]
 
 -- 449
@@ -12129,23 +12129,12 @@ BEGIN TRANSACTION;
 	CREATE INDEX x ON t(i);
 	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
 COMMIT;
-SELECT * FROM t WHERE -1 < i && 314 > i;
+SELECT * FROM t WHERE -1 < i && 314 > i OR i > 1000 && i < 2000; //MAYBE use ORed intervals
 |"i"
-[0]
 [278]
+[0]
 
 -- 1009
-BEGIN TRANSACTION;
-	CREATE TABLE t (i int);
-	CREATE INDEX x ON t(i);
-	INSERT INTO t VALUES (314), (0), (NULL), (-1), (278);
-COMMIT;
-SELECT * FROM t WHERE -1 < i && 314 > i OR i > 1000 && i < 2000; //TODO use ORed intervals
-|"i"
-[278]
-[0]
-
--- 1010
 BEGIN TRANSACTION;
 	CREATE TABLE t (i int, b bool);
 	CREATE INDEX x ON t (b);
@@ -12159,3 +12148,97 @@ SELECT i FROM t WHERE !b ORDER BY i;
 |"i"
 [24]
 [240]
+
+-- 1010
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i == -2;
+|"i"
+
+-- 1011
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i == -1;
+|"i"
+
+-- 1012
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i == 0;
+|"i"
+[0]
+
+-- 1013
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i == 1;
+|"i"
+
+-- 1014
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i == 2;
+|"i"
+
+-- 1015
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i >= -2;
+|"i"
+[0]
+
+-- 1016
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i >= -1;
+|"i"
+[0]
+
+-- 1017
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i >= 0;
+|"i"
+[0]
+
+-- 1018
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i >= 1;
+|"i"
+
+-- 1019
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i == 0 && i >= 2;
+|"i"

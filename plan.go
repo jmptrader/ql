@@ -21,10 +21,13 @@ const (
 	intervalGt        // (L, ...)
 	intervalIsNotNull // (NULL, ...)
 	intervalIsNull    // [NULL]
+	intervalLHCC      // [L, H]
+	intervalLHCO      // [L, H)
+	intervalLHOC      // (L, H]
+	intervalLHOO      // (L, H)
 	intervalLe        // (..., H]
 	intervalLt        // (..., H)
 	intervalNe        // (L)
-	intervalLHOO      // (L, H)
 	intervalTrue      // [true]
 )
 
@@ -514,27 +517,27 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 
 func (r *indexIntervalPlan) fieldNames() []string { return r.src.fieldNames() }
 
-func (r *indexIntervalPlan) filterGt(op int, val interface{}) (p plan, indicesSought []string, err error) {
-	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ...
-	// ---  ---  ---  ---  ---  -  -  +++  +++  +++
+func (r *indexIntervalPlan) filterEq(op int, val interface{}) (p plan, indicesSought []string, err error) {
 	switch op {
-	case '<':
-		switch c := collate1(r.lval, val); {
-		case c < 0: // L < val
-			// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ..., H-1, H-1, H, H, H+1, H+1, ...
-			// ---  ---  ---  ---  ---  -  -  +++  +++  +++  +++  +++  -  -  ---  ---  ---
-			r.hval = val
-			r.kind = intervalLHOO
+	case eq:
+		if collate1(r.lval, val) == 0 {
 			return r, nil, nil
-		case c == 0: // L == val
-			//dbg("", r.lval, val)
-			panic("TODO")
-		default: // L > val
-			//dbg("", r.lval, val)
-			panic("TODO")
 		}
-	default:
-		//dbg("", string(op), yySymName(op))
+
+		return &nullPlan{r.fieldNames()}, nil, nil
+	case ge:
+		if collate1(r.lval, val) >= 0 {
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
+	case '>':
+		panic("TODO")
+	case le:
+		panic("TODO")
+	case '<':
+		panic("TODO")
+	case neq:
 		panic("TODO")
 	}
 	return nil, nil, nil
@@ -557,10 +560,29 @@ func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []str
 		}
 
 		switch r.kind {
-		case intervalGt:
-			return r.filterGt(x.op, val)
-		default:
-			//dbg("", r.kind)
+		case intervalEq: // [L]
+			return r.filterEq(x.op, val)
+		case intervalFalse: // [false]
+			panic("TODO")
+		case intervalGe: // [L, ...)
+			panic("TODO")
+		case intervalGt: // (L, ...)
+			panic("TODO")
+		case intervalLHCC: // [L, H]
+			panic("TODO")
+		case intervalLHCO: // [L, H)
+			panic("TODO")
+		case intervalLHOC: // (L, H]
+			panic("TODO")
+		case intervalLHOO: // (L, H)
+			panic("TODO")
+		case intervalLe: // (..., H]
+			panic("TODO")
+		case intervalLt: // (..., H)
+			panic("TODO")
+		case intervalNe: // (L)
+			panic("TODO")
+		case intervalTrue: // [true]
 			panic("TODO")
 		}
 	default:

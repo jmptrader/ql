@@ -3332,8 +3332,13 @@ func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 		break
 	}
 
-	if op == '+' {
-		return x.(expression), nil
+	if l.isStatic() {
+		val, err := l.eval(nil, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		l = value{val}
 	}
 
 	if op == '!' {
@@ -3367,17 +3372,22 @@ func newUnaryOperation(op int, x interface{}) (v expression, err error) {
 		}
 	}
 
-	u := unaryOperation{op, l}
-	if !l.isStatic() {
-		return &u, nil
-	}
+	return &unaryOperation{op, l}, nil
+	//TODO- u := unaryOperation{op, l}
+	//TODO- if !l.isStatic() {
+	//TODO- 	return &u, nil
+	//TODO- }
 
-	val, err := u.eval(nil, nil)
-	if val == nil {
-		return value{nil}, nil
-	}
+	//TODO- val, err := u.eval(nil, nil)
+	//TODO- if err != nil {
+	//TODO- 	return nil, err
+	//TODO- }
 
-	return value{val}, err
+	//TODO- if val == nil {
+	//TODO- 	return value{nil}, nil
+	//TODO- }
+
+	//TODO- return value{val}, nil
 }
 
 func (u *unaryOperation) clone(arg []interface{}, unqualify ...string) (expression, error) {

@@ -956,11 +956,11 @@ SELECT * FROM department WHERE DepartmentID < 34 ORDER BY DepartmentID;
 └Output field names ["DepartmentID" "DepartmentName"]
 
 ---- 164
-SELECT DepartmentID FROM employee;
+SELECT +DepartmentID FROM employee;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Evaluate DepartmentID as "DepartmentID",
-└Output field names ["DepartmentID"]
+┌Evaluate +DepartmentID as "",
+└Output field names [""]
 
 ---- 165
 SELECT * FROM employee ORDER BY LastName;
@@ -986,10 +986,10 @@ SELECT 1023 + DepartmentID AS y FROM employee ORDER BY y DESC;
 └Output field names ["y"]
 
 ---- 168
-SELECT DepartmentID AS y FROM employee ORDER BY y DESC;
+SELECT +DepartmentID AS y FROM employee ORDER BY y DESC;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Evaluate DepartmentID as "y",
+┌Evaluate +DepartmentID as "y",
 └Output field names ["y"]
 ┌Order descending by y,
 └Output field names ["y"]
@@ -1009,10 +1009,10 @@ SELECT * FROM employee ORDER BY 0 + DepartmentID DESC;
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 171
-SELECT * FROM employee ORDER BY DepartmentID DESC;
+SELECT * FROM employee ORDER BY +DepartmentID DESC;
 ┌Iterate all rows of table "employee"
 └Output field names ["LastName" "DepartmentID"]
-┌Order descending by DepartmentID,
+┌Order descending by +DepartmentID,
 └Output field names ["LastName" "DepartmentID"]
 
 ---- 172
@@ -2639,12 +2639,10 @@ SELECT * FROM t WHERE ^c == -79857;
 └Output field names ["c"]
 
 ---- 398
-SELECT * FROM t WHERE c == 79856;
+SELECT * FROM t WHERE +c == 79856;
 ┌Iterate all rows of table "t"
 └Output field names ["c"]
-┌Filter on c == 79856
-│Possibly useful indices
-│CREATE INDEX xt_c ON t(c);
+┌Filter on +c == 79856
 └Output field names ["c"]
 
 ---- 399
@@ -2812,11 +2810,11 @@ SELECT c / d FROM t;
 └Output field names [""]
 
 ---- 424
-SELECT c, -d FROM t;
+SELECT +c, -d FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["c" "d"]
-┌Evaluate c as "c", -d as "",
-└Output field names ["c" ""]
+┌Evaluate +c as "", -d as "",
+└Output field names ["" ""]
 
 ---- 425
 SELECT 1 + c, d + 1, 1.5 + c, d + 1.5 FROM t;
@@ -2982,9 +2980,11 @@ SELECT ^a, ^b, ^c FROM t;
 └Output field names ["" "" ""]
 
 ---- 448
-SELECT a, b, c FROM t;
+SELECT +a, +b, +c FROM t;
 ┌Iterate all rows of table "t"
 └Output field names ["a" "b" "c"]
+┌Evaluate +a as "", +b as "", +c as "",
+└Output field names ["" "" ""]
 
 ---- 449
 SELECT -a, -b, -c FROM t;
@@ -6579,23 +6579,68 @@ SELECT * FROM t WHERE id() != 0;
 └Output field names ["i"]
 
 ---- 1008
-SELECT * FROM t WHERE i > -1 && i < 314;
-┌Iterate all rows of table "t" using index "x" where i > -1 && < 314
-└Output field names ["i"]
-
----- 1009
 SELECT * FROM t WHERE i > -1 && i < 314 || i > 1000 && i < 2000;
 ┌Iterate all rows of table "t"
 └Output field names ["i"]
 ┌Filter on i > -1 && i < 314 || i > 1000 && i < 2000
 └Output field names ["i"]
 
----- 1010
+---- 1009
 SELECT i FROM t WHERE !b ORDER BY i;
 ┌Iterate all rows of table "t" using index "x" where !b
 └Output field names ["i" "b"]
 ┌Evaluate i as "i",
 └Output field names ["i"]
 ┌Order by i,
+└Output field names ["i"]
+
+---- 1010
+SELECT i FROM t WHERE i == 0 && i == -2;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1011
+SELECT i FROM t WHERE i == 0 && i == -1;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1012
+SELECT i FROM t WHERE i == 0 && i == 0;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1013
+SELECT i FROM t WHERE i == 0 && i == 1;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1014
+SELECT i FROM t WHERE i == 0 && i == 2;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1015
+SELECT i FROM t WHERE i == 0 && i >= -2;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1016
+SELECT i FROM t WHERE i == 0 && i >= -1;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1017
+SELECT i FROM t WHERE i == 0 && i >= 0;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1018
+SELECT i FROM t WHERE i == 0 && i >= 1;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1019
+SELECT i FROM t WHERE i == 0 && i >= 2;
+┌Iterate no rows
 └Output field names ["i"]
 
