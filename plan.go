@@ -570,7 +570,10 @@ func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (p plan, indic
 
 		return &nullPlan{r.fieldNames()}, nil, nil
 	case ge:
-		panic("TODO")
+		if collate1(r.lval, val) < 0 {
+			r.lval = val
+		}
+		return r, nil, nil
 	case '>':
 		panic("TODO")
 	case le:
