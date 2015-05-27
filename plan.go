@@ -206,6 +206,41 @@ func (r *indexIntervalPlan) doLHOO(ctx *execCtx, f func(interface{}, []interface
 	}
 }
 
+func (r *indexIntervalPlan) doLHCC(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ..., H-1, H-1, H, H, H+1, H+1, ...
+	// ---  ---  ---  ---  ---  +  +  +++  +++  +++  +++  +++  +  +  ---  ---  ---
+	t := r.src
+	it, _, err := r.x.Seek([]interface{}{r.lval})
+	if err != nil {
+		return noEOF(err)
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		val, err := expand1(k[0], nil)
+		if err != nil {
+			return err
+		}
+
+		if collate1(val, r.hval) > 0 {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) doLe(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	// nil, nil, ..., H-1, H-1, H, H, H+1, H+1, ...
 	// ---  ---  +++  +++  +++  +  +  ---  ---
@@ -475,6 +510,8 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 		return r.doTrue(ctx, f)
 	case intervalLHOO:
 		return r.doLHOO(ctx, f)
+	case intervalLHCC:
+		return r.doLHCC(ctx, f)
 	default:
 		//dbg("", r.kind)
 		panic("internal error 072")
@@ -508,6 +545,8 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 		// nop
 	case intervalLHOO:
 		w.Format(" > %v && < %v", value{r.lval}, value{r.hval})
+	case intervalLHCC:
+		w.Format(" >= %v && <= %v", value{r.lval}, value{r.hval})
 	default:
 		//dbg("", r.kind)
 		panic("internal error 073")
@@ -517,7 +556,7 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 
 func (r *indexIntervalPlan) fieldNames() []string { return r.src.fieldNames() }
 
-func (r *indexIntervalPlan) filterEq(binOp2 int, val interface{}) (p plan, indicesSought []string, err error) {
+func (r *indexIntervalPlan) filterEq(binOp2 int, val interface{}) (plan, []string, error) {
 	switch binOp2 {
 	case eq:
 		if collate1(r.lval, val) == 0 {
@@ -559,7 +598,7 @@ func (r *indexIntervalPlan) filterEq(binOp2 int, val interface{}) (p plan, indic
 	return nil, nil, nil
 }
 
-func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (p plan, indicesSought []string, err error) {
+func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (plan, []string, error) {
 	switch binOp2 {
 	case eq:
 		if collate1(r.lval, val) <= 0 {
@@ -581,7 +620,16 @@ func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (p plan, indic
 		}
 		return r, nil, nil
 	case le:
-		panic("TODO")
+		switch c := collate1(r.lval, val); {
+		case c < 0:
+			r.hval = val
+			r.kind = intervalLHCC
+		case c == 0:
+			r.kind = intervalEq
+			return r, nil, nil
+		default: // c > 0
+			return &nullPlan{r.fieldNames()}, nil, nil
+		}
 	case '<':
 		panic("TODO")
 	case neq:
@@ -590,7 +638,7 @@ func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (p plan, indic
 	return nil, nil, nil
 }
 
-func (r *indexIntervalPlan) filter(expr expression) (p plan, indicesSought []string, err error) {
+func (r *indexIntervalPlan) filter(expr expression) (plan, []string, error) {
 	switch x := expr.(type) {
 	case *binaryOperation:
 		ok, cname, val, err := x.isIdentRelOpVal()
