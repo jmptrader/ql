@@ -292,6 +292,10 @@ func (r *orderByRset) String() string {
 }
 
 func (r *orderByRset) plan(ctx *execCtx) (plan, error) {
+	if _, ok := r.src.(*nullPlan); ok {
+		return r.src, nil
+	}
+
 	var by []expression
 	fields := r.src.fieldNames()
 	for _, e := range r.by {

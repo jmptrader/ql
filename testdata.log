@@ -6748,8 +6748,6 @@ SELECT i FROM t WHERE i == 0 && i != 2;
 SELECT * FROM t WHERE !b && b ORDER BY i;
 ┌Iterate no rows
 └Output field names ["i" "b"]
-┌Order by i,
-└Output field names ["i" "b"]
 
 ---- 1041
 SELECT * FROM t WHERE !b && !b ORDER BY i;
