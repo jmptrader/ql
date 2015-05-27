@@ -575,7 +575,11 @@ func (r *indexIntervalPlan) filterGe(binOp2 int, val interface{}) (p plan, indic
 		}
 		return r, nil, nil
 	case '>':
-		panic("TODO")
+		if collate1(r.lval, val) <= 0 {
+			r.lval = val
+			r.kind = intervalGt
+		}
+		return r, nil, nil
 	case le:
 		panic("TODO")
 	case '<':
