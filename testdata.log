@@ -7101,3 +7101,28 @@ SELECT i FROM t WHERE i <= 0 && i == 2;
 ┌Iterate no rows
 └Output field names ["i"]
 
+---- 1110
+SELECT i FROM t WHERE i <= 0 && i >= -2;
+┌Iterate all rows of table "t" using index "x" where i >= -2 && <= 0
+└Output field names ["i"]
+
+---- 1111
+SELECT i FROM t WHERE i <= 0 && i >= -1;
+┌Iterate all rows of table "t" using index "x" where i >= -1 && <= 0
+└Output field names ["i"]
+
+---- 1112
+SELECT i FROM t WHERE i <= 0 && i >= 0;
+┌Iterate all rows of table "t" using index "x" where i == 0
+└Output field names ["i"]
+
+---- 1113
+SELECT i FROM t WHERE i <= 0 && i >= 1;
+┌Iterate no rows
+└Output field names ["i"]
+
+---- 1114
+SELECT i FROM t WHERE i <= 0 && i >= 2;
+┌Iterate no rows
+└Output field names ["i"]
+
