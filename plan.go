@@ -1058,6 +1058,84 @@ func (r *indexIntervalPlan) filterOC(binOp2 int, val interface{}) (plan, []strin
 	return nil, nil, nil
 }
 
+func (r *indexIntervalPlan) filterOO(binOp2 int, val interface{}) (plan, []string, error) {
+	switch binOp2 {
+	case eq:
+		if collate1(val, r.lval) <= 0 || collate1(val, r.hval) >= 0 {
+			return &nullPlan{r.fieldNames()}, nil, nil
+		}
+
+		r.lval = val
+		r.kind = intervalEq
+		return r, nil, nil
+		//case ge:
+		//	if collate1(val, r.lval) <= 0 {
+		//		return r, nil, nil
+		//	}
+
+		//	switch c := collate1(val, r.hval); {
+		//	case c < 0:
+		//		r.lval = val
+		//		r.kind = intervalLHCC
+		//		return r, nil, nil
+		//	case c == 0:
+		//		r.lval = val
+		//		r.kind = intervalEq
+		//		return r, nil, nil
+		//	default:
+		//		return &nullPlan{r.fieldNames()}, nil, nil
+		//	}
+		//case '>':
+		//	if collate1(val, r.lval) <= 0 {
+		//		return r, nil, nil
+		//	}
+
+		//	if collate1(val, r.hval) < 0 {
+		//		r.lval = val
+		//		return r, nil, nil
+		//	}
+
+		//	return &nullPlan{r.fieldNames()}, nil, nil
+		//case le:
+		//	if collate1(val, r.lval) <= 0 {
+		//		return &nullPlan{r.fieldNames()}, nil, nil
+		//	}
+
+		//	if collate1(val, r.hval) < 0 {
+		//		r.hval = val
+		//	}
+		//	return r, nil, nil
+		//case '<':
+		//	if collate1(val, r.lval) <= 0 {
+		//		return &nullPlan{r.fieldNames()}, nil, nil
+		//	}
+
+		//	switch c := collate1(val, r.hval); {
+		//	case c < 0:
+		//		r.hval = val
+		//		r.kind = intervalLHOO
+		//	case c == 0:
+		//		r.kind = intervalLHOO
+		//	}
+		//	return r, nil, nil
+		//case neq:
+		//	if collate1(val, r.lval) <= 0 {
+		//		return r, nil, nil
+		//	}
+
+		//	switch c := collate1(val, r.hval); {
+		//	case c < 0:
+		//		return nil, nil, nil
+		//	case c == 0:
+		//		r.kind = intervalLHOO
+		//		return r, nil, nil
+		//	default:
+		//		return r, nil, nil
+		//	}
+	}
+	return nil, nil, nil
+}
+
 func (r *indexIntervalPlan) filter(expr expression) (plan, []string, error) {
 	switch x := expr.(type) {
 	case *binaryOperation:
@@ -1088,7 +1166,7 @@ func (r *indexIntervalPlan) filter(expr expression) (plan, []string, error) {
 		case intervalLHOC: // (L, H]
 			return r.filterOC(x.op, val)
 		case intervalLHOO: // (L, H)
-			panic("TODO")
+			return r.filterOO(x.op, val)
 		case intervalLe: // (..., H]
 			return r.filterLe(x.op, val)
 		case intervalLt: // (..., H)
