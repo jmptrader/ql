@@ -959,7 +959,23 @@ func (r *indexIntervalPlan) filterCC(binOp2 int, val interface{}) (plan, []strin
 		}
 		return r, nil, nil
 	case neq:
-		panic("TODO")
+		switch c := collate1(val, r.lval); {
+		case c < 0:
+			return r, nil, nil
+		case c == 0:
+			r.kind = intervalLHOC
+			return r, nil, nil
+		default:
+			switch c := collate1(val, r.hval); {
+			case c == 0:
+				r.kind = intervalLHCO
+				return r, nil, nil
+			case c > 0:
+				return r, nil, nil
+			default:
+				return nil, nil, nil
+			}
+		}
 	}
 	return nil, nil, nil
 }
