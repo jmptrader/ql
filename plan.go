@@ -1209,7 +1209,17 @@ func (r *indexIntervalPlan) filterNe(binOp2 int, val interface{}) (plan, []strin
 
 		return &nullPlan{r.fieldNames()}, nil, nil
 	case ge:
-		panic("TODO")
+		switch c := collate1(val, r.lval); {
+		case c < 0:
+			return nil, nil, nil //TODO
+		case c == 0:
+			r.kind = intervalGt
+			return r, nil, nil
+		default:
+			r.lval = val
+			r.kind = intervalGe
+			return r, nil, nil
+		}
 	case '>':
 		panic("TODO")
 	case le:

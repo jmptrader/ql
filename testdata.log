@@ -8042,3 +8042,32 @@ SELECT i FROM t WHERE i != 0 && i == 2;
 ┌Iterate all rows of table "t" using index "x" where i == 2
 └Output field names ["i"]
 
+---- 1295
+SELECT i FROM t WHERE i != 0 && i >= -2;
+┌Iterate all rows of table "t" using index "x" where i != 0
+└Output field names ["i"]
+┌Filter on i >= -2
+└Output field names ["i"]
+
+---- 1296
+SELECT i FROM t WHERE i != 0 && i >= -1;
+┌Iterate all rows of table "t" using index "x" where i != 0
+└Output field names ["i"]
+┌Filter on i >= -1
+└Output field names ["i"]
+
+---- 1297
+SELECT i FROM t WHERE i != 0 && i >= 0;
+┌Iterate all rows of table "t" using index "x" where i > 0
+└Output field names ["i"]
+
+---- 1298
+SELECT i FROM t WHERE i != 0 && i >= 1;
+┌Iterate all rows of table "t" using index "x" where i >= 1
+└Output field names ["i"]
+
+---- 1299
+SELECT i FROM t WHERE i != 0 && i >= 2;
+┌Iterate all rows of table "t" using index "x" where i >= 2
+└Output field names ["i"]
+
