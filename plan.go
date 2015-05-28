@@ -990,22 +990,23 @@ func (r *indexIntervalPlan) filterOC(binOp2 int, val interface{}) (plan, []strin
 		r.lval = val
 		r.kind = intervalEq
 		return r, nil, nil
-	//case ge:
-	//	if collate1(val, r.lval) <= 0 {
-	//		return r, nil, nil
-	//	}
+	case ge:
+		if collate1(val, r.lval) <= 0 {
+			return r, nil, nil
+		}
 
-	//	switch c := collate1(val, r.hval); {
-	//	case c < 0:
-	//		r.lval = val
-	//		return r, nil, nil
-	//	case c == 0:
-	//		r.lval = val
-	//		r.kind = intervalEq
-	//		return r, nil, nil
-	//	default:
-	//		return &nullPlan{r.fieldNames()}, nil, nil
-	//	}
+		switch c := collate1(val, r.hval); {
+		case c < 0:
+			r.lval = val
+			r.kind = intervalLHCC
+			return r, nil, nil
+		case c == 0:
+			r.lval = val
+			r.kind = intervalEq
+			return r, nil, nil
+		default:
+			return &nullPlan{r.fieldNames()}, nil, nil
+		}
 	//case '>':
 	//	switch c := collate1(val, r.lval); {
 	//	case c < 0:
