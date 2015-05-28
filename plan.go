@@ -1171,16 +1171,15 @@ func (r *indexIntervalPlan) filterCO(binOp2 int, val interface{}) (plan, []strin
 			}
 			return r, nil, nil
 		}
-		//case '<':
-		//	if collate1(val, r.lval) <= 0 {
-		//		return &nullPlan{r.fieldNames()}, nil, nil
-		//	}
+	case '<':
+		if collate1(val, r.lval) <= 0 {
+			return &nullPlan{r.fieldNames()}, nil, nil
+		}
 
-		//	if collate1(val, r.hval) <= 0 {
-		//		r.hval = val
-		//		r.kind = intervalLHCO
-		//	}
-		//	return r, nil, nil
+		if collate1(val, r.hval) < 0 {
+			r.hval = val
+		}
+		return r, nil, nil
 		//case neq:
 		//	switch c := collate1(val, r.lval); {
 		//	case c < 0:
