@@ -290,6 +290,41 @@ func (r *indexIntervalPlan) doLHCC(ctx *execCtx, f func(interface{}, []interface
 	}
 }
 
+func (r *indexIntervalPlan) doLHCO(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
+	// nil, nil, ..., L-1, L-1, L, L, L+1, L+1, ..., H-1, H-1, H, H, H+1, H+1, ...
+	// ---  ---  ---  ---  ---  +  +  +++  +++  +++  +++  +++  -  -  ---  ---  ---
+	t := r.src
+	it, _, err := r.x.Seek([]interface{}{r.lval})
+	if err != nil {
+		return noEOF(err)
+	}
+
+	for {
+		k, h, err := it.Next()
+		if err != nil {
+			return noEOF(err)
+		}
+
+		val, err := expand1(k[0], nil)
+		if err != nil {
+			return err
+		}
+
+		if collate1(val, r.hval) >= 0 {
+			return nil
+		}
+
+		id, data, err := t.row(ctx, h)
+		if err != nil {
+			return err
+		}
+
+		if more, err := f(id, data); err != nil || !more {
+			return err
+		}
+	}
+}
+
 func (r *indexIntervalPlan) doLe(ctx *execCtx, f func(interface{}, []interface{}) (bool, error)) error {
 	// nil, nil, ..., H-1, H-1, H, H, H+1, H+1, ...
 	// ---  ---  +++  +++  +++  +  +  ---  ---
@@ -563,6 +598,8 @@ func (r *indexIntervalPlan) do(ctx *execCtx, f func(interface{}, []interface{}) 
 		return r.doLHCC(ctx, f)
 	case intervalLHOC:
 		return r.doLHOC(ctx, f)
+	case intervalLHCO:
+		return r.doLHCO(ctx, f)
 	default:
 		//dbg("", r.kind)
 		panic("internal error 072")
@@ -598,6 +635,8 @@ func (r *indexIntervalPlan) explain(w strutil.Formatter) {
 		w.Format(" > %v && < %v", value{r.lval}, value{r.hval})
 	case intervalLHCC:
 		w.Format(" >= %v && <= %v", value{r.lval}, value{r.hval})
+	case intervalLHCO:
+		w.Format(" >= %v && < %v", value{r.lval}, value{r.hval})
 	case intervalLHOC:
 		w.Format(" > %v && <= %v", value{r.lval}, value{r.hval})
 	default:
@@ -818,7 +857,13 @@ func (r *indexIntervalPlan) filterLt(binOp2 int, val interface{}) (plan, []strin
 
 		return &nullPlan{r.fieldNames()}, nil, nil
 	case ge:
-		panic("TODO")
+		if collate1(r.hval, val) > 0 {
+			r.lval = val
+			r.kind = intervalLHCO
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
 	case '>':
 		panic("TODO")
 	case le:
