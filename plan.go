@@ -1091,15 +1091,16 @@ func (r *indexIntervalPlan) filterOO(binOp2 int, val interface{}) (plan, []strin
 		}
 
 		return &nullPlan{r.fieldNames()}, nil, nil
-		//case le:
-		//	if collate1(val, r.lval) <= 0 {
-		//		return &nullPlan{r.fieldNames()}, nil, nil
-		//	}
+	case le:
+		if collate1(val, r.lval) <= 0 {
+			return &nullPlan{r.fieldNames()}, nil, nil
+		}
 
-		//	if collate1(val, r.hval) < 0 {
-		//		r.hval = val
-		//	}
-		//	return r, nil, nil
+		if collate1(val, r.hval) < 0 {
+			r.hval = val
+			r.kind = intervalLHOC
+		}
+		return r, nil, nil
 		//case '<':
 		//	if collate1(val, r.lval) <= 0 {
 		//		return &nullPlan{r.fieldNames()}, nil, nil
