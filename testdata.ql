@@ -15231,3 +15231,65 @@ SELECT i FROM t WHERE i != 0 && i < 2;
 [-2]
 [-1]
 [1]
+
+-- 1315
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i != 0 && i != -2;
+|"i"
+[-1]
+[1]
+[2]
+
+-- 1316
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i != 0 && i != -1;
+|"i"
+[-2]
+[1]
+[2]
+
+-- 1317
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i != 0 && i != 0;
+|"i"
+[-2]
+[-1]
+[1]
+[2]
+
+
+-- 1318
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i != 0 && i != 1;
+|"i"
+[-2]
+[-1]
+[2]
+
+-- 1319
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i != 0 && i != 2;
+|"i"
+[-2]
+[-1]
+[1]
