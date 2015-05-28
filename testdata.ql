@@ -13410,3 +13410,50 @@ SELECT i FROM t WHERE i <= 0 && i != 2;
 [-2]
 [-1]
 [0]
+
+-- 1135
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i < 0 && i == -2;
+|"i"
+[-2]
+
+-- 1136
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i < 0 && i == -1;
+|"i"
+[-1]
+
+-- 1137
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i < 0 && i == 0;
+|"i"
+
+-- 1138
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i < 0 && i == 1;
+|"i"
+
+-- 1139
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i < 0 && i == 2;
+|"i"
