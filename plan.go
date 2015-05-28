@@ -865,7 +865,13 @@ func (r *indexIntervalPlan) filterLt(binOp2 int, val interface{}) (plan, []strin
 
 		return &nullPlan{r.fieldNames()}, nil, nil
 	case '>':
-		panic("TODO")
+		if collate1(r.hval, val) > 0 {
+			r.lval = val
+			r.kind = intervalLHOO
+			return r, nil, nil
+		}
+
+		return &nullPlan{r.fieldNames()}, nil, nil
 	case le:
 		panic("TODO")
 	case '<':
