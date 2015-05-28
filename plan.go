@@ -893,6 +893,30 @@ func (r *indexIntervalPlan) filterLt(binOp2 int, val interface{}) (plan, []strin
 	return nil, nil, nil
 }
 
+func (r *indexIntervalPlan) filterCC(binOp2 int, val interface{}) (plan, []string, error) {
+	switch binOp2 {
+	case eq:
+		if collate1(val, r.lval) < 0 || collate1(val, r.hval) > 0 {
+			return &nullPlan{r.fieldNames()}, nil, nil
+		}
+
+		r.lval = val
+		r.kind = intervalEq
+		return r, nil, nil
+	case ge:
+		panic("TODO")
+	case '>':
+		panic("TODO")
+	case le:
+		panic("TODO")
+	case '<':
+		panic("TODO")
+	case neq:
+		panic("TODO")
+	}
+	return nil, nil, nil
+}
+
 func (r *indexIntervalPlan) filter(expr expression) (plan, []string, error) {
 	switch x := expr.(type) {
 	case *binaryOperation:
@@ -917,7 +941,7 @@ func (r *indexIntervalPlan) filter(expr expression) (plan, []string, error) {
 		case intervalGt: // (L, ...)
 			return r.filterGt(x.op, val)
 		case intervalLHCC: // [L, H]
-			panic("TODO")
+			return r.filterCC(x.op, val)
 		case intervalLHCO: // [L, H)
 			panic("TODO")
 		case intervalLHOC: // (L, H]

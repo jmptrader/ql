@@ -708,8 +708,13 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 				case eq, '>', ge, '<', le, neq:
 					in = append(in, l)
 					break loop
+				case andand:
+					in = append(in, l.r)
+					x = l
 				default:
-					//dbg("", string(l.op), yySymName(l.op))
+					dbg("", in)
+					dbg("", x)
+					dbg("", string(l.op), yySymName(l.op))
 					panic("TODO")
 				}
 			default:
