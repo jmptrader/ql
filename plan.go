@@ -936,7 +936,18 @@ func (r *indexIntervalPlan) filterCC(binOp2 int, val interface{}) (plan, []strin
 			return &nullPlan{r.fieldNames()}, nil, nil
 		}
 	case le:
-		panic("TODO")
+		switch c := collate1(val, r.lval); {
+		case c < 0:
+			return &nullPlan{r.fieldNames()}, nil, nil
+		case c == 0:
+			r.kind = intervalEq
+			return r, nil, nil
+		default:
+			if collate1(val, r.hval) < 0 {
+				r.hval = val
+			}
+			return r, nil, nil
+		}
 	case '<':
 		panic("TODO")
 	case neq:
