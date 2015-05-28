@@ -1221,7 +1221,13 @@ func (r *indexIntervalPlan) filterNe(binOp2 int, val interface{}) (plan, []strin
 			return r, nil, nil
 		}
 	case '>':
-		panic("TODO")
+		if collate1(val, r.lval) < 0 {
+			return nil, nil, nil //TODO
+		}
+
+		r.lval = val
+		r.kind = intervalGt
+		return r, nil, nil
 	case le:
 		panic("TODO")
 	case '<':
