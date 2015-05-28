@@ -879,7 +879,10 @@ func (r *indexIntervalPlan) filterLt(binOp2 int, val interface{}) (plan, []strin
 		}
 		return r, nil, nil
 	case '<':
-		panic("TODO")
+		if collate1(r.hval, val) > 0 {
+			r.hval = val
+		}
+		return r, nil, nil
 	case neq:
 		panic("TODO")
 	}
