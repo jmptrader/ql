@@ -14123,3 +14123,53 @@ BEGIN TRANSACTION;
 COMMIT;
 SELECT i FROM t WHERE i > -1 && i <= 1 && i >= 2;
 |"i"
+
+-- 1205
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > -1 && i <= 1 && i > -2;
+|"i"
+[0]
+[1]
+
+-- 1206
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > -1 && i <= 1 && i > -1;
+|"i"
+[0]
+[1]
+
+-- 1207
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > -1 && i <= 1 && i > 0;
+|"i"
+[1]
+
+-- 1208
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > -1 && i <= 1 && i > 1;
+|"i"
+
+-- 1209
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX x ON t(i);
+	INSERT INTO t VALUES (1), (NULL), (-2), (0), (2), (-1);
+COMMIT;
+SELECT i FROM t WHERE i > -1 && i <= 1 && i > 2;
+|"i"
