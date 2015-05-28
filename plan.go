@@ -1329,18 +1329,12 @@ func (r *indexIntervalPlan) filter(expr expression) (plan, []string, error) {
 		case intervalTrue: // [true]
 			return &nullPlan{r.fieldNames()}, nil, nil
 		}
-	default:
-		//dbg("%T: %v", x, x)
-		panic("TODO")
 	}
 
-	//dbg("TODO %T(index %s(%s)): %v", r, r.src.name, r.cname, expr)
-	return nil, nil, nil //TODO
+	return nil, nil, nil
 }
 
-func (r *indexIntervalPlan) hasID() bool {
-	panic("TODO")
-}
+func (r *indexIntervalPlan) hasID() bool { return true }
 
 type explainDefaultPlan struct {
 	s stmt
