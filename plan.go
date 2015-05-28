@@ -1110,20 +1110,12 @@ func (r *indexIntervalPlan) filterOO(binOp2 int, val interface{}) (plan, []strin
 			r.hval = val
 		}
 		return r, nil, nil
-		//case neq:
-		//	if collate1(val, r.lval) <= 0 {
-		//		return r, nil, nil
-		//	}
+	case neq:
+		if collate1(val, r.lval) <= 0 || collate1(val, r.hval) >= 0 {
+			return r, nil, nil
+		}
 
-		//	switch c := collate1(val, r.hval); {
-		//	case c < 0:
-		//		return nil, nil, nil
-		//	case c == 0:
-		//		r.kind = intervalLHOO
-		//		return r, nil, nil
-		//	default:
-		//		return r, nil, nil
-		//	}
+		return nil, nil, nil
 	}
 	return nil, nil, nil
 }

@@ -7813,3 +7813,30 @@ SELECT i FROM t WHERE i > -1 && i < 1 && i < 2;
 ┌Iterate all rows of table "t" using index "x" where i > -1 && < 1
 └Output field names ["i"]
 
+---- 1250
+SELECT i FROM t WHERE i > -1 && i < 1 && i != -2;
+┌Iterate all rows of table "t" using index "x" where i > -1 && < 1
+└Output field names ["i"]
+
+---- 1251
+SELECT i FROM t WHERE i > -1 && i < 1 && i != -1;
+┌Iterate all rows of table "t" using index "x" where i > -1 && < 1
+└Output field names ["i"]
+
+---- 1252
+SELECT i FROM t WHERE i > -1 && i < 1 && i != 0;
+┌Iterate all rows of table "t" using index "x" where i > -1 && < 1
+└Output field names ["i"]
+┌Filter on i != 0
+└Output field names ["i"]
+
+---- 1253
+SELECT i FROM t WHERE i > -1 && i < 1 && i != 1;
+┌Iterate all rows of table "t" using index "x" where i > -1 && < 1
+└Output field names ["i"]
+
+---- 1254
+SELECT i FROM t WHERE i > -1 && i < 1 && i != 2;
+┌Iterate all rows of table "t" using index "x" where i > -1 && < 1
+└Output field names ["i"]
+
