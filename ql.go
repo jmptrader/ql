@@ -391,6 +391,7 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 		}
 	case andand:
 		in := []expression{x.r}
+		x := x
 	loop:
 		for {
 			switch l := x.l.(type) {
@@ -441,6 +442,10 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 		}
 
 		for len(out) > 1 {
+			dbg("in %v", in)
+			dbg("out %v", out)
+			dbg("is %v", is)
+			panic("TODO")
 			return &filterDefaultPlan{r.src, x, is}, nil //TODO
 		}
 

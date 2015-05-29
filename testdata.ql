@@ -15293,3 +15293,116 @@ SELECT i FROM t WHERE i != 0 && i != 2;
 [-2]
 [-1]
 [1]
+
+-- 1320
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int, k int);
+	INSERT INTO t VALUES
+	(1, 2, 3),
+	(4, 5, -6),
+	(7, -8, 9),
+	(10, -11, -12),
+	(-13, 14, 15),
+	(-16, 17, -18),
+	(-19, -20, 21),
+	(-22, -23, -24);
+COMMIT;
+SELECT * FROM t WHERE i > 0 && j > 0 ORDER BY i, j;
+|"i", "j", "k"
+[1 2 3]
+[4 5 -6]
+
+-- 1321
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int, k int);
+	CREATE INDEX xi ON t(i);
+	INSERT INTO t VALUES
+	(1, 2, 3),
+	(4, 5, -6),
+	(7, -8, 9),
+	(10, -11, -12),
+	(-13, 14, 15),
+	(-16, 17, -18),
+	(-19, -20, 21),
+	(-22, -23, -24);
+COMMIT;
+SELECT * FROM t WHERE i > 0 && j > 0 ORDER BY i, j;
+|"i", "j", "k"
+[1 2 3]
+[4 5 -6]
+
+-- 1322
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int, k int);
+	CREATE INDEX xj ON t(j);
+	INSERT INTO t VALUES
+	(1, 2, 3),
+	(4, 5, -6),
+	(7, -8, 9),
+	(10, -11, -12),
+	(-13, 14, 15),
+	(-16, 17, -18),
+	(-19, -20, 21),
+	(-22, -23, -24);
+COMMIT;
+SELECT * FROM t WHERE i > 0 && j > 0 ORDER BY i, j;
+|"i", "j", "k"
+[1 2 3]
+[4 5 -6]
+
+-- 1323
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int, k int);
+	CREATE INDEX xi ON t(i);
+	CREATE INDEX xj ON t(j);
+	INSERT INTO t VALUES
+	(1, 2, 3),
+	(4, 5, -6),
+	(7, -8, 9),
+	(10, -11, -12),
+	(-13, 14, 15),
+	(-16, 17, -18),
+	(-19, -20, 21),
+	(-22, -23, -24);
+COMMIT;
+SELECT * FROM t WHERE i > 0 && j > 0 ORDER BY i, j;
+|"i", "j", "k"
+[1 2 3]
+[4 5 -6]
+
+-- 1324
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int, k int);
+	CREATE INDEX xi ON t(i);
+	CREATE INDEX xj ON t(j);
+	INSERT INTO t VALUES
+	(1, 2, 3),
+	(4, 5, -6),
+	(7, -8, 9),
+	(10, -11, -12),
+	(-13, 14, 15),
+	(-16, 17, -18),
+	(-19, -20, 21),
+	(-22, -23, -24);
+COMMIT;
+SELECT * FROM t WHERE j > 0 && i > 0 ORDER BY i, j;
+|"i", "j", "k"
+[1 2 3]
+[4 5 -6]
+
+-- 1325
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int, j int, k int);
+	INSERT INTO t VALUES
+	(1, 2, 3),
+	(4, 5, -6),
+	(7, -8, 9),
+	(10, -11, -12),
+	(-13, 14, 15),
+	(-16, 17, -18),
+	(-19, -20, 21),
+	(-22, -23, -24);
+COMMIT;
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0;
+|"i", "j", "k"
+[1 2 3]
