@@ -15,11 +15,11 @@
 // Change list
 //
 // 2015-05-29: The execution planner was rewritten from scratch. It should use
-// indices in all places where they were used before plus in few situations
-// more.  It is possible to investigate the plan using the newly added EXPLAIN
-// statement.  The QL tool is handy for such analysis. If the planner would
-// have used an index, but no such exists, the plan includes hints in form of
-// copy/paste ready CREATE INDEX statements.
+// indices in all places where they were used before plus in some additional
+// situations more.  It is possible to investigate the plan using the newly
+// added EXPLAIN statement.  The QL tool is handy for such analysis. If the
+// planner would have used an index, but no such exists, the plan includes
+// hints in form of copy/paste ready CREATE INDEX statements.
 //
 // The planner is still quite simple and a lot of work on it is yet ahead. You
 // can help this process by filling an issue with a schema and query which
@@ -1632,7 +1632,9 @@
 //	│   ┌Iterate all rows of table "u" using index "xu_j" where j < 314
 //	│   └Output field names ["j"]
 //	└Output field names ["t.i" "u.j"]
-
+//	$ ql 'explain select * from t where i > 12 and i between 10 and 20 and i < 42'
+//	┌Iterate all rows of table "t" using index "xt_i" where i > 12 && <= 20
+//	└Output field names ["i"]
 //	$
 //
 // The explanation may aid in uderstanding how a statement/query would be

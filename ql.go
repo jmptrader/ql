@@ -390,30 +390,23 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 			return p2, nil
 		}
 	case andand:
-		in := []expression{x.r}
-		x := x
-	loop:
-		for {
-			switch l := x.l.(type) {
-			case *binaryOperation:
-				switch l.op {
-				case eq, '>', ge, '<', le, neq:
-					in = append(in, l)
-					break loop
-				case andand:
-					in = append(in, l.r)
-					x = l
-				}
-			default:
-				in = append(in, l)
-				break loop
+		var in []expression
+		var f func(expression)
+		f = func(e expression) {
+			b, ok := e.(*binaryOperation)
+			if !ok || b.op != andand {
+				in = append(in, e)
+				return
 			}
+
+			f(b.l)
+			f(b.r)
 		}
+		f(x)
 		out := []expression{}
 		p := r.src
 		isNewPlan := false
-		for i := range in {
-			e := in[len(in)-1-i]
+		for _, e := range in {
 			p2, is2, err := p.filter(e)
 			if err != nil {
 				return nil, err
