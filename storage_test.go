@@ -172,6 +172,29 @@ const sample = `
      COMMIT;
 `
 
+func explained(db *DB, s stmt, tctx *TCtx) (string, error) {
+	src := "explain " + s.String()
+	rs, _, err := db.Run(tctx, src, int64(30))
+	if err != nil {
+		return "", err
+	}
+
+	rows, err := rs[0].Rows(-1, 0)
+	if err != nil {
+		return "", err
+	}
+
+	if !strings.HasPrefix(rows[0][0].(string), "┌") {
+		return "", nil
+	}
+
+	var a []string
+	for _, v := range rows {
+		a = append(a, v[0].(string))
+	}
+	return strings.Join(a, "\n"), nil
+}
+
 // Test provides a testing facility for alternative storage implementations.
 // The s.setup should return a freshly created and empty storage. Removing the
 // store from the system is the responsibility of the caller. The test only
@@ -371,33 +394,22 @@ func test(t *testing.T, s testDB) (panicked error) {
 				if noErrors {
 					hdr := false
 					for _, v := range list.l {
-						src := "EXPLAIN " + v.String()
-						rs, _, err := db.Run(tctx, src, int64(30))
+						s, err := explained(db, v, tctx)
 						if err != nil {
-							t.Errorf("(%d) %s: %v", itest, src, err)
+							t.Error(err)
 							return
 						}
 
-						rows, err := rs[0].Rows(-1, 0)
-						if err != nil {
-							t.Errorf("%s: %v", src, err)
-							return
-						}
-
-						if !strings.HasPrefix(rows[0][0].(string), "┌") {
+						if !strings.HasPrefix(s, "┌") {
 							continue
 						}
 
-						var a []string
-						for _, v := range rows {
-							a = append(a, v[0].(string))
-						}
 						if !hdr {
 							fmt.Fprintf(log, "---- %v\n", itest)
 							hdr = true
 						}
 						fmt.Fprintf(log, "%s\n", v)
-						fmt.Fprintf(log, "%s\n\n", strings.Join(a, "\n"))
+						fmt.Fprintf(log, "%s\n\n", s)
 					}
 				}
 
