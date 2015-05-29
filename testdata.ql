@@ -15549,3 +15549,26 @@ COMMIT;
 SELECT * FROM t WHERE i > 0 && j > 0 && k > 0 && l > 0;
 |"i", "j", "k", "l"
 [1 2 3 25]
+
+-- 1334
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (13), (15), (11), (16), (12), (14);
+COMMIT;
+SELECT * FROM t WHERE i > 12 && i BETWEEN 10 AND 20 AND i < 15 ORDER BY i;
+|"i"
+[13]
+[14]
+
+-- 1335
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	CREATE INDEX xt_i ON t(i);
+	INSERT INTO t VALUES (13), (15), (11), (16), (12), (14);
+COMMIT;
+SELECT * FROM t WHERE i > 12 && i BETWEEN 10 AND 20 AND i < 42;
+|"i"
+[13]
+[14]
+[15]
+[16]

@@ -2274,7 +2274,7 @@ func (r *tableDefaultPlan) filterBinOp(x *binaryOperation) (plan, []string, erro
 	}
 }
 
-func (r *tableDefaultPlan) filterIdent(x *ident, trueValue bool) (plan, []string, error) { //TODO !ident
+func (r *tableDefaultPlan) filterIdent(x *ident, trueValue bool) (plan, []string, error) {
 	cn := x.s
 	t := r.t
 	for _, v := range t.cols {

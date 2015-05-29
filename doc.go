@@ -14,6 +14,18 @@
 //
 // Change list
 //
+// 2015-05-29: The execution planner was rewritten from scratch. It should use
+// indices in all places where they were used before plus in few situations
+// more.  It is possible to investigate the plan using the newly added EXPLAIN
+// statement.  The QL tool is handy for such analysis. If the planner would
+// have used an index, but no such exists, the plan includes hints in form of
+// copy/paste ready CREATE INDEX statements.
+//
+// The planner is still quite simple and a lot of work on it is yet ahead. You
+// can help this process by filling an issue with a schema and query which
+// fails to use an index or indices when it should, in your opinion. Bonus
+// points for including output of `ql 'explain <query>'`.
+//
 // 2015-05-09: The grammar of the CREATE INDEX statement now accepts an
 // expression list instead of a single expression, which was further limited to
 // just a column name or the built-in id().  As a side effect, composite
@@ -1615,11 +1627,12 @@
 //	$ ql 'CREATE INDEX xt_i ON t(i); CREATE INDEX xu_j ON u(j);'
 //	$ ql 'explain select * from t, u where t.i > 42 && u.j < 314'
 //	┌Compute Cartesian product of
-//	│   ┌Iterate all rows of table "t" using index "xt_i" where the indexed value is > 42
+//	│   ┌Iterate all rows of table "t" using index "xt_i" where i > 42
 //	│   └Output field names ["i"]
-//	│   ┌Iterate all rows of table "u" using index "xu_j" where the indexed value is < 314
+//	│   ┌Iterate all rows of table "u" using index "xu_j" where j < 314
 //	│   └Output field names ["j"]
 //	└Output field names ["t.i" "u.j"]
+
 //	$
 //
 // The explanation may aid in uderstanding how a statement/query would be
@@ -1627,6 +1640,26 @@
 // improve the statement performance.  The create index statements above were
 // directly copy/pasted in the terminal from the suggestions provided by the
 // filter recordset pipeline part returned by the explain statement.
+//
+// If the statement has nothing special in its plan, the result is the original
+// statement.
+//
+//	$ ql 'explain delete from t where 42 < i'
+//	DELETE FROM t WHERE i > 42;
+//	$
+//
+// To get an explanation of the select statement of the IN predicate, use the EXPLAIN
+// statement with that particular select statement.
+//
+//	$ ql 'explain select * from t where i in (select j from u where j > 0)'
+//	┌Iterate all rows of table "t"
+//	└Output field names ["i"]
+//	┌Filter on i IN (SELECT j FROM u WHERE j > 0;)
+//	└Output field names ["i"]
+//	$ ql 'explain select j from u where j > 0'
+//	┌Iterate all rows of table "u" using index "xu_j" where j > 0
+//	└Output field names ["j"]
+//	$
 //
 // ROLLBACK
 //
