@@ -429,10 +429,6 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 			isNewPlan = true
 		}
 
-		//dbg("in %v", in)
-		//dbg("out %v", out)
-		//dbg("is %v", is)
-
 		if !isNewPlan {
 			break
 		}
@@ -442,16 +438,17 @@ func (r *whereRset) planBinOp(x *binaryOperation) (plan, error) {
 		}
 
 		for len(out) > 1 {
-			dbg("in %v", in)
-			dbg("out %v", out)
-			dbg("is %v", is)
-			panic("TODO")
-			return &filterDefaultPlan{r.src, x, is}, nil //TODO
+			n := len(out)
+			e, err := newBinaryOperation(andand, out[n-2], out[n-1])
+			if err != nil {
+				return nil, err
+			}
+
+			out = out[:n-1]
+			out[n-2] = e
 		}
 
-		rest := out[0]
-		//dbg("rest: %v", rest)
-		return &filterDefaultPlan{p, rest, is}, nil
+		return &filterDefaultPlan{p, out[0], is}, nil
 	}
 
 	return &filterDefaultPlan{p, x, is}, nil

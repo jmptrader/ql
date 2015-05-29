@@ -8252,3 +8252,78 @@ SELECT * FROM t WHERE i > 0 && j > 0 && k > 0;
 │CREATE INDEX xt_k ON t(k);
 └Output field names ["i" "j" "k"]
 
+---- 1326
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0;
+┌Iterate all rows of table "t" using index "xi" where i > 0
+└Output field names ["i" "j" "k"]
+┌Filter on j > 0 && k > 0
+└Output field names ["i" "j" "k"]
+
+---- 1327
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0;
+┌Iterate all rows of table "t" using index "xj" where j > 0
+└Output field names ["i" "j" "k"]
+┌Filter on i > 0 && k > 0
+│Possibly useful indices
+│CREATE INDEX xt_i ON t(i);
+└Output field names ["i" "j" "k"]
+
+---- 1328
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0;
+┌Iterate all rows of table "t" using index "xk" where k > 0
+└Output field names ["i" "j" "k"]
+┌Filter on i > 0 && j > 0
+│Possibly useful indices
+│CREATE INDEX xt_i ON t(i);
+│CREATE INDEX xt_j ON t(j);
+└Output field names ["i" "j" "k"]
+
+---- 1329
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0 && l > 0;
+┌Iterate all rows of table "t"
+└Output field names ["i" "j" "k" "l"]
+┌Filter on i > 0 && j > 0 && k > 0 && l > 0
+│Possibly useful indices
+│CREATE INDEX xt_i ON t(i);
+│CREATE INDEX xt_j ON t(j);
+│CREATE INDEX xt_k ON t(k);
+│CREATE INDEX xt_l ON t(l);
+└Output field names ["i" "j" "k" "l"]
+
+---- 1330
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0 && l > 0;
+┌Iterate all rows of table "t" using index "xi" where i > 0
+└Output field names ["i" "j" "k" "l"]
+┌Filter on j > 0 && k > 0 && l > 0
+└Output field names ["i" "j" "k" "l"]
+
+---- 1331
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0 && l > 0;
+┌Iterate all rows of table "t" using index "xj" where j > 0
+└Output field names ["i" "j" "k" "l"]
+┌Filter on i > 0 && k > 0 && l > 0
+│Possibly useful indices
+│CREATE INDEX xt_i ON t(i);
+└Output field names ["i" "j" "k" "l"]
+
+---- 1332
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0 && l > 0;
+┌Iterate all rows of table "t" using index "xk" where k > 0
+└Output field names ["i" "j" "k" "l"]
+┌Filter on i > 0 && j > 0 && l > 0
+│Possibly useful indices
+│CREATE INDEX xt_i ON t(i);
+│CREATE INDEX xt_j ON t(j);
+└Output field names ["i" "j" "k" "l"]
+
+---- 1333
+SELECT * FROM t WHERE i > 0 && j > 0 && k > 0 && l > 0;
+┌Iterate all rows of table "t" using index "xl" where l > 0
+└Output field names ["i" "j" "k" "l"]
+┌Filter on i > 0 && j > 0 && k > 0
+│Possibly useful indices
+│CREATE INDEX xt_i ON t(i);
+│CREATE INDEX xt_j ON t(j);
+│CREATE INDEX xt_k ON t(k);
+└Output field names ["i" "j" "k" "l"]
+
