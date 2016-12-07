@@ -34,6 +34,7 @@ const benchScale = 1e6
 func init() {
 	log.SetFlags(log.Flags() | log.Lshortfile)
 	isTesting = true
+	use(dieHard, caller, dumpTables2, dumpTables3, dumpFields, dumpFlds, dumpCols, typeof, stypeof)
 }
 
 func dieHard(exitValue int) {
@@ -319,7 +320,7 @@ func rnds16(rng *rand.Rand, n int) string {
 
 var (
 	benchmarkScaleOnce  sync.Once
-	benchmarkSelectOnce = map[string]sync.Once{}
+	benchmarkSelectOnce = map[string]bool{}
 )
 
 func benchProlog(b *testing.B) {
@@ -335,13 +336,12 @@ func benchmarkSelect(b *testing.B, n int, sel List, ts testDB) {
 	if testing.Verbose() {
 		benchProlog(b)
 		id := fmt.Sprintf("%T|%d", ts, n)
-		once := benchmarkSelectOnce[id]
-		once.Do(func() {
+		if !benchmarkSelectOnce[id] {
 			b.Logf(`Having a table of %d records, each of size 1kB, measure the performance of
 %s
 `, n, sel)
-		})
-		benchmarkSelectOnce[id] = once
+		}
+		benchmarkSelectOnce[id] = true
 	}
 
 	db, err := ts.setup()
@@ -463,19 +463,18 @@ func TestString(t *testing.T) {
 	}
 }
 
-var benchmarkInsertOnce = map[string]sync.Once{}
+var benchmarkInsertOnce = map[string]bool{}
 
 func benchmarkInsert(b *testing.B, batch, total int, ts testDB) {
 	if testing.Verbose() {
 		benchProlog(b)
 		id := fmt.Sprintf("%T|%d|%d", ts, batch, total)
-		once := benchmarkInsertOnce[id]
-		once.Do(func() {
+		if !benchmarkInsertOnce[id] {
 			b.Logf(`In batches of %d record(s), insert a total of %d records, each of size 1kB, into a table.
 
 `, batch, total)
-		})
-		benchmarkInsertOnce[id] = once
+		}
+		benchmarkInsertOnce[id] = true
 	}
 
 	if total%batch != 0 {
@@ -1221,14 +1220,13 @@ func TestIndices(t *testing.T) {
 	testIndices(db, t)
 }
 
-var benchmarkInsertBoolOnce = map[string]sync.Once{}
+var benchmarkInsertBoolOnce = map[string]bool{}
 
 func benchmarkInsertBool(b *testing.B, db *DB, size int, selectivity float64, index bool, teardown func()) {
 	if testing.Verbose() {
 		benchProlog(b)
 		id := fmt.Sprintf("%t|%d|%g|%t", db.isMem, size, selectivity, index)
-		once := benchmarkInsertBoolOnce[id]
-		once.Do(func() {
+		if !benchmarkInsertBoolOnce[id] {
 			s := "INDEXED"
 			if !index {
 				s = "NON " + s
@@ -1236,8 +1234,8 @@ func benchmarkInsertBool(b *testing.B, db *DB, size int, selectivity float64, in
 			b.Logf(`Insert %d records into a table having a single bool %s column. Batch size: 1 record.
 
 `, size, s)
-		})
-		benchmarkInsertBoolOnce[id] = once
+		}
+		benchmarkInsertBoolOnce[id] = true
 	}
 
 	if teardown != nil {
@@ -1401,7 +1399,7 @@ func BenchmarkInsertBoolFileX1e3(b *testing.B) {
 	benchmarkInsertBoolFile(b, 1e3, 0.5, true)
 }
 
-var benchmarkSelectBoolOnce = map[string]sync.Once{}
+var benchmarkSelectBoolOnce = map[string]bool{}
 
 func benchmarkSelectBool(b *testing.B, db *DB, size int, selectivity float64, index bool, teardown func()) {
 	sel, err := Compile("SELECT * FROM t WHERE b;")
@@ -1412,8 +1410,7 @@ func benchmarkSelectBool(b *testing.B, db *DB, size int, selectivity float64, in
 	if testing.Verbose() {
 		benchProlog(b)
 		id := fmt.Sprintf("%t|%d|%g|%t", db.isMem, size, selectivity, index)
-		once := benchmarkSelectBoolOnce[id]
-		once.Do(func() {
+		if !benchmarkSelectBoolOnce[id] {
 			s := "INDEXED"
 			if !index {
 				s = "NON " + s
@@ -1422,8 +1419,8 @@ func benchmarkSelectBool(b *testing.B, db *DB, size int, selectivity float64, in
 %.0f%% of them are true. Measure the performance of
 %s
 `, s, size, 100*selectivity, sel)
-		})
-		benchmarkSelectBoolOnce[id] = once
+		}
+		benchmarkSelectBoolOnce[id] = true
 	}
 
 	if teardown != nil {
@@ -1743,14 +1740,13 @@ func TestIndex(t *testing.T) {
 	}
 }
 
-var benchmarkCrossJoinOnce = map[string]sync.Once{}
+var benchmarkCrossJoinOnce = map[string]bool{}
 
 func benchmarkCrossJoin(b *testing.B, db *DB, create, sel List, size1, size2 int, index bool, teardown func()) {
 	if testing.Verbose() {
 		benchProlog(b)
 		id := fmt.Sprintf("%t|%d|%d|%t", db.isMem, size1, size2, index)
-		once := benchmarkCrossJoinOnce[id]
-		once.Do(func() {
+		if !benchmarkCrossJoinOnce[id] {
 			s := "INDEXED "
 			if !index {
 				s = "NON " + s
@@ -1758,8 +1754,8 @@ func benchmarkCrossJoin(b *testing.B, db *DB, create, sel List, size1, size2 int
 			b.Logf(`Fill two %stables with %d and %d records of random numbers [0, 1). Measure the performance of
 %s
 `, s, size1, size2, sel)
-		})
-		benchmarkCrossJoinOnce[id] = once
+		}
+		benchmarkCrossJoinOnce[id] = true
 	}
 
 	if teardown != nil {
@@ -2064,15 +2060,6 @@ func dumpFields(f []*fld) string {
 		a = append(a, fmt.Sprintf("%p: %q", v, v.name))
 	}
 	return strings.Join(a, ", ")
-}
-
-func rndBytes(n int, seed int64) []byte {
-	rng := rand.New(rand.NewSource(seed))
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = byte(rng.Int())
-	}
-	return b
 }
 
 func TestIssue50(t *testing.T) { // https://github.com/cznic/ql/issues/50
@@ -3145,4 +3132,305 @@ func BenchmarkIssue99(b *testing.B) {
 		recs = testIssue99(b, db)
 	}
 	b.SetBytes(int64(recs) * benchScale)
+}
+
+func TestIssue108(t *testing.T) {
+	db, err := OpenMem()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	setup := `BEGIN TRANSACTION;
+CREATE TABLE people (name string NOT NULL);
+INSERT INTO people VALUES ("alice"), ("bob");
+`
+	ctx := NewRWCtx()
+	_, _, err = db.Run(ctx, setup)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rs, _, err := db.Run(ctx, "SELECT count() FROM people;")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	row, err := rs[0].FirstRow() // Used to block forever.
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	n, ok := row[0].(int64)
+	if !ok || n != 2 {
+		t.Fatal(n, 2)
+	}
+
+	_, _, err = db.Run(ctx, "COMMIT;")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+type issue109 struct {
+	*testing.T
+	db *DB
+}
+
+func (t issue109) test(doIndex bool) {
+	t.Logf("Use index: %v", doIndex)
+	var err error
+	if t.db, err = OpenMem(); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, _, err := t.db.Run(NewRWCtx(), `
+		BEGIN TRANSACTION;
+			CREATE TABLE people (name string NOT NULL);
+			CREATE TABLE awards (name string NOT NULL);
+			CREATE TABLE people_awards (person_id int NOT NULL, award_id int NOT NULL);
+		COMMIT;
+	`); err != nil {
+		t.Fatal(err)
+	}
+
+	if doIndex {
+		t.createBuggyIndex()
+	}
+
+	pid1 := t.createPerson("alice")
+
+	aid1 := t.createAward("awesome")
+	aid2 := t.createAward("best")
+
+	zeroFullJoinCount := t.countFullJoin(pid1)
+	if zeroFullJoinCount != 0 {
+		t.Fatal(zeroFullJoinCount, "Incorrect full join count before creating records")
+	}
+
+	t.insertPersonAward(pid1, aid1)
+	t.insertPersonAward(pid1, aid2)
+
+	initialFullJoinCount := t.countFullJoin(pid1)
+	if initialFullJoinCount != 2 {
+		t.Fatal(initialFullJoinCount, "Incorrect full join count before deleting records")
+	}
+
+	initialNumJoinRecords := t.countJoinRecords()
+	if initialNumJoinRecords != 2 {
+		t.Fatal(initialNumJoinRecords, "Incorrect number of join records before deleting records")
+	}
+
+	t.deletePersonAwards(pid1)
+
+	afterNumJoinRecords := t.countJoinRecords()
+	if afterNumJoinRecords != 0 {
+		t.Fatal(afterNumJoinRecords, "Incorrect number of join records after deleting records")
+	}
+
+	afterFullJoinCount := t.countFullJoin(pid1)
+	if afterFullJoinCount != 0 {
+		t.Fatal(afterFullJoinCount, "Incorrect full join count after deleting records")
+	}
+
+	t.Logf("OK")
+}
+
+func (t issue109) createBuggyIndex() {
+	if _, _, err := t.db.Run(NewRWCtx(), `
+		BEGIN TRANSACTION;
+			CREATE INDEX people_awards_person_id ON people_awards (person_id);
+		COMMIT;
+	`); err != nil {
+		t.Fatal(err)
+	}
+	t.Log("CREATE INDEX people_awards_person_id ON people_awards (person_id);")
+}
+
+func (t issue109) createPerson(name string) int64 {
+	ctx := NewRWCtx()
+	_, _, err := t.db.Run(ctx, `
+		BEGIN TRANSACTION;
+			INSERT INTO people(name) VALUES ($1);
+		COMMIT;`,
+		name,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("INSERT INTO people(name) VALUES (%q); -> ID %v", name, ctx.LastInsertID)
+	return ctx.LastInsertID
+}
+
+func (t issue109) createAward(name string) int64 {
+	ctx := NewRWCtx()
+	_, _, err := t.db.Run(ctx, `
+		BEGIN TRANSACTION;
+			INSERT INTO awards(name) VALUES ($1);
+		COMMIT`,
+		name,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("INSERT INTO awards(name) VALUES (%q); -> ID %v", name, ctx.LastInsertID)
+	return ctx.LastInsertID
+}
+
+func (t issue109) countFullJoin(personID int64) int {
+	stmt := `
+		SELECT
+			*
+		FROM
+			awards
+		FULL JOIN
+			people_awards 
+		ON
+			id(awards) == people_awards.award_id
+		WHERE
+			people_awards.person_id == $1
+	`
+	rs, _, err := t.db.Run(nil, "explain "+stmt, personID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rows, err := rs[0].Rows(-1, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log("----")
+	for _, v := range rows {
+		t.Log(v)
+	}
+
+	if rs, _, err = t.db.Run(nil, stmt, personID); err != nil {
+		t.Fatal(err)
+	}
+
+	if rows, err = rs[0].Rows(-1, 0); err != nil {
+		t.Fatal(err)
+	}
+
+	for i, v := range rows {
+		t.Logf("%v/%v: %v", i, len(rows), v)
+	}
+	t.Log("----")
+	return len(rows)
+}
+
+func (t issue109) insertPersonAward(personID, awardID int64) {
+	ctx := NewRWCtx()
+	_, _, err := t.db.Run(ctx, `
+		BEGIN TRANSACTION;
+			INSERT INTO people_awards(person_id, award_id) VALUES ($1, $2);
+		COMMIT;`,
+		personID, awardID,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("INSERT INTO people_awards(person_id, award_id) VALUES (%v, %v);", personID, awardID)
+}
+
+func (t issue109) countJoinRecords() int64 {
+	rs, _, err := t.db.Run(nil, `
+		SELECT
+			count()
+		FROM
+			people_awards;	
+	`)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	row, err := rs[0].FirstRow()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return row[0].(int64)
+}
+
+func (t issue109) deletePersonAwards(personID int64) {
+	ctx := NewRWCtx()
+	_, _, err := t.db.Run(ctx, `
+		BEGIN TRANSACTION;
+			DELETE FROM people_awards WHERE person_id == $1;
+		COMMIT`,
+		personID,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if ctx.RowsAffected != 2 {
+		t.Fatal("Did not delete rows as expected")
+	}
+	t.Logf("DELETE FROM people_awards WHERE person_id == %v;", personID)
+}
+
+func TestIssue109(t *testing.T) {
+	(issue109{T: t}).test(false)
+	(issue109{T: t}).test(true)
+}
+
+// https://github.com/cznic/ql/issues/142
+func TestIssue142(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.Chdir(cwd)
+
+	wd, err := ioutil.TempDir("", "ql-test-issue-142")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer os.RemoveAll(wd)
+
+	if err := os.Chdir(wd); err != nil {
+		t.Fatal(err)
+	}
+
+	RegisterDriver()
+	for _, nm := range []string{"test.db", "./test.db", "another.db"} {
+		t.Log(nm)
+		db, err := sql.Open("ql", nm)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		tx, err := db.Begin()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if _, err := tx.Exec("drop table if exists t; create table t (c int)"); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := tx.Commit(); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := db.Close(); err != nil {
+			t.Fatal(err)
+		}
+
+		fn := filepath.Join(wd, nm)
+		fi, err := os.Stat(fn)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t.Log(fn, fi.Size())
+		if fi.Size() == 0 {
+			t.Fatal("DB is empty")
+		}
+	}
 }

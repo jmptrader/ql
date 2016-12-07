@@ -15572,3 +15572,101 @@ SELECT * FROM t WHERE i > 12 && i BETWEEN 10 AND 20 AND i < 42;
 [14]
 [15]
 [16]
+
+-- 1336 // https://github.com/cznic/ql/issues/102
+BEGIN TRANSACTION;
+	CREATE TABLE t (i byte);
+	INSERT INTO t VALUES (NULL);
+COMMIT;
+SELECT * FROM t;
+|"i"
+[<nil>]
+
+-- 1337 // https://github.com/cznic/ql/issues/103
+BEGIN TRANSACTION;
+	CREATE TABLE t (t time);
+	INSERT INTO t VALUES (date(2015, 6, 11, 11, 7, 50, 0, "UTC"));
+	CREATE INDEX x ON t(t);
+COMMIT;
+SELECT * FROM t;
+|"t"
+[2015-06-11 11:07:50 +0000 UTC]
+
+-- 1338
+BEGIN TRANSACTION;
+	CREATE TABLE t (t time);
+COMMIT;
+SELECT len(*) FROM t;
+||invalid expression
+
+-- 1339
+BEGIN TRANSACTION;
+	CREATE TABLE t (t time);
+COMMIT;
+SELECT t.count(*) FROM t;
+||invalid expression
+
+-- 1340
+BEGIN TRANSACTION;
+	CREATE TABLE t (t time);
+COMMIT;
+SELECT count(*) FROM t;
+|""
+[0]
+
+-- 1341
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (1), (NULL), (3);
+COMMIT;
+SELECT count(*) FROM t;
+|""
+[3]
+
+-- 1342
+BEGIN TRANSACTION;
+	CREATE TABLE t (i int);
+	INSERT INTO t VALUES (1), (NULL), (3);
+COMMIT;
+SELECT count() FROM t;
+|""
+[3]
+
+-- 1343 // https://github.com/cznic/ql/issues/118
+BEGIN TRANSACTION;
+	CREATE TABLE foo (bar int, when time);
+	INSERT INTO foo VALUES (1, parseTime("2006-01-02", "3016-02-01"));
+	CREATE INDEX FooWhen ON foo (when);
+COMMIT;
+SELECT * FROM foo WHERE when > now();
+|"bar", "when"
+[1 3016-02-01 00:00:00 +0000 UTC]
+
+-- 1344 // https://github.com/cznic/ql/issues/118
+BEGIN TRANSACTION;
+	CREATE TABLE foo (bar int, when time);
+	INSERT INTO foo VALUES (1, parseTime("2006-01-02", "2017-02-01"));
+	CREATE INDEX FooWhen ON foo (when);
+COMMIT;
+SELECT * FROM foo WHERE when > date(2017, 1, 31, 23, 59, 59, 999999999, "UTC");
+|"bar", "when"
+[1 2017-02-01 00:00:00 +0000 UTC]
+
+-- 1345 // https://github.com/cznic/ql/issues/118
+BEGIN TRANSACTION;
+	CREATE TABLE foo (bar int, when time);
+	INSERT INTO foo VALUES (1, parseTime("2006-01-02", "2017-02-01"));
+	CREATE INDEX FooWhen ON foo (when);
+COMMIT;
+SELECT * FROM foo WHERE when > date(2017, 2, 1, 0, 0, 0, 0, "UTC");
+|"bar", "when"
+
+-- 1346 // https://github.com/cznic/ql/issues/131
+BEGIN TRANSACTION;
+	CREATE TABLE t (c1 int, c2 string);
+	INSERT INTO t VALUES (1, "a");
+	INSERT INTO t VALUES (2, "b");
+COMMIT;
+SELECT * FROM t WHERE c1 = 1;
+|"c1", "c2"
+[1 a]
